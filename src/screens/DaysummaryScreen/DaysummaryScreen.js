@@ -77,7 +77,7 @@ const DaysummaryScreen = () => {
       redirect: "follow"
     };
 
-    fetch("http://localhost:8091/EODOrderbutton", requestOptions)
+    fetch("https://devcrm.romsons.com:8080/EODOrderbutton", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.error == false) {
@@ -105,7 +105,7 @@ const DaysummaryScreen = () => {
       redirect: "follow"
     };
 
-    fetch("http://localhost:8091/ActivityDatabutton", requestOptions)
+    fetch("https://devcrm.romsons.com:8080/ActivityDatabutton", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log('activittyyy', result);

@@ -164,27 +164,18 @@ const CheckInOutScreen = () => {
             <Text style={CheckInOutStyles.createdBy}>{t("Total Hour")}: {item.total_hours}</Text>
 
             <TouchableOpacity onPress={item.attendance_status === "A" ? handleAbsentClick : null}>
-  <View
-    style={[
-      CheckInOutStyles.statusContainer,
-      { backgroundColor: CheckInOutStyles.statusContainerColor(item.attendance_status) }
-    ]}
-  >
-    <Text
+    <View
       style={[
-        CheckInOutStyles.statusText,
-        regularizedDates.includes(item.punch_date) && {
-          borderBottomWidth: 2, // Adjust thickness
-          fontWeight:"bold",
-          borderBottomColor: "blue", // Blue color for the underline
-          paddingBottom: 2 // Optional: adjust space between text and underline
-        }
+        CheckInOutStyles.statusContainer,
+        { backgroundColor: CheckInOutStyles.statusContainerColor(item.attendance_status) },
+        item.attendance_status === "A" && regularizedDates.includes(item.punch_date) && { backgroundColor: "lightblue" }
       ]}
     >
-      {item.attendance_status}
-    </Text>
-  </View>
-</TouchableOpacity>
+      <Text style={CheckInOutStyles.statusText}>
+        {item.attendance_status}
+      </Text>
+    </View>
+  </TouchableOpacity>
 
 
 

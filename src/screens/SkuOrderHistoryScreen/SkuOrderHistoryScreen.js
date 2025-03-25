@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image, Modal, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Image, Modal, ScrollView, ActivityIndicatorm, Alert } from "react-native";
 import { SkuOrderStyle } from '../../styles';
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -68,6 +68,10 @@ const SkuOrderHistoryScreen = () => {
 
   // Navigate and pass selected SKUs (only sku_ids)
   const goToSkuOrderScreen = () => {
+    if (selectedSKUs.length === 0) {
+      Alert.alert("Validation Error", "Please select SKU items before proceeding.");
+      return;
+    }
     navigation.navigate(RouteName.SKUORDER, { selectedSKUs });
   };
 

@@ -36,7 +36,7 @@ const EodScreen = () => {
     };
 
     const shareData = () => {
-        alert("Yor data is share");
+        alert("Your data is share");
         flag();
     }
 
@@ -736,15 +736,15 @@ const EodScreen = () => {
                                     <Text style={EodStyles.orderId}>
                                         {res.call_type ? res.call_type : 'N/A'} ({res.joined_name ? res.joined_name : 'N/A'})
                                     </Text>
-                                    
+
                                 </View>
 
                                 <View style={EodStyles.orderContainer}>
-                                <Text style={EodStyles.orderType}>Dealer Name</Text>
-                                <Text style={EodStyles.orderId}>
+                                    <Text style={EodStyles.orderType}>Dealer Name</Text>
+                                    <Text style={EodStyles.orderId}>
                                         {res.dealer_name ? res.dealer_name : 'N/A'}
                                     </Text>
-                                    
+
                                 </View>
 
                                 {/* SKU Data */}
@@ -875,6 +875,9 @@ const EodScreen = () => {
                     const activitiesForOutlet = activitydatas?.filter(
                         (activity) => activity.outlet_id === outlet.outlet_id
                     );
+                    const callType = activitiesForOutlet?.length ? activitiesForOutlet[0].call_type : 'N/A';
+    const joinedName = activitiesForOutlet?.length ? activitiesForOutlet[0].joined_name : 'N/A';
+
 
                     // Skip rendering outlets with no activities
                     if (!activitiesForOutlet?.length) return null;
@@ -892,6 +895,12 @@ const EodScreen = () => {
                             <View style={EodStyles.orderContainer}>
                                 <Text style={EodStyles.orderType}>Type: Activity</Text>
                             </View>
+
+                            <View style={EodStyles.orderContainer}>
+                <Text style={EodStyles.orderType}>Call Status</Text>
+                <Text style={EodStyles.orderId}>{callType} ({joinedName})</Text>
+            </View>
+
 
                             {/* Activity Data */}
                             {activitiesForOutlet.map((activity, activityIndex) => (
