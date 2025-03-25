@@ -30,6 +30,7 @@ const AttendancePunchInOut = () => {
     const [punchinoutTime, setPunchinoutTime] = useState([]);
     const [checkInTime, setCheckInTime] = useState(null);
     const [checkOutTime, setCheckOutTime] = useState(null);
+    const [totalHours,setTotalHours] = useState(null)
     const isDarkMode = useSelector(state => state.DarkReducer.isDarkMode);
     const currentColors = isDarkMode ? darkTheme : lightTheme;
     const AttendancePunchStyles = useMemo(() => AttendancePunchStyle(currentColors), [currentColors]);
@@ -423,6 +424,8 @@ const AttendancePunchInOut = () => {
                     if (result.data.length > 0) {
                         setCheckInTime(result.data[0].punch_in); 
                         setCheckOutTime(result.data[0].punch_out);  
+                        setTotalHours(result.data[0].total_hours); // Assuming total_hours is returned from API
+
 
 
                     }
@@ -626,6 +629,11 @@ const AttendancePunchInOut = () => {
             </TouchableOpacity>
             {item.date && <Text style={AttendancePunchStyles.dateText}>{item.date}</Text>}
             <Text style={AttendancePunchStyles.timeText}>{item.time}</Text>
+            {item.id === 2 && totalHours && (
+                    <View>
+                        <Text>Total Hours: <Text style={{ color: 'black', fontWeight: 'bold' }}>{totalHours}</Text> hrs</Text>
+                    </View>
+                )}
         </View>
     );
 

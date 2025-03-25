@@ -17,7 +17,7 @@ const OutletDetailScreen = ({ route }) => {
   const [selectedoutletsdeatil, setSelectedoutletsdeatial] = useState({});
   const [modalVisible, setModalVisible] = useState(false); // State for Modal visibility
   const [modalVisible1, setModalVisible1] = useState(false); // State for Modal visibility
-  const [callType, setCallType] = useState("Call Type"); // Default button text
+  const [callType, setCallType] = useState("Call With"); // Default button text
   const [callerName, setCallerName] = useState(""); // Default Caller Name
   const [reportingPersons, setReportingPersons] = useState([]); // Store the reporting persons
   const [dealerName, setDealerName] = useState([]);
@@ -736,25 +736,26 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
             onPress={HandleFetchAddress}
             disabled={locationPinColor === 'green'}
           >
-            <Text style={OutletDetailStyles.buttonText}>Geo Tag</Text>
+            <Text style={OutletDetailStyles.buttonText}>Location Icon</Text>
           </TouchableOpacity>
 
-    <TouchableOpacity style={OutletDetailStyles.button} onPress={handleOrderButtonClick}>
+    <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={handleOrderButtonClick}>
       <Text style={OutletDetailStyles.buttonText}>Order</Text>
     </TouchableOpacity>
 
-    <TouchableOpacity style={OutletDetailStyles.button} onPress={handleActivityButtonClick}>
+    <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={handleActivityButtonClick}>
       <Text style={OutletDetailStyles.buttonText}>Activity</Text>
     </TouchableOpacity>
 
-    <TouchableOpacity style={OutletDetailStyles.button} onPress={() => setModalVisible(true)}>
+    <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={() => setModalVisible(true)}>
       <Text style={OutletDetailStyles.buttonText}>{callType}</Text>
     </TouchableOpacity>
 
-    <TouchableOpacity style={OutletDetailStyles.button} onPress={openModal}>
-        <Text style={OutletDetailStyles.buttonText}>Dealer Names</Text>
+    <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={openModal}>
+        <Text style={OutletDetailStyles.buttonText}>Dealer</Text>
       </TouchableOpacity>
   </View>
+  
 </ScrollView>
 
 

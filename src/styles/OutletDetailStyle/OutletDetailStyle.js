@@ -120,26 +120,28 @@ outletLabel1: {
       },
 
       buttonsRow: {
-        flexDirection: 'row', 
-        justifyContent: 'space-between', // Space between buttons
+        flexDirection: 'row',
+        justifyContent: 'space-between', // Ensures even spacing between buttons
         alignItems: 'center',
-        marginBottom: 20,
+        flexWrap: 'nowrap', // Prevent wrapping
+        marginBottom: 15,
         marginTop: 10,
-        paddingHorizontal: 5, // Reduce padding to fit buttons
-        flexWrap: 'nowrap', // Wrap hone se rokega
+        paddingHorizontal: 10, // Provides spacing on both sides
       },
       
       button: {
         backgroundColor: Colors.peach_orange,
-        paddingVertical: 6,  // Reduced height
-        paddingHorizontal: 8, // Reduced width
-        borderRadius: 15, // Smaller rounded corners
+        paddingVertical: 8, // Balanced height
+        paddingHorizontal: 12, // Enough padding for text
+        borderRadius: 12, // Smooth rounded corners
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 1,  // Equal width for all buttons
-        minWidth: '18%', // Reduce width so that 5 buttons fit in a row
-        marginHorizontal: 1, // Reduce spacing between buttons
+        flexGrow: 1, // Allows buttons to adjust and distribute evenly
+        marginHorizontal: 5, // Adds space between buttons
+        minWidth: 80, // Ensures all buttons have a minimum width
       },
+      
+      
       
       
 

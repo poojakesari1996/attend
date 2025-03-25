@@ -132,18 +132,6 @@ useEffect(() => {
 
 
   
-  // useEffect(() => {
-  //   console.log("Updated Outlet Data:", outletData);
-  
-  //   // ✅ Sirf unhi outlets ko count karo jo "Red" ho chuke hain
-  //   const coveredOutlets = outletData.filter((outlet) => outlet.order_status === 'Red').length;
-  //   console.log("Covered Outlets Count:", coveredOutlets);
-  
-  //   const remaining = Math.max(minOutletCoverage - coveredOutlets, 0);
-  //   console.log("Remaining Outlets:", remaining);
-  
-  //   setRemainingOutlets(remaining);
-  // }, [outletData]); // ✅ outletData change hone pe yeh re-run hoga
   
 
   useEffect(() => {
@@ -152,6 +140,7 @@ useEffect(() => {
 
   const handleDateSelection = (date, index) => {
     setSelectedButton(index); // Set the selected button index
+    setOutletData([]);
     fetchOutletData(Moment(date).format('YYYY-MM-DD')); // Fetch data for the selected date
     countOutlets(Moment(date).format('YYYY-MM-DD')); // Count outlets for the selected date
   };
