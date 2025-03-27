@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, ActivityIndicator, Button } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, ActivityIndicator, Button,Alert, Linking  } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AttendancePunchStyle } from '../../styles'; // Corrected import
 import { useSelector } from 'react-redux';

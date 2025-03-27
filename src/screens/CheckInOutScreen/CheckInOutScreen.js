@@ -16,7 +16,7 @@ const CheckInOutScreen = () => {
   const { t } = useTranslation();
   const isDarkMode = useSelector(state => state.DarkReducer.isDarkMode);
   const Colors = isDarkMode ? darkTheme : lightTheme;
-  const [fromDate, setFromDate] = useState(null);
+  const [fromDate, setFromDate] = useState(moment().startOf('month').format("YYYY-MM-DD"));
   const [attendanceData, setAttendanceData] = useState([]);
   const [attendanceCounts, setAttendanceCounts] = useState({
     present: 0,

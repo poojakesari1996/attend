@@ -4,23 +4,19 @@ import { Fonts, SH, SF, Colors } from '../../utils';
 export default OutletDetailStyle = () => StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: Colors.white_color, // light background color for the whole screen
+        backgroundColor: Colors.white_color, 
         padding: 10,
       },
       container: {
-        backgroundColor: Colors.white_color, // white background for the details container
+        backgroundColor: Colors.white_color, 
         padding: 15,
         borderRadius: 10,
-        shadowColor: Colors.gray_text_color, // shadow for better depth
+        shadowColor: Colors.gray_text_color, 
         shadowOpacity: 0.1,
         shadowRadius: 5,
-        elevation: 3, // Android shadow
+        elevation: 3, 
       },
-      // infoContainer: {
-      //   flexDirection: 'row',
-      //   justifyContent: 'space-between',
-      //   marginVertical: 10, // space between each row
-      // },
+      
 
       infoContainer: {
         marginVertical: 2,
@@ -37,7 +33,7 @@ export default OutletDetailStyle = () => StyleSheet.create({
 
       labelContainer: {
         flexDirection: 'row',
-        marginBottom: 5, // Adds space below the container if needed
+        marginBottom: 5, 
       },
       
       outletLabel: {
@@ -49,96 +45,61 @@ export default OutletDetailStyle = () => StyleSheet.create({
 
       valueContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Aligns values below their respective labels
+        justifyContent: 'space-between', 
       },
 
 
 
       labelContainer1: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Spreads labels across the row
-        marginBottom: 5, // Adds space between label and value
+        justifyContent: 'space-between', 
+        marginBottom: 5, 
       },
 
 outletLabel1: {
         fontSize: 14,
         fontWeight: 'bold',
         color: '#555',
-        flex: 1, // Distributes space evenly for labels
+        flex: 1, 
       },
 
 
-      // outletLabel: {
-      //   fontSize: 14,
-      //   fontWeight: 'bold',
-      //   color: '#555',
-      //   flex: 1, // Distributes space evenly for labels
-      // },
-      // outletValue: {
-      //   fontSize: 13,
-      // color: Colors.black_color,
-      // flex: 2,
-      // flexWrap: 'wrap',
-      // overflow: 'hidden', // Prevents text spill
-      // maxWidth: '70%', // Limits the width of the value
-      // flexShrink: 1, // Shrinks if necessary // grey color for values
-      // },
+      
 
       outletValue: {
         fontSize: 12,
         fontWeight: 'normal',
         color: '#000',
-        flex: 1, // Matches space with labels for alignment
+        flex: 1, 
       },
 
-      // buttonsRow: {
-      //   flexDirection: 'row', // Arrange buttons horizontally
-      //   justifyContent: 'space-evenly', // Distribute buttons evenly with space between
-      //   marginBottom: 20, // Space between buttons and main content
-      //   marginTop: 10, // Space at the top of the buttons
-      //   paddingHorizontal: 10, // Padding for container to avoid touching the edges
-      // },
-      // button: {
-      //   backgroundColor: Colors.peach_orange, // Button color
-      //   paddingVertical: 8,  // Reduced vertical padding for smaller button size
-      //   paddingHorizontal: 20, // Normal horizontal padding
-      //   borderRadius: 20, // Rounded corners for a smoother look
-      //   alignItems: 'center',
-      //   justifyContent: 'center',
-      //   shadowColor: '#000', // Adding shadow for a subtle 3D effect
-      //   shadowOffset: { width: 0, height: 4 }, 
-      //   shadowOpacity: 0.1,
-      //   shadowRadius: 5,
-      //   elevation: 5, // For Android shadow
-      //   marginHorizontal: 8, // Adds space between buttons
-      // },
+      
       buttonText: {
-        color: 'white', // Make the text white for contrast
-        fontSize: 12,    // Slightly smaller text for better button fit
+        color: 'white', 
+        fontSize: 12,    
         fontWeight: 'bold',
         textAlign: 'center',
       },
 
       buttonsRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Ensures even spacing between buttons
+        justifyContent: 'space-between', 
         alignItems: 'center',
-        flexWrap: 'nowrap', // Prevent wrapping
-        marginBottom: 15,
-        marginTop: 10,
-        paddingHorizontal: 10, // Provides spacing on both sides
+        flexWrap: 'nowrap', 
+        marginBottom: 25,
+        // marginTop: 10,
+        paddingHorizontal: 10, 
       },
       
       button: {
         backgroundColor: Colors.peach_orange,
-        paddingVertical: 8, // Balanced height
-        paddingHorizontal: 12, // Enough padding for text
-        borderRadius: 12, // Smooth rounded corners
+        paddingVertical: 8, 
+        paddingHorizontal: 12, 
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1, // Allows buttons to adjust and distribute evenly
-        marginHorizontal: 5, // Adds space between buttons
-        minWidth: 80, // Ensures all buttons have a minimum width
+        flexGrow: 1, 
+        marginHorizontal: 5, 
+        minWidth: 80, 
       },
       
       
