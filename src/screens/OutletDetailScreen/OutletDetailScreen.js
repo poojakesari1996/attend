@@ -47,7 +47,7 @@ const [savedLongitude, setSavedLongitude] = useState(null);
 
 
   const handleOrderButtonClick = async () => {
-    if (!address) {  // ✅ Location validation
+    if (locationPinColor === "red") {  // ✅ Location validation only when icon is red
       Alert.alert(
         "Please Fetch Location",
         "You must fetch and save the location before proceeding.",
@@ -59,7 +59,7 @@ const [savedLongitude, setSavedLongitude] = useState(null);
     if (!callerName) {
       Alert.alert(
         "Please Select Call Type",
-        "Please select a call type (Self or Joined).",
+        "Self or Joined.",
         [{ text: "OK", onPress: () => console.log("OK Pressed") }],
         { cancelable: false }
       );
@@ -110,7 +110,7 @@ const [savedLongitude, setSavedLongitude] = useState(null);
 };
 
   const handleActivityButtonClick = async () => {
-    if (!address) {  // ✅ Location validation
+    if (locationPinColor === "red") {  // ✅ Location validation only when icon is red
       Alert.alert(
         "Please Fetch Location",
         "You must fetch and save the location before proceeding.",

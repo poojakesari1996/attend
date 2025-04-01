@@ -297,7 +297,7 @@ const RootNavigator = props => {
         <Stack.Screen name={RouteName.CHECKINOUTSCREEN} options=
           {{
             ...headerthemeArrow,
-            title: Translation('CheckInOut'),
+            title: Translation('My Calender'),
             headerTitleAlign: 'center'
           }} component={CheckInOutScreen} />
 

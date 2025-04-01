@@ -35,6 +35,8 @@ const CheckInOutScreen = () => {
 
   const CheckInOutStyles = useMemo(() => CheckInOutStyle(Colors), [Colors]);
 
+  
+
   const monthlyInOutList = async () => {
     if (!fromDate) return;
 

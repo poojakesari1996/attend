@@ -8,6 +8,8 @@ import { Spacing, ConfirmationAlert } from '../../components';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from 'react-native-geolocation-service';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import axios from 'axios';
 import { Platform, PermissionsAndroid } from 'react-native';
 import { Divider } from 'react-native-elements';
@@ -105,12 +107,12 @@ const AttendancePunchInOut = () => {
 
     const handleSave = async () => {
         if (!currentLatitude || !currentLongitude || currentLatitude === '...' || currentLongitude === '...') {
-            alert("Fetching location, please wait...");
+            alert("Location is disabled. Please enable Your location");
             return;
         }
     
         if (!address || address.trim() === "") {
-            alert("Fetching address, please wait...");
+            alert("Location is disabled. Please enable Your location");
             return;
         }
     
@@ -166,29 +168,42 @@ const AttendancePunchInOut = () => {
         requestPermissions();
     }, []);
 
+    
 
-    Geolocation.getCurrentPosition(
-        (position) => {
-            const currentLongitude = JSON.stringify(position.coords.longitude);
-            const currentLatitude = JSON.stringify(position.coords.latitude);
 
-            // Do something with the latitude and longitude
-            console.log("Longitude: ", currentLongitude, "Latitude: ", currentLatitude);
-        },
-        (error) => {
-            if (error.code === 3) { // Code 3 is for timeout
-                console.log("Location request timed out, handling silently.");
-                // You could set a default location or retry logic here if needed
-            } else {
-                console.log("An error occurred: ", error.message);
+    const getLocation = () => {
+        Geolocation.getCurrentPosition(
+            (position) => {
+                const currentLongitude = JSON.stringify(position.coords.longitude);
+                const currentLatitude = JSON.stringify(position.coords.latitude);
+    
+                setCurrentLongitude(currentLongitude);
+                setCurrentLatitude(currentLatitude);
+    
+                // Check if location is enabled and proceed with fetching the address
+                if (currentLatitude !== '...' && currentLongitude !== '...') {
+                    getAddress(currentLatitude, currentLongitude);
+                } else {
+                    alert('Location is off. Please enable location.');
+                }
+            },
+            (error) => {
+                if (error.code === 3) {
+                    console.log("Location request timed out.");
+                } else if (error.code === 1) {  // Error code 1 indicates location services are denied
+                    alert("Location services are disabled. Please enable your location in settings.");
+                } else {
+                    console.log("Error getting location:", error.message);
+                    alert('Location is disabled. Please enable your location.');
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 60000,
+                maximumAge: 1000,
             }
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 60000,
-            maximumAge: 1000
-        }
-    );
+        );
+    }
 
 
     const hasLocationPermission = async () => {
@@ -272,7 +287,6 @@ const AttendancePunchInOut = () => {
                         },
                     );
                     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                        //To Check, If Permission is granted
                         getOneTimeLocation();
                         subscribeLocationLocation();
                     } else {
@@ -361,19 +375,29 @@ const AttendancePunchInOut = () => {
                 skipPermissionRequests: false,
                 authorizationLevel: 'whenInUse',
             });
+            getLocation();
         }
 
         if (Platform.OS === 'android') {
-            await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            );
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            getLocation();
+        } else {
+            alert('Location permission denied. Please enable location.');
         }
+    }
     }
 
     const [loading, setLoading] = useState(false);
     
 
     const getAddress = async (lat, long) => {
+        if (!lat || !long) {
+            alert("Location not available. Please enable location services.");
+            return;
+        }
         setLoading(true); // Start loading
 
         try {
@@ -439,12 +463,12 @@ const AttendancePunchInOut = () => {
 
     const handleOut = async () => {
         if (!currentLatitude || !currentLongitude || currentLatitude === '...' || currentLongitude === '...') {
-            alert("Fetching location, please wait...");
+            alert("Location is disabled. Please enable Your location");
             return;
         }
     
         if (!address || address.trim() === "") {
-            alert("Fetching address, please wait...");
+            alert("Location is disabled. Please enable Your location");
             return;
         }
     

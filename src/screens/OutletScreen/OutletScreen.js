@@ -203,10 +203,10 @@ useEffect(() => {
         console.log(res.outlet_lat, res.outlet_long, 'hthuytjt');
   // Determine the color based on order status
   // const outletNameColor = res.order_status === 'Red' ? 'red' : 'black';
-  const outletNameColor = res.order_status === 'Red' 
-    ? 'red'  // If order exists, color it red
-    : res.activity_status === 'Blue' 
-      ? 'blue'  // If activity exists, color it green
+  const outletNameColor = res.order_status === 'Green' 
+    ? 'green'  // If order exists, color it red
+    : res.activity_status === 'Green' 
+      ? 'green'  // If activity exists, color it green
       : 'black'; // Default color
   const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green'; // Map icon_color to the correct color
 

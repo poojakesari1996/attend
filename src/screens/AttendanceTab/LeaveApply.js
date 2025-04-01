@@ -96,12 +96,64 @@ const LeaveApply = () => {
         calculateNumberOfDays(fromDate, toDate);
     }, [fromDate, toDate]);
 
+    // const handleSubmit = async () => {
+    //     try {
+    //         // Get user data from AsyncStorage
+    //         const user = await AsyncStorage.getItem('userInfor');
+    //         const empid = JSON.parse(user);
+
+    //         // Prepare payload for the API request
+    //         const leavePayload = {
+    //             empID: empid[0].emp_id,
+    //             rpPerson: empid[0].reporting_to,
+    //             leaveType: leaveType,
+    //             fromDate: Moment(fromDate).format('YYYY-MM-DD'),
+    //             toDate: Moment(toDate).format('YYYY-MM-DD'),
+    //             numofdays: numberOfdays,
+    //             leavereason: reason,
+    //             enterBy: empid[0].emp_id,
+    //         };
+
+    //         console.log("Payload being sent:", leavePayload);
+
+    //         // Send POST request
+    //         const response = await axios.post("https://devcrm.romsons.com:8080/LeaveApp", leavePayload, {
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //         });
+
+    //         // Check for error in the response
+    //         if (response.data.error) {
+    //             Alert.alert("Error", response.data.data || "Something went wrong");
+    //         } else {
+    //             Alert.alert("Success", response.data.msg || "Leave request submitted successfully");
+    //         }
+    //         setNumberOfdays(0);
+    //         setFromDate('');
+    //         setToDate('');
+    //         setReason('');
+
+    //     } catch (error) {
+    //         // Handle error if request fails
+    //         console.error("Error during leave submission:", error);
+    //         Alert.alert("Error", "An error occurred while submitting the leave request.");
+    //     }
+    // };
+
+
     const handleSubmit = async () => {
         try {
             // Get user data from AsyncStorage
             const user = await AsyncStorage.getItem('userInfor');
             const empid = JSON.parse(user);
-
+    
+            // **15 days validation (frontend check)**
+            if (numberOfdays > 15) {
+                Alert.alert("Error", "You cannot apply for more than 15 leaves at a time.");
+                return;
+            }
+    
             // Prepare payload for the API request
             const leavePayload = {
                 empID: empid[0].emp_id,
@@ -113,16 +165,16 @@ const LeaveApply = () => {
                 leavereason: reason,
                 enterBy: empid[0].emp_id,
             };
-
+    
             console.log("Payload being sent:", leavePayload);
-
+    
             // Send POST request
             const response = await axios.post("https://devcrm.romsons.com:8080/LeaveApp", leavePayload, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-
+    
             // Check for error in the response
             if (response.data.error) {
                 Alert.alert("Error", response.data.data || "Something went wrong");
@@ -133,14 +185,13 @@ const LeaveApply = () => {
             setFromDate('');
             setToDate('');
             setReason('');
-
+    
         } catch (error) {
             // Handle error if request fails
             console.error("Error during leave submission:", error);
             Alert.alert("Error", "An error occurred while submitting the leave request.");
         }
     };
-
 
     const fetchLeaveBalanceData = async () => {
         try {

@@ -14,7 +14,8 @@ import { darkTheme, lightTheme, SH } from "../../utils";
 import { RouteName } from '../../routes';
 import { setOrder, setSaleReturn, setResetOrder, setResetReturn } from "../../redux/action/orderActions";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { Picker } from '@react-native-picker/picker'; // For dropdown
+import { Picker } from '@react-native-picker/picker';
+import {PickerIOS} from './PickerIOS';
 import { Divider } from "react-native-elements";
 
 const OrderScreen = ({ route }) => {
@@ -214,14 +215,22 @@ const OrderScreen = ({ route }) => {
 
   //////////////////////////////////Return order////////////////////////////////
   const handleSaveReturn = () => {
-
-
     try {
       const isAnyUnitEntered = Object.values(unitValue).some((value) => value > 0);
 
       if (!isAnyUnitEntered) {
         alert('Please enter units');
         return; // Exit if no unit is entered
+      }
+
+      // Check if reason is missing for any entered unit
+      const isReasonMissing = skuList.some(
+        (sku, index) => unitValue[index] > 0 && !selectedService[index]
+      );
+
+      if (isReasonMissing) {
+        alert('Please select a reason for all entered units.');
+        return; // Exit if any unit is entered without a reason
       }
 
       // Filter and map relevant items only
@@ -235,12 +244,9 @@ const OrderScreen = ({ route }) => {
           value: (unitValue[index] || 0) * sku.sku_price,
           price: sku.sku_price,
           itemId: sku.sku_id
-
         }));
 
-
-
-      console.log('Order Dataa:', filteredData);
+      console.log('Order Data:', filteredData);
 
       // Dispatch to Redux
       dispatch(setSaleReturn(filteredData));
@@ -268,7 +274,7 @@ const OrderScreen = ({ route }) => {
     }
   }
 
-  
+
 
   const orderSubmit = async () => {
     try {
@@ -304,7 +310,7 @@ const OrderScreen = ({ route }) => {
       });
 
       console.log(raw, 'orderrrrrr');
-      
+
 
 
       const requestOptions = {
@@ -511,8 +517,8 @@ const OrderScreen = ({ route }) => {
               contentContainerStyle={{ paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => {
-                const unit = unitInputs[index] || ""; 
-                const amount = unit * item.sku_price; 
+                const unit = unitInputs[index] || "";
+                const amount = unit * item.sku_price;
 
                 return (
                   <TouchableOpacity key={index} style={OrderStyles.PaddingHorizontal}>
@@ -646,10 +652,15 @@ const OrderScreen = ({ route }) => {
           />
           {/* Footer for Sale Return with Save Button */}
           <View style={OrderStyles.saleReturnFooterContainer}>
-            <TouchableOpacity style={OrderStyles.footerButton1} activeOpacity={0.7} // Provides visual feedback when pressed
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Text style={OrderStyles.footerButtonText1} onPress={handleSaveReturn}>Save</Text>
+            <TouchableOpacity
+              style={OrderStyles.footerButton1}
+              activeOpacity={0.7}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              onPress={handleSaveReturn} // Move onPress here
+            >
+              <Text style={OrderStyles.footerButtonText1}>Save</Text>
             </TouchableOpacity>
+
           </View>
         </>
       )}
@@ -703,155 +714,210 @@ const OrderScreen = ({ route }) => {
 
               {/* Order Summary */}
               <Text style={OrderStyles.summaryHeading}>Order Summary</Text>
-              <View style={OrderStyles.taskContainer9}>
+              <View>
+  {orderData?.map((res, ind) => (
+    <View
+      key={ind}
+      style={{
+        marginTop: 16,
+        padding: 12,
+        backgroundColor: '#ffffff',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+      }}>
+      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{res.skuName}</Text>
+      </Text>
 
-                {/* Table Header */}
-                <View style={OrderStyles.summaryTableHeader}>
-                  <Text style={OrderStyles.tableHeaderTextLeft}>SKU Name</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Price</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Unit</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Amt</Text>
-                  <Text style={OrderStyles.tableHeaderText}>GST%</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Net Amt</Text>
-                </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_price}</Text>
+      </Text>
 
-                {/* Order Item Rows */}
-                {orderData?.map((res, ind) => {
-                  return (
-                    <View style={OrderStyles.tableRow} key={ind}>
-                      <View style={OrderStyles.tableCellLeft}>
-                        <Text style={OrderStyles.tableDataLeft}>{res?.skuName}</Text>
-                      </View>
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>{res?.sku_price}</Text>
-                      </View>
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData1}>{res?.itemvalue}</Text>
-                      </View>
-                      <View style={OrderStyles.tableCell} numberOfLines={1} // Ensure text stays on one line
-                        ellipsizeMode="tail" >
-                        <Text style={OrderStyles.tableData56}>{res?.amount}</Text>
-                      </View>
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData1}>{res?.sku_gst}%</Text>
-                      </View>
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>
-                          {(res?.sku_price * res?.sku_gst / 100 + res?.amount).toFixed(2)}
-                        </Text>
-                      </View>
-                    </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{res.itemvalue}</Text>
+      </Text>
 
-                  )
-                })}
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
+      </Text>
 
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_gst}%</Text>
+      </Text>
 
-                {/* Total Row */}
-                <View style={OrderStyles.totalRow}>
-                  <Text style={OrderStyles.tableDataLeft6}>Total</Text>
-                  <Text style={OrderStyles.tableData}>-</Text>
-                  <View style={OrderStyles.tableCellLeft}>
-                    <Text style={OrderStyles.tableData91}>{orderData.reduce((total, item) => Number(total) + Number(item.itemvalue), 0)}</Text>
-                  </View>
-                  <Text style={OrderStyles.tableData8}>{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
-                  <Text style={OrderStyles.tableData0}>-</Text>
-                  <Text style={{ color: 'black', fontWeight: 'bold' }}> {orderData.reduce(
-                    (total, item) => total + item.sku_price * item.sku_gst / 100 + item.amount,
-                    0
-                  ).toFixed(2)}</Text>
-                </View>
-              </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>
+          {(res.sku_price * res.sku_gst / 100 + res.amount).toFixed(2)}
+        </Text>
+      </Text>
+    </View>
+  ))}
+
+  {/* Total Row */}
+  <View
+    style={{
+      marginTop: 16,
+      padding: 12,
+      backgroundColor: '#f1f1f1',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 3,
+    }}>
+    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
+
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {orderData.reduce((total, item) => Number(total) + Number(item.itemvalue), 0)}
+      </Text>
+    </Text>
+
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Total Amt: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {orderData.reduce((total, item) => total + item.amount, 0)}
+      </Text>
+    </Text>
+
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {orderData
+          .reduce((total, item) => total + item.sku_price * item.sku_gst / 100 + item.amount, 0)
+          .toFixed(2)}
+      </Text>
+    </Text>
+  </View>
+</View>
+
 
               {/* Return Section */}
               <Text style={OrderStyles.summaryHeading}>Return</Text>
-              <View style={OrderStyles.taskContainer9}>
+              <View>
+  {saleReturnData?.map((response, index) => (
+    <View
+      key={index}
+      style={{
+        marginTop: 16,
+        padding: 12,
+        backgroundColor: '#ffffff',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+      }}>
+      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{response?.skuName}</Text>
+      </Text>
 
-                {/* Table Header */}
-                <View style={OrderStyles.summaryTableHeader}>
-                  <Text style={OrderStyles.tableHeaderTextLeft}>SKU Name</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Price</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Unit</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Amt</Text>
-                  <Text style={OrderStyles.tableHeaderText}>GST%</Text>
-                  <Text style={OrderStyles.tableHeaderText}>Net Amt</Text>
-                </View>
+      {response?.ITM && (
+        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+          <Text style={{ color: 'black', fontSize: 13 }}>Service: </Text>
+          <Text style={{ color: 'green', fontSize: 13 }}>{response?.ITM}</Text>
+        </Text>
+      )}
 
-                {/* Return Item Rows */}
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{response?.price}</Text>
+      </Text>
 
-                {saleReturnData?.map((response, index) => {
-                  return (
-                    <View style={OrderStyles.tableRow} key={index}>
-                      {/* SKU Name and Service */}
-                      <View style={OrderStyles.tableCellLeft}>
-                        <View style={{ flex: 1, flexDirection: 'column', marginLeft: 0 }}>
-                          <Text style={OrderStyles.tableDataLeft}>{response?.skuName}</Text>
-                          <Text style={OrderStyles.tableDataLeft}>{response?.ITM}</Text>
-                        </View>
-                      </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{response?.unit}</Text>
+      </Text>
 
-                      {/* Price */}
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>{response?.price}</Text>
-                      </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Amount: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{response?.value}</Text>
+      </Text>
 
-                      {/* Unit */}
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>{response?.unit}</Text>
-                      </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>{response?.itmgst}%</Text>
+      </Text>
 
-                      {/* Amount */}
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>{response?.value}</Text>
-                      </View>
+      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
+        <Text style={{ color: 'green', fontSize: 13 }}>
+          {(response?.price * response?.itmgst / 100 + response?.value).toFixed(2)}
+        </Text>
+      </Text>
+    </View>
+  ))}
 
-                      {/* GST */}
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>{response?.itmgst}%</Text>
-                      </View>
+  {/* Total Row in Activities Style */}
+  <View
+    style={{
+      marginTop: 16,
+      padding: 12,
+      backgroundColor: '#f1f1f1',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 3,
+    }}>
+    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
 
-                      {/* Net Amount */}
-                      <View style={OrderStyles.tableCell}>
-                        <Text style={OrderStyles.tableData}>
-                          {(response?.price * response?.itmgst / 100 + response?.value).toFixed(2)}
-                        </Text>
-                      </View>
-                    </View>
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {saleReturnData.reduce((total, item) => Number(total) + Number(item.unit), 0)}
+      </Text>
+    </Text>
 
-                  )
-                })}
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Total Amount: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {saleReturnData.reduce((total, item) => total + item.value, 0)}
+      </Text>
+    </Text>
 
+    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
+      <Text style={{ color: 'green', fontSize: 13 }}>
+        {saleReturnData
+          .reduce((total, item) => total + item.price * item.itmgst / 100 + item.value, 0)
+          .toFixed(2)}
+      </Text>
+    </Text>
+  </View>
+</View>
 
-                <View style={OrderStyles.totalRow}>
-                  <Text style={OrderStyles.tableDataLeft6}>Total</Text>
-                  <Text style={OrderStyles.tableData}>-</Text>
-                  <View style={OrderStyles.tableCellLeft}>
-                    <Text style={OrderStyles.tableData9}>{saleReturnData.reduce((total, item) => Number(total) + Number(item.unit), 0)}</Text>
-                  </View>
-                  <View style={OrderStyles.tableCell}>
-                    <Text style={OrderStyles.tableData8}>{saleReturnData.reduce((total, item) => total + item.value, 0)}</Text>
-                  </View>
-                  <Text style={{ color: 'black', fontWeight: 'bold' }}> {saleReturnData.reduce(
-                    (total, item) => total + item.price * item.itmgst / 100 + item.value,
-                    0
-                  ).toFixed(2)}</Text>
-                </View>
-              </View>
             </View>
             {saleReturnData.length > 0 || orderData.length > 0 ? (
-  <TouchableOpacity style={{ padding: 2, marginVertical: 3 }} activeOpacity={0.9}>
-    {loading ? (
-      <ActivityIndicator size="large" color="green" />
-    ) : (
-      <Text style={OrderStyles.footerButtonText8} onPress={HandleSaveOrderSummury} disabled={disable}>
-        Final Submit
-      </Text>
-    )}
-  </TouchableOpacity>
-) : (
-  <TouchableOpacity style={{ padding: 2, marginVertical: 3 }}>
-    <Button buttonStyle={OrderStyles.footerButtonText8} title={t("Final Submit")} />
-  </TouchableOpacity>
-)}
+              <TouchableOpacity style={{ padding: 2, marginVertical: 3 }} activeOpacity={0.9}>
+                {loading ? (
+                  <ActivityIndicator size="large" color="green" />
+                ) : (
+                  <Text style={OrderStyles.footerButtonText8} onPress={HandleSaveOrderSummury} disabled={disable}>
+                    Final Submit
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={{ padding: 2, marginVertical: 3 }}>
+                <Button buttonStyle={OrderStyles.footerButtonText8} title={t("Final Submit")} />
+              </TouchableOpacity>
+            )}
 
 
 

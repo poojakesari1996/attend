@@ -186,7 +186,7 @@ const MsdActivityScreen = ({ route }) => {
             const empid = JSON.parse(user);
 
             console.log(outletDetail, "Line 65");
-            
+
 
             // Prepare the data for submission
             const outlet_id = outlet_id ?? 0;
@@ -418,18 +418,6 @@ const MsdActivityScreen = ({ route }) => {
                                             onChange={(event, selectedDate) => handleDateChange(event, selectedDate, index)}
                                         />
                                     )}
-
-
-                                    {/* <Text
-                                        style={[
-                                            MsdActivityStyles.taskTime1,
-                                            { flex: 2, textAlign: 'right', flexShrink: 1 }
-                                        ]}
-                                        numberOfLines={1}
-                                    >
-                                        Seg: {item.segment_code}
-                                    </Text> */}
-
 
                                 </View>
                                 <View style={MsdActivityStyles.rowContainer}>

@@ -257,9 +257,9 @@ taskContainer1: {
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.peach_orange,
-    marginBottom: 2,
-    justifyContent: 'center', // Centers vertically
-  alignItems: 'center',    // Centers horizontally
+    marginTop: 10,
+    justifyContent: 'center',
+  alignItems: 'center',
        
   },
   summaryTableHeader: {
@@ -286,13 +286,14 @@ taskContainer1: {
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
+    alignItems: "center",
     borderBottomColor: Colors.gray_text_color,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
 
     
   tableCell: {
-    flex: 1, // Adjust for proportional widths
+    flex: 0.6, // Adjust for proportional widths
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 5,
@@ -300,7 +301,7 @@ taskContainer1: {
   },
 
   tableCellLeft: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
     paddingHorizontal: 5,
@@ -333,7 +334,11 @@ tableDataLeft: {
     
   },
 
-
+  tableDataSecondary: {
+    fontSize: 12,
+    color: Colors.gray_text_color,
+    marginTop: 2,
+  },
   
 //   tableData: {
 //     fontSize: 12,
