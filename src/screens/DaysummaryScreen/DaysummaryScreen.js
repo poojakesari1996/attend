@@ -17,6 +17,7 @@ const DaysummaryScreen = () => {
   let [statuspunch, setStatuspunch] = useState([]);
   let [eodorderDetails, setEodorderDetails] = useState([]);
   let [eodactivityDetails, setEodactivitydetails] = useState([]);
+  let [eodreturnDetails, setEodreturnDetails] = useState([])
 
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
@@ -27,7 +28,8 @@ const DaysummaryScreen = () => {
     if (fromDate) {
       handlePunchinPunchoutData(fromDate);
       EodOrderDetails(fromDate);
-      EodActivityDetails(fromDate)
+      EodActivityDetails(fromDate);
+      eodReturnDetail(fromDate)
     }
   }, [fromDate]);
 
@@ -116,6 +118,41 @@ const DaysummaryScreen = () => {
       .catch((error) => console.error(error));
   }
 
+  
+
+  const eodReturnDetail = async(selectedDate) => {
+    const user = await AsyncStorage.getItem('userInfor');
+    const empid = JSON.parse(user);
+    const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+const raw = JSON.stringify({
+  "enterBy": empid[0].emp_id,
+  "enterDate": Moment(selectedDate).format("YYYY-MM-DD")
+});
+
+console.log("poojaaaa", raw);
+
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+
+fetch("https://devcrm.romsons.com:8080/EodReturnbutton", requestOptions)
+  .then((response) => response.json())
+  .then((result) => {
+    if(result.error == false){
+      console.log('returnnn', result.data);
+      
+      setEodreturnDetails(result.data)
+    }
+  })
+  .catch((error) => console.error(error));
+  }
+
   const groupedData = eodactivityDetails.reduce((acc, res) => {
     if (!acc[res.outlet_id]) {
       acc[res.outlet_id] = {
@@ -151,6 +188,35 @@ const DaysummaryScreen = () => {
   
   // Group the data
   const groupedEodOrderDetails = groupEodOrderDetailsByOutlet(eodorderDetails);
+
+
+  const groupEodReturnDetailByOutlet = (data) => {
+    return data.reduce((acc, item) => {
+        if (!item.outlet_id || !item.m_return_orderID) {
+            console.warn("Skipping item due to missing keys:", item);
+            return acc;
+        }
+
+        if (!acc[item.outlet_id]) {
+            acc[item.outlet_id] = {
+                outlet_id: item.outlet_id,
+                outlet_name: item.outlet_name,
+                orders: {},
+            };
+        }
+
+        if (!acc[item.outlet_id].orders[item.m_return_orderID]) {
+            acc[item.outlet_id].orders[item.m_return_orderID] = [];
+        }
+
+        // Corrected Push Operation
+        acc[item.outlet_id].orders[item.m_return_orderID].push(item);
+        return acc;
+    }, {});
+};
+
+const groupedEodReturnDetails = groupEodReturnDetailByOutlet(eodreturnDetails);
+
   
 
   return (
@@ -249,7 +315,7 @@ const DaysummaryScreen = () => {
             {group.outlet_id}, {group.hospital_name}
           </Text>
         </View>
-
+        <Text style={{marginHorizontal: 20, marginTop: 8, color: 'black', fontWeight: 'bold'}}>Type: Activity</Text>
         {/* Activities related to the same outlet */}
         {group.activities.map((res, ind) => (
           <View
@@ -299,6 +365,74 @@ const DaysummaryScreen = () => {
       </View>
     ))}
   </View>
+
+  {groupedEodReturnDetails && Object.keys(groupedEodReturnDetails).length > 0 ? (
+  Object.keys(groupedEodReturnDetails).map((outletId) => {
+    const outlet = groupedEodReturnDetails[outletId];
+    return (
+      <View key={outletId}>
+        {/* Outlet Info (Displayed Once) */}
+        <View style={DaysummaryStyles.infoContainer3}>
+          <Text style={DaysummaryStyles.hospitalText}>
+            {outlet.outlet_id}, {outlet.outlet_name}
+          </Text>
+        </View>
+
+        {/* Orders for each outlet */}
+        {outlet.orders && Object.keys(outlet.orders).length > 0 ? (
+          Object.keys(outlet.orders).map((orderId) => {
+            const orderItems = outlet.orders[orderId];
+            return (
+              <View key={orderId} style={{ marginHorizontal: 20, marginTop: 8 }}>
+                <View style={DaysummaryStyles.orderContainer}>
+                  <Text style={DaysummaryStyles.orderType}>Type: Return</Text>
+                  <Text style={DaysummaryStyles.orderId}>OrderID: {orderId}</Text>
+                </View>
+
+                {/* SKU Table */}
+                <View style={DaysummaryStyles.skuContainer}>
+                  <View style={DaysummaryStyles.skuHeaderRow}>
+                    <Text style={DaysummaryStyles.skuHeaderText}>SKU Name</Text>
+                    <Text style={DaysummaryStyles.skuHeaderText}>Unit Price</Text>
+                    <Text style={DaysummaryStyles.skuHeaderText}>Unit</Text>
+                    <Text style={DaysummaryStyles.skuHeaderText}>Amount</Text>
+                  </View>
+
+                  {orderItems.map((res, ind) => (
+                    <View key={ind}>
+                      <View style={DaysummaryStyles.skuDataRow}>
+                        <Text style={DaysummaryStyles.skuText}>{res.sku_name}</Text>
+                        <Text style={DaysummaryStyles.skuText}>{res.item_price_unit}</Text>
+                        <Text style={DaysummaryStyles.skuText}>{res.item_qty}</Text>
+                        <Text style={DaysummaryStyles.skuText}>{res.return_order_amt}</Text>
+                      </View>
+
+                      {/* Total Row - Show only after last item */}
+                      {/* {ind === orderItems.length - 1 && (
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                          <Text style={{ marginHorizontal: 10, color: 'black', fontWeight: 'bold' }}>Total</Text>
+                          <Text style={{ marginHorizontal: 10, color: 'green', fontWeight: 'bold', fontSize: 13 }}>
+                            {res.total_quantity}
+                          </Text>
+                        </View>
+                      )} */}
+                    </View>
+                  ))}
+                </View>
+              </View>
+            );
+          })
+        ) : (
+          <Text style={{ textAlign: 'center', marginTop: 10 }}>No Orders Found</Text>
+        )}
+      </View>
+    );
+  })
+) : (
+  <Text style={{ textAlign: 'center', marginTop: 10 }}>No Data Available</Text>
+)}
+
+  
       </ScrollView>
 
       {/* If no data is available */}

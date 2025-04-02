@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, FlatList, ScrollView, Modal, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, ScrollView, Modal, Alert, Linking } from 'react-native';
 import { SH, SF } from '../../utils';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -35,47 +35,54 @@ const EodScreen = () => {
         EodNotpunchin();
     };
 
-    const shareData = () => {
-        alert("Your data is share");
-        flag();
-    }
-
+    const shareData = async () => {
+        try {
+            
+            const apiResponse = await flag();
+    
+            
+            const message = `Data Shared Successfully! ✅\n\n` +
+                            `Punch Date: ${apiResponse.punchdate}\n` +
+                            `Employee ID: ${apiResponse.enterBy}`;
+    
+            
+            const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+            await Linking.openURL(whatsappUrl);
+    
+        } catch (error) {
+            Alert.alert("Error", error.message || "Failed to share data!");
+        }
+    };
+    
+    // Modified flag() function to return API data
     const flag = async () => {
         try {
             const user = await AsyncStorage.getItem('userInfor');
             const empid = JSON.parse(user);
-
+    
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-
+    
             const raw = JSON.stringify({
                 "punchdate": Moment(flagDate).format('YYYY-MM-DD'),
                 "enterBy": empid[0].emp_id
             });
-
-            console.log("Request Body:", raw); // Request body ko console karna
-
+    
             const requestOptions = {
                 method: 'POST',
                 headers: myHeaders,
                 body: raw,
                 redirect: 'follow'
             };
-
+    
             const response = await fetch("https://devcrm.romsons.com:8080/EodShareUpdate", requestOptions);
-
-            console.log("Response Status:", response.status); // Response status check karna
-            console.log("Response Headers:", response.headers); // Headers ko dekhna
-
             const result = await response.json();
-
-            console.log("Response Data:", result); // Final response data ko console me print karna
-
-            Alert.alert("Success", "Update Successful!");
-
+    
+            // Return API data to use in WhatsApp message
+            return result;
+    
         } catch (error) {
-            console.log("Error:", error); // Error ko console me print karna
-            Alert.alert("Error", "Something went wrong!");
+            throw new Error("API Error: " + error.message);
         }
     };
 
@@ -632,9 +639,6 @@ const EodScreen = () => {
 
 
     }
-
-
-
 
 
     return (

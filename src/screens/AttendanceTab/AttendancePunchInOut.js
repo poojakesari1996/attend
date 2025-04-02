@@ -1,3 +1,5 @@
+///////////////////////////aatendance updated///////////////////////////////
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, ActivityIndicator, Button,Alert, Linking  } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -52,30 +54,7 @@ const AttendancePunchInOut = () => {
         console.log(userdetail.division);
     }
 
-    // const attendance = async () => {
-    //     try {
-    //         const user = await AsyncStorage.getItem('userInfor');
-    //         const empid = JSON.parse(user);
-    //         const requestOptions = {
-    //             method: "GET",
-    //             redirect: "follow",
-    //         };
-
-    //         const response = await fetch(`https://devcrm.romsons.com:8080/attendance_summary?emp_id=${empid[0].emp_id}`, requestOptions);
-    //         const result = await response.json(); // Parse response as JSON
-
-    //         if (result.error === false) {
-    //             console.log("Logged in User Data: ", result.data);
-    //             setAttendanceData(result.data); // Update state with fetched data
-    //         } else {
-    //             console.error("Error from server: ", result.message || "Unknown error");
-    //         }
-    //     } catch (error) {
-    //         console.error("Fetch Error: ", error);
-    //     }
-    // };
-
-
+    
 
 
 
@@ -161,7 +140,18 @@ const AttendancePunchInOut = () => {
     };
     
 
-
+    const [
+        currentLongitude,
+        setCurrentLongitude
+    ] = useState('...');
+    const [
+        currentLatitude,
+        setCurrentLatitude
+    ] = useState('...');
+    const [
+        locationStatus,
+        setLocationStatus
+    ] = useState('');
 
 
     useEffect(() => {
@@ -259,18 +249,7 @@ const AttendancePunchInOut = () => {
 
 
 
-    const [
-        currentLongitude,
-        setCurrentLongitude
-    ] = useState('...');
-    const [
-        currentLatitude,
-        setCurrentLatitude
-    ] = useState('...');
-    const [
-        locationStatus,
-        setLocationStatus
-    ] = useState('');
+    
 
     useEffect(() => {
         const requestLocationPermission = async () => {
@@ -555,74 +534,7 @@ const AttendancePunchInOut = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // const handleOut = async () => {
-    //     // Check if remarks are empty
-    //     if (remarks1 == '') {
-    //         alert('Please enter remarks');
-    //         return;
-    //     }
-
-    //     // Get the current time in the user's local time zone
-    //     const currentTime = new Date();
-    //     const currentHour = currentTime.getHours();  // Get the current hour (24-hour format)
-
-    //     // Validate if the current time is after 9 PM (21:00)
-    //     if (currentHour >= 21) {
-    //         alert('Punch-out is not allowed after 9 PM');
-    //         setShowCheckOutPopup(false);
-    //         setRemarks1('');
-
-
-    //         return;
-    //     }
-
-    //     // Proceed with the punch-out if validation passes
-    //     let user = await AsyncStorage.getItem('userInfor');
-    //     let empid = JSON.parse(user);
-
-    //     const myHeaders = new Headers();
-    //     myHeaders.append("Content-Type", "application/json");
-
-    //     const raw = JSON.stringify({
-    //         "out_lat": currentLatitude,
-    //         "out_long": currentLongitude,
-    //         "out_remark": remarks1,
-    //         "add_res": address,
-    //         "empid": empid[0].emp_id
-    //     });
-
-    //     const requestOptions = {
-    //         method: "POST",
-    //         headers: myHeaders,
-    //         body: raw,
-    //         redirect: "follow"
-    //     };
-
-    //     fetch("https://devcrm.romsons.com:8080/attendance_punchout", requestOptions)
-    //         .then((response) => response.json())
-    //         .then((result) => {
-    //             console.log(result, "test");
-    //             if (result.success === false) {
-    //                 alert(result.data);  // Show the error message returned from the backend
-    //                 setShowCheckOutPopup(false);
-    //                 setRemarks1('');
-    //             } else {
-    //                 alert('Successfully punched out');
-    //                 setShowCheckOutPopup(false);
-    //                 setRemarks1('');
-    //             }
-    //         })
-    //         .catch((error) => console.error(error));
-    // };
-
-
-    // const handleOptionSelect = (option) => {
-    //     setSelectedOption(option);
-    //     if (option === 'field') {
-    //         setRemarks(''); // Clear remarks if 'field' is selected
-    //     }
-    // };
-
+    
 
 
     const buttons = [

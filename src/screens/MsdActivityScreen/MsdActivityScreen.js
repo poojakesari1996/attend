@@ -223,7 +223,7 @@ const MsdActivityScreen = ({ route }) => {
             if (result.error === false) {
                 alert(result.data);
                 dispatch(setResetMsdActivity());
-                navigation.navigate(RouteName.HOME_SCREEN);
+                navigation.navigate(RouteName.CONTACTLIST);
             } else {
                 alert("Something Went Wrong");
             }

@@ -13,11 +13,33 @@ const initialState = {
 
   export const orderReducer = (state = initialState, action) => {
     switch (action.type) {
-      case SET_ORDER:
-        return {
-          ...state,
-          orderData: action.payload,  // Store the order data
-        };
+      // case SET_ORDER:
+      //   return {
+      //     ...state,
+      //     orderData: action.payload,  // Store the order data
+      //   };
+
+  //     case SET_ORDER:
+  // return {
+  //   ...state,
+  //   orderData: [...state.orderData, ...action.payload],  // ✅ Old + new orders
+  // };
+
+  case SET_ORDER:
+  return {
+    ...state,
+    orderData: [
+      ...state.orderData.map(existingOrder => {
+        const newItem = action.payload.find(order => order.sku_id === existingOrder.sku_id);
+        return newItem
+          ? { ...existingOrder, itemvalue: newItem.itemvalue, amount: newItem.amount }
+          : existingOrder;
+      }),
+      ...action.payload.filter(order => !state.orderData.some(existing => existing.sku_id === order.sku_id))
+    ],
+  };
+
+
 
         case SET_SALE_RETURN: // New case for Sale Return
       return {

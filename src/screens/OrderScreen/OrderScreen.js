@@ -411,13 +411,7 @@ const OrderScreen = ({ route }) => {
   };
 
 
-
-
-  // const handleUnitChanges = (index, value) => {
-  //   // Update unit value for the current SKU
-  //   const updatedUnits = { ...unitInputs, [index]: value };
-  //   setUnitInputs(updatedUnits);
-  // };
+  
 
 
   const handleUnitChange = (value, index) => {
