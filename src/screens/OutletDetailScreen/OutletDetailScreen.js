@@ -26,7 +26,7 @@ const OutletDetailScreen = ({ route }) => {
   const [reportingPersons, setReportingPersons] = useState([]); // Store the reporting persons
   const [dealerName, setDealerName] = useState([]);
   const [savedLatitude, setSavedLatitude] = useState(null);
-const [savedLongitude, setSavedLongitude] = useState(null);
+  const [savedLongitude, setSavedLongitude] = useState(null);
   const [selectedDealerName, setSelectedDealerName] = useState("");
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
@@ -63,7 +63,7 @@ const [savedLongitude, setSavedLongitude] = useState(null);
         [{ text: "OK", onPress: () => console.log("OK Pressed") }],
         { cancelable: false }
       );
-    } else if (!selectedDealerName) {  
+    } else if (!selectedDealerName) {
       Alert.alert(
         "Please Select Dealer Name",
         "Please select a dealer name before proceeding.",
@@ -74,12 +74,12 @@ const [savedLongitude, setSavedLongitude] = useState(null);
       // Get User Data
       const user = await AsyncStorage.getItem("userInfor");
       const loginData = JSON.parse(user);
-  
+
       // Find the selected reporting person's details
       const selectedReportingPerson = reportingPersons.find(
         (person) => person.reporting_to_name === callerName
       );
-  
+
       // Extract reporting_to
       const reportingTo = selectedReportingPerson ? selectedReportingPerson.reporting_to : null;
       console.log("Selected Reporting To:", reportingTo);
@@ -88,26 +88,26 @@ const [savedLongitude, setSavedLongitude] = useState(null);
       const selectedDealer = dealerName.find(
         (dealer) => dealer.dealer_name === selectedDealerName
       );
-      
+
       // Extract dealer_id
       const dealerId = selectedDealer ? selectedDealer.dealer_id : null;
       console.log("Final Selected Dealer ID:", dealerId);
 
       // Prepare outletData with dealer_id added
-      const outletData = { 
-        ...selectedoutletsdeatil, 
-        callerName: callerName, 
+      const outletData = {
+        ...selectedoutletsdeatil,
+        callerName: callerName,
         callType: callType,
-        reportingTo: reportingTo, 
+        reportingTo: reportingTo,
         dealerName: selectedDealerName,
         dealerId: dealerId  // ✅ Added dealer_id
       };
       console.log('poojaaa', outletData);
-      
-  
+
+
       navigation.navigate("OrderScreen", { outletDetail: outletData });
     }
-};
+  };
 
   const handleActivityButtonClick = async () => {
     if (locationPinColor === "red") {  // ✅ Location validation only when icon is red
@@ -120,13 +120,13 @@ const [savedLongitude, setSavedLongitude] = useState(null);
       return;
     }
     if (!callerName) {
-        Alert.alert(
-            "Please Select Call Type",
-            "Please select a call type (Self or Joined).",
-            [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-            { cancelable: false }
-        );
-        return;
+      Alert.alert(
+        "Please Select Call Type",
+        "Please select a call type (Self or Joined).",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+        { cancelable: false }
+      );
+      return;
     }
 
     const user = await AsyncStorage.getItem("userInfor");
@@ -134,31 +134,31 @@ const [savedLongitude, setSavedLongitude] = useState(null);
 
     // Find the selected reporting person's details based on callerName
     const selectedReportingPerson = reportingPersons.find(
-        (person) => person.reporting_to_name === callerName
+      (person) => person.reporting_to_name === callerName
     );
 
     // ✅ Agar "Self" select kare toh reportingTo ko null rakho
     const reportingTo = selectedReportingPerson ? selectedReportingPerson.reporting_to : null;
-    
+
     console.log("Selected Reporting To:", reportingTo);
 
     // Prepare outletData with callerName, callType, and reporting_to
     const outletData = {
-        ...selectedoutletsdeatil,
-        callerName,
-        callType,
-        reportingTo // ✅ "Self" ke case mein null hoga
+      ...selectedoutletsdeatil,
+      callerName,
+      callType,
+      reportingTo // ✅ "Self" ke case mein null hoga
     };
 
     console.log("Outlet Data:", outletData);
 
     // ✅ Navigation hamesha hona chahiye, chahe "Self" ho ya "Joined"
     if (loginData[0].division === 2) {
-        navigation.navigate("ContactListScreen", { outletDetail: outletData });
+      navigation.navigate("ContactListScreen", { outletDetail: outletData });
     } else {
-        navigation.navigate("RetailActivityScreen", { outletDetail: outletData });
+      navigation.navigate("RetailActivityScreen", { outletDetail: outletData });
     }
-};
+  };
 
 
 
@@ -180,9 +180,9 @@ const [savedLongitude, setSavedLongitude] = useState(null);
         console.log(outletDetail, 'commeeeeeeee');
         setOutletPinCode(outletDetail.pin);
 
-    // Set the outlet details to the state
-    setSelectedoutletsdeatial(outletDetail);
-        
+        // Set the outlet details to the state
+        setSelectedoutletsdeatial(outletDetail);
+
         // Extract the outlet details
         setSelectedoutletsdeatial(outletDetail);
 
@@ -239,30 +239,30 @@ const [savedLongitude, setSavedLongitude] = useState(null);
     const user = await AsyncStorage.getItem("userInfor");
     const empid = JSON.parse(user);
     const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Content-Type", "application/json");
 
-const raw = JSON.stringify({
-  "empidd": empid[0].emp_id,
-});
+    const raw = JSON.stringify({
+      "empidd": empid[0].emp_id,
+    });
 
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-};
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
 
-fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
-  .then((response) => response.json())
-  .then((result) => {
-    if(result.error == false) {
-      console.log('comeee', result.data);
-      setDealerName(result.data)
-      
-    }
+    fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.error == false) {
+          console.log('comeee', result.data);
+          setDealerName(result.data)
 
-  })
-  .catch((error) => console.error(error));
+        }
+
+      })
+      .catch((error) => console.error(error));
   }
 
 
@@ -274,41 +274,41 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
       const empid = JSON.parse(user);
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-  
+
       const raw = JSON.stringify({
         "Outletid": itemId.outlet_id,
         "enterBy": empid[0].emp_id
       });
-  
+
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
         redirect: "follow"
       };
-  
+
       const response = await fetch("https://devcrm.romsons.com:8080/LastTwovisit_OrderHistory", requestOptions);
       const result = await response.json();
-  
+
       if (result.error === false) {
         console.log("Response Data:", result.data);
-  
-        
+
+
         const orderData = result.data.filter(item => item.source === 'order');
         const activityData = result.data.filter(item => item.source === 'activity');
-  
-        console.log("Filtered Order Data:", orderData); 
-        console.log("Filtered Activity Data:", activityData); 
-  
-        
+
+        console.log("Filtered Order Data:", orderData);
+        console.log("Filtered Activity Data:", activityData);
+
+
         const filteredData = [
-          ...orderData.map(order => ({ ...order, type: 'order' })), 
+          ...orderData.map(order => ({ ...order, type: 'order' })),
           ...activityData.map(activity => ({ ...activity, type: 'activity' }))
         ];
-  
-        console.log("Combined Data:", filteredData); 
-  
-        
+
+        console.log("Combined Data:", filteredData);
+
+
         setOrderData(filteredData);
       } else {
         console.log("Error in response:", result.message);
@@ -317,7 +317,7 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
       console.error("Error:", error);
     }
   };
-  
+
 
 
 
@@ -612,8 +612,8 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
   };
 
 
-  
-  
+
+
 
   useEffect(() => {
     setHide(false)
@@ -635,13 +635,15 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
   );
   const navigation = useNavigation();
 
+  
+
   return (
     <ScrollView contentContainerStyle={OutletDetailStyles.scrollContainer}>
       <View style={OutletDetailStyles.mainContainer}>
-        
-        
-<View style={OutletDetailStyles.buttonsRow}>
-  {/* <TouchableOpacity
+
+
+        <View style={OutletDetailStyles.buttonsRow}>
+          {/* <TouchableOpacity
             style={[OutletDetailStyles.button, { backgroundColor: locationPinColor }]}
             onPress={HandleFetchAddress}
             disabled={locationPinColor === 'green'}
@@ -649,110 +651,110 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
             <Text style={OutletDetailStyles.buttonText}>Location Icon</Text>
           </TouchableOpacity> */}
           <TouchableOpacity
-  style={{
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 0,
-  }}
-  onPress={HandleFetchAddress}
-  disabled={locationPinColor === 'green'}
->
-  {/* Background Circle */}
-  <View
-    style={{
-      backgroundColor: locationPinColor,
-      padding: 10,
-      borderRadius: 30,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <Icon
-      name="location-on"
-      size={35}
-      color={locationPinColor === 'green' ? 'black' : 'gray'}
-    />
-  </View>
-  
-  {/* Name Below Icon */}
-  <Text style={{ fontSize: 12, color: '#128C7E', marginTop: 3 }}>Location</Text>
-</TouchableOpacity>
+            style={{
+              padding: 5,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginHorizontal: 0,
+            }}
+            onPress={HandleFetchAddress}
+            disabled={locationPinColor === 'green'}
+          >
+            {/* Background Circle */}
+            <View
+              style={{
+                backgroundColor: locationPinColor,
+                padding: 10,
+                borderRadius: 30,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
+                name="location-on"
+                size={35}
+                color={locationPinColor === 'green' ? 'black' : 'gray'}
+              />
+            </View>
+
+            {/* Name Below Icon */}
+            <Text style={{ fontSize: 12, color: '#128C7E', marginTop: 3 }}>Location</Text>
+          </TouchableOpacity>
 
 
 
 
 
 
-<TouchableOpacity
-    onPress={handleOrderButtonClick}
-    style={{
-      padding: 5,
-      marginHorizontal: 14,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <VectorIcon icon="FontAwesome" size={35} color="#128C7E" name="shopping-cart" />
-    <Text style={{ fontSize: 12, color: '#128C7E' }}>Order</Text>
-  </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleOrderButtonClick}
+            style={{
+              padding: 5,
+              marginHorizontal: 14,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <VectorIcon icon="FontAwesome" size={35} color="#128C7E" name="shopping-cart" />
+            <Text style={{ fontSize: 12, color: '#128C7E' }}>Order</Text>
+          </TouchableOpacity>
 
 
-    {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={handleActivityButtonClick}>
+          {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={handleActivityButtonClick}>
       <Text style={OutletDetailStyles.buttonText}>Activity</Text>
     </TouchableOpacity> */}
 
-<TouchableOpacity
-    style={{
-      padding: 7,
-      marginHorizontal: 8,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    onPress={handleActivityButtonClick}
-  >
-    <VectorIcon icon="FontAwesome5" size={30} name="tasks" color="#128C7E" />
-    <Text style={{ fontSize: 12, color: '#128C7E' }}>Activity</Text>
-  </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 7,
+              marginHorizontal: 8,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={handleActivityButtonClick}
+          >
+            <VectorIcon icon="FontAwesome5" size={30} name="tasks" color="#128C7E" />
+            <Text style={{ fontSize: 12, color: '#128C7E' }}>Activity</Text>
+          </TouchableOpacity>
 
-    {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={() => setModalVisible(true)}>
+          {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={() => setModalVisible(true)}>
       <Text style={OutletDetailStyles.buttonText}>{callType}</Text>
     </TouchableOpacity> */}
 
-<TouchableOpacity
-    style={{
-      padding: 7,
-      marginHorizontal: 8,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    onPress={() => setModalVisible(true)}
-  >
-    <Icon name="add-call" size={25} color="#128C7E" />
-    {callType && (
-      <Text style={{ color: '#128C7E', marginTop: 5, fontSize: 12 }}>
-        {callType}
-      </Text>
-    )}
-  </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 7,
+              marginHorizontal: 8,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => setModalVisible(true)}
+          >
+            <Icon name="add-call" size={25} color="#128C7E" />
+            {callType && (
+              <Text style={{ color: '#128C7E', marginTop: 5, fontSize: 12 }}>
+                {callType}
+              </Text>
+            )}
+          </TouchableOpacity>
 
 
 
-    {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={openModal}>
+          {/* <TouchableOpacity style={[OutletDetailStyles.button, { backgroundColor:'#128C7E' }]} onPress={openModal}>
         <Text style={OutletDetailStyles.buttonText}>Dealer</Text>
       </TouchableOpacity> */}
 
-      <TouchableOpacity style={{
-      padding: 7,
-      marginHorizontal: 8,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }} onPress={openModal}>
-      <Icon name="person-add" size={30} color="#128C7E" />
-      <Text style={{ fontSize: 12, color: '#128C7E' }}>Dealer</Text>
-      </TouchableOpacity>
-  </View>
-  
+          <TouchableOpacity style={{
+            padding: 7,
+            marginHorizontal: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }} onPress={openModal}>
+            <Icon name="person-add" size={30} color="#128C7E" />
+            <Text style={{ fontSize: 12, color: '#128C7E' }}>Dealer</Text>
+          </TouchableOpacity>
+        </View>
+
 
 
 
@@ -779,87 +781,87 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
         </View>
 
         <View style={OutletDetailStyles.callerNameContainer}>
-  {hide ? (
-    <View style={OutletDetailStyles.addressContainer}>
-      <Text style={OutletDetailStyles.callerNameText3}>
-        {address} {/* Display the fetched address */}
-      </Text>
-      <TouchableOpacity
-        style={OutletDetailStyles.saveButton}
-        onPress={() => {
-          // Extract pin code from the address dynamically (assuming pin code is embedded)
-          const jioAddressPinCode = address.match(/\d+/) ? address.match(/\d+/)[0] : ''; // Ensure correct pin code format
-          console.log("Extracted Pin Code from Address:", jioAddressPinCode);
-          console.log("Outlet Pin Code from DB:", selectedoutletsdeatil.pin);
+          {hide ? (
+            <View style={OutletDetailStyles.addressContainer}>
+              <Text style={OutletDetailStyles.callerNameText3}>
+                {address} {/* Display the fetched address */}
+              </Text>
+              <TouchableOpacity
+                style={OutletDetailStyles.saveButton}
+                onPress={() => {
+                  // Extract pin code from the address dynamically (assuming pin code is embedded)
+                  const jioAddressPinCode = address.match(/\d+/) ? address.match(/\d+/)[0] : ''; // Ensure correct pin code format
+                  console.log("Extracted Pin Code from Address:", jioAddressPinCode);
+                  console.log("Outlet Pin Code from DB:", selectedoutletsdeatil.pin);
 
-          // Check if the extracted pin code matches the one stored in the database (selectedoutletsdeatil.pin)
-          if (jioAddressPinCode === selectedoutletsdeatil.pin) {
-            console.log("Pin codes match! Proceeding to save the address.");
-            // Pin codes match, so save the address
-            jioAddress(); // Proceed with saving the address
-          } else {
-            console.log("Pin codes mismatch! Showing alert.");
-            // Pin codes mismatch, show alert
-            Alert.alert(
-              "Location Mismatch",
-              "Your current location does not match the outlet's stored location. You cannot proceed with saving the address.",
-              [
-                {
-                  text: "OK",
-                  onPress: () => {
-                    // Navigate to Home screen after alert is dismissed
-                    navigation.navigate(RouteName.HOME_SCREEN);
-                  },
-                },
-              ]
-            );
-          }
-        }}
-      >
-        <Text style={OutletDetailStyles.saveButtonText}>
-          {isUpdated ? "Address Saved" : "Save"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  ) : null}
-</View>
+                  // Check if the extracted pin code matches the one stored in the database (selectedoutletsdeatil.pin)
+                  if (jioAddressPinCode === selectedoutletsdeatil.pin) {
+                    console.log("Pin codes match! Proceeding to save the address.");
+                    // Pin codes match, so save the address
+                    jioAddress(); // Proceed with saving the address
+                  } else {
+                    console.log("Pin codes mismatch! Showing alert.");
+                    // Pin codes mismatch, show alert
+                    Alert.alert(
+                      "Location Mismatch",
+                      "Your current location does not match the outlet's stored location. You cannot proceed with saving the address.",
+                      [
+                        {
+                          text: "OK",
+                          onPress: () => {
+                            // Navigate to Home screen after alert is dismissed
+                            navigation.navigate(RouteName.HOME_SCREEN);
+                          },
+                        },
+                      ]
+                    );
+                  }
+                }}
+              >
+                <Text style={OutletDetailStyles.saveButtonText}>
+                  {isUpdated ? "Address Saved" : "Save"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </View>
 
         <Modal
-        transparent={true}
-        visible={modalVisible1}
-        animationType="fade"
-        onRequestClose={() => setModalVisible1(false)}
-      >
-        <View style={OutletDetailStyles.modalOverlay4}>
-          <View style={OutletDetailStyles.dropdownContainer4}>
-            {loading ? (
-              <ActivityIndicator size="medium" color="#0000ff" /> // Loader while fetching
-            ) : (
-              <ScrollView>
-                {dealerName.length > 0 ? (
-                  dealerName.map((dealer, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={OutletDetailStyles.option4}
-                      onPress={() => {
-                        console.log("Selected Dealer:", dealer.dealer_name);
-                        setSelectedDealerName(dealer.dealer_name);
-                        setModalVisible1(false); // Close modal on selection
-                      }}
-                    >
-                      <Text style={OutletDetailStyles.optionText4}>{dealer.dealer_name}</Text>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text style={{ textAlign: "center", padding: 10 }}>
-                    No Dealers Available
-                  </Text>
-                )}
-              </ScrollView>
-            )}
+          transparent={true}
+          visible={modalVisible1}
+          animationType="fade"
+          onRequestClose={() => setModalVisible1(false)}
+        >
+          <View style={OutletDetailStyles.modalOverlay4}>
+            <View style={OutletDetailStyles.dropdownContainer4}>
+              {loading ? (
+                <ActivityIndicator size="medium" color="#0000ff" /> // Loader while fetching
+              ) : (
+                <ScrollView>
+                  {dealerName.length > 0 ? (
+                    dealerName.map((dealer, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={OutletDetailStyles.option4}
+                        onPress={() => {
+                          console.log("Selected Dealer:", dealer.dealer_name);
+                          setSelectedDealerName(dealer.dealer_name);
+                          setModalVisible1(false); // Close modal on selection
+                        }}
+                      >
+                        <Text style={OutletDetailStyles.optionText4}>{dealer.dealer_name}</Text>
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text style={{ textAlign: "center", padding: 10 }}>
+                      No Dealers Available
+                    </Text>
+                  )}
+                </ScrollView>
+              )}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
         {/* Modal for Call Type Selection */}
         <Modal
           transparent={true}
@@ -882,9 +884,9 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
               <TouchableOpacity
                 style={OutletDetailStyles.option}
                 onPress={() => {
-                  setCallType("Joined"); // Set selected call type
-                  setModalVisible(false); // Close modal
-                  reportingPerson(); // Fetch reporting persons and show the next modal
+                  setCallType("Joined"); 
+                  setModalVisible(false); 
+                  reportingPerson(); 
                 }}
               >
                 <Text style={OutletDetailStyles.optionText}>Joint Call</Text>
@@ -919,7 +921,7 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
             </View>
           </View>
         </Modal>
-        
+
         <View style={OutletDetailStyles.infoContainer}>
           <Text style={OutletDetailStyles.outletLabel}>Geo Address:</Text>
           <Text style={OutletDetailStyles.outletValue}>
@@ -976,101 +978,101 @@ fetch("https://devcrm.romsons.com:8080/Dealernamelist", requestOptions)
 
 
         {orderData.map((item, index) => {
-  return (
-    <View key={index} style={OutletDetailStyles.container3}>
-      {/* Order Section */}
-      {item.type === 'order' && (
-        <>
-          <Text style={OutletDetailStyles.headerText3}>Order ({item.m_orderID})</Text>
+          return (
+            <View key={index} style={OutletDetailStyles.container3}>
+              {/* Order Section */}
+              {item.type === 'order' && (
+                <>
+                  <Text style={OutletDetailStyles.headerText3}>Order ({item.m_orderID})</Text>
 
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
-          </View>
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
+                  </View>
 
-          <View style={OutletDetailStyles.details3}>
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{item.sku_name}</Text>
+                  <View style={OutletDetailStyles.details3}>
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{item.sku_name}</Text>
+                    </View>
+
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
+                    </View>
+
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{item.item_qty}</Text>
+                    </View>
+
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{item.item_value}</Text>
+                    </View>
+
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>Scheme Discount</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{item.scheme_discount}</Text>
+                    </View>
+
+                    <View style={OutletDetailStyles.row3}>
+                      <Text style={OutletDetailStyles.rowLabel3}>Total</Text>
+                      <Text style={OutletDetailStyles.rowValue3}>{item.total}</Text>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {/* Activity Section */}
+              {item.type === 'activity' && (
+                <>
+                  <Text style={OutletDetailStyles.headerText3}>{item.source}</Text>
+
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black', marginLeft: 10 }}>OrderID: </Text>
+                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'brown' }}>{item.m_orderID}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.contactPerson}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.department}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={[OutletDetailStyles.rowLabel3, { marginRight: 10 }]}>SKU Name</Text>
+                    <Text style={[OutletDetailStyles.rowValue3, { flex: 1 }]}>{item.sku_name}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.remark}</Text>
+                  </View>
+
+                  <View style={OutletDetailStyles.row3}>
+                    <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.followUp}</Text>
+                  </View>
+                </>
+              )}
             </View>
-
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
-            </View>
-
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{item.item_qty}</Text>
-            </View>
-
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{item.item_value}</Text>
-            </View>
-
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>Scheme Discount</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{item.scheme_discount}</Text>
-            </View>
-
-            <View style={OutletDetailStyles.row3}>
-              <Text style={OutletDetailStyles.rowLabel3}>Total</Text>
-              <Text style={OutletDetailStyles.rowValue3}>{item.total}</Text>
-            </View>
-          </View>
-        </>
-      )}
-
-      {/* Activity Section */}
-      {item.type === 'activity' && (
-        <>
-          <Text style={OutletDetailStyles.headerText3}>{item.source}</Text>
-
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black', marginLeft: 10 }}>OrderID: </Text>
-            <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'brown' }}>{item.m_orderID}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.contactPerson}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.department}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={[OutletDetailStyles.rowLabel3, { marginRight: 10 }]}>SKU Name</Text>
-            <Text style={[OutletDetailStyles.rowValue3, { flex: 1 }]}>{item.sku_name}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.remark}</Text>
-          </View>
-
-          <View style={OutletDetailStyles.row3}>
-            <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
-            <Text style={OutletDetailStyles.rowValue3}>{item.followUp}</Text>
-          </View>
-        </>
-      )}
-    </View>
-  );
-})}
+          );
+        })}
 
 
 

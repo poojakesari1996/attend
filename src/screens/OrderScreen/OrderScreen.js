@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, FlatList, Alert } from "react-native";
 import { Spacing, Button } from '../../components';
 import { ApprovalStyle } from "../../styles";
@@ -11,6 +11,9 @@ import Geolocation from '@react-native-community/geolocation';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { darkTheme, lightTheme, SH } from "../../utils";
+import ViewShot from "react-native-view-shot";
+import Share from "react-native-share";
+import RNFS from "react-native-fs";
 import { RouteName } from '../../routes';
 import { setOrder, setSaleReturn, setResetOrder, setResetReturn } from "../../redux/action/orderActions";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -40,6 +43,7 @@ const OrderScreen = ({ route }) => {
   const [alertMessage, setAlertMessage] = useState('');
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const viewShotRef = useRef(null);
 
   const [
     currentLongitude,
@@ -58,6 +62,22 @@ const OrderScreen = ({ route }) => {
     'loginSuccess': t("Login_Successfull"),
     'invalid': t("Enter Valid Emp ID & Password")
   };
+
+  const captureAndShare = async () => {
+    try {
+      const uri = await viewShotRef.current.capture();  // Screenshot Capture
+      const shareOptions = {
+        title: "Order Summary",
+        message: "Here is the order summary:",
+        url: `file://${uri}`,  // Local Image Path
+        social: Share.Social.WHATSAPP,
+      };
+      await Share.shareSingle(shareOptions);  // Share via WhatsApp
+    } catch (error) {
+      console.error("Sharing failed:", error);
+    }
+  };
+
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -659,15 +679,22 @@ const OrderScreen = ({ route }) => {
         </>
       )}
 
+{selectedTab === "Order Summary" && (
+  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
+    <TouchableOpacity onPress={captureAndShare}>
+      <Icon name="share" size={30} color="#000" />
+    </TouchableOpacity>
+  </View>
+)}
 
+
+
+                    
       {/* Order Summary UI */}
       {selectedTab === "Order Summary" && (
         <ScrollView>
+          <ViewShot ref={viewShotRef} options={{ format: "png", quality: 0.9 }}>
           <View style={OrderStyles.PaddingHorizontal6}>
-            {/* <TouchableOpacity style={OrderStyles.footerButton5} onPress={HandleGenrateSummary}>
-        <Text style={OrderStyles.footerButtonText5}>Generate Summary</Text>
-      </TouchableOpacity> */}
-
             <View style={OrderStyles.taskContainer2}>
 
               {/* Outlet Information Section */}
@@ -916,6 +943,7 @@ const OrderScreen = ({ route }) => {
 
 
           </View>
+          </ViewShot>
         </ScrollView>
       )}
     </View>

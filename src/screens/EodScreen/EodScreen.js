@@ -8,6 +8,9 @@ import { EodStyle } from '../../styles/EodStyle';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import Moment from 'moment';
+import ViewShot from "react-native-view-shot";
+import Share from "react-native-share";
+import RNFS from "react-native-fs";
 // import Share from 'react-native-share';
 
 
@@ -28,6 +31,8 @@ const EodScreen = () => {
     let [activitydatas, setActivitydatas] = useState([]);
     let [flagDate, setFlagDate] = React.useState([]);
     const EodStyles = useMemo(() => EodStyle(currentColors), [currentColors]);
+    const viewShotRef = useRef(null);
+    
 
 
     const toggleModal = () => {
@@ -35,24 +40,33 @@ const EodScreen = () => {
         EodNotpunchin();
     };
 
-    const shareData = async () => {
+    const captureScreenAndShare = async () => {
         try {
-            
-            const apiResponse = await flag();
-    
-            
-            const message = `Data Shared Successfully! ✅\n\n` +
-                            `Punch Date: ${apiResponse.punchdate}\n` +
-                            `Employee ID: ${apiResponse.enterBy}`;
-    
-            
-            const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
-            await Linking.openURL(whatsappUrl);
-    
+            // Take a screenshot
+            const uri = await viewShotRef.current.capture();
+
+            // Convert image to base64
+            const base64Data = await RNFS.readFile(uri, "base64");
+
+            // Fetch API data
+            const apiData = await flag();  
+
+            // Prepare WhatsApp message with API data
+            const message = `Attendance Report:\nDate: ${Moment(flagDate).format('YYYY-MM-DD')}`;
+
+            // Share via WhatsApp
+            const shareOptions = {
+                message: message,
+                url: `data:image/png;base64,${base64Data}`,
+                social: Share.Social.WHATSAPP,
+            };
+
+            await Share.shareSingle(shareOptions);
         } catch (error) {
-            Alert.alert("Error", error.message || "Failed to share data!");
+            Alert.alert("Error", error.message || "Failed to share screenshot!");
         }
     };
+
     
     // Modified flag() function to return API data
     const flag = async () => {
@@ -644,6 +658,7 @@ const EodScreen = () => {
     return (
 
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            <ViewShot ref={viewShotRef} options={{ format: "png", quality: 0.9 }}>
             <View style={EodStyles.container}>
                 {/* Pending EOD Button */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -651,7 +666,7 @@ const EodScreen = () => {
                         <Text style={EodStyles.pendingText}>Pending EOD</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={shareData}>
+                    <TouchableOpacity onPress={captureScreenAndShare}>
                         <Icon name="share" size={30} color="#000" />
 
                     </TouchableOpacity>
@@ -659,6 +674,7 @@ const EodScreen = () => {
                 </View>
 
                 {/* Date Display */}
+                <>
                 <Text style={EodStyles.dateText1}>{Moment(flagDate).format('DD-MMM-YYYY')}</Text>
 
 
@@ -824,55 +840,6 @@ const EodScreen = () => {
                     })
                 }
 
-
-
-
-
-                {/* {eodreturnDate?.map((outlet, outletIndex) => {
-    const returnsForOutlet = eodreturnData?.filter(
-        (returnItem) => returnItem.outlet_id === outlet.outlet_id
-    );
-
-    if (!returnsForOutlet?.length) return null;
-
-    return (
-        <View key={outletIndex} style={EodStyles.infoContainer}>
-            <Text style={EodStyles.hospitalText}>
-                {outlet.outlet_id}, {outlet.outlet_name}
-            </Text>
-
-            <View style={EodStyles.orderContainer}>
-                <Text style={EodStyles.orderType}>Type: Return</Text>
-                <Text style={EodStyles.orderId}>OrderID: </Text>
-            </View>
-
-            {returnsForOutlet.map((res, ind) => (
-                <View style={EodStyles.skuContainer} key={ind}>
-                    <View style={EodStyles.skuHeaderRow}>
-                        <Text style={EodStyles.skuHeaderText}>SKU Name</Text>
-                        <Text style={EodStyles.skuHeaderText}>Unit Price</Text>
-                        <Text style={EodStyles.skuHeaderText}>Unit</Text>
-                        <Text style={EodStyles.skuHeaderText}>Amount</Text>
-                    </View>
-
-                    <View style={EodStyles.skuDataRow}>
-                        <Text style={EodStyles.skuText}>{res.sku_name}</Text>
-                        <Text style={EodStyles.skuText}>{res.item_price_unit}</Text>
-                        <Text style={EodStyles.skuText}>{res.item_qty}</Text>
-                        <Text style={EodStyles.skuText}>{res.return_order_amt}</Text>
-                    </View>
-                </View>
-            ))}
-        </View>
-    );
-})} */}
-
-
-
-
-
-
-
                 {/* Additional Info */}
                 {activitydata?.map((outlet, outletIndex) => {
                     // Filter activities for the current outlet_id
@@ -956,8 +923,9 @@ const EodScreen = () => {
                         </View>
                     );
                 })}
-
+</>
             </View>
+            </ViewShot>
         </ScrollView>
 
     );
