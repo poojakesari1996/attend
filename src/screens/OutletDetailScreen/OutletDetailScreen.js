@@ -985,10 +985,10 @@ const OutletDetailScreen = ({ route }) => {
                 <>
                   <Text style={OutletDetailStyles.headerText3}>Order ({item.m_orderID})</Text>
 
-                  <View style={OutletDetailStyles.row3}>
+                  {/* <View style={OutletDetailStyles.row3}>
                     <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
                     <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
-                  </View>
+                  </View> */}
 
                   <View style={OutletDetailStyles.details3}>
                     <View style={OutletDetailStyles.row3}>
@@ -1027,17 +1027,17 @@ const OutletDetailScreen = ({ route }) => {
               {/* Activity Section */}
               {item.type === 'activity' && (
                 <>
-                  <Text style={OutletDetailStyles.headerText3}>{item.source}</Text>
+                  <Text style={OutletDetailStyles.headerText3}>{item.source} ({item.m_orderID})</Text>
 
-                  <View style={{ flexDirection: 'row' }}>
+                  {/* <View style={{ flexDirection: 'row' }}>
                     <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black', marginLeft: 10 }}>OrderID: </Text>
                     <Text style={{ fontSize: 10, fontWeight: 'bold', color: 'brown' }}>{item.m_orderID}</Text>
-                  </View>
+                  </View> */}
 
-                  <View style={OutletDetailStyles.row3}>
+                  {/* <View style={OutletDetailStyles.row3}>
                     <Text style={OutletDetailStyles.rowLabel3}>Outlet Id</Text>
                     <Text style={OutletDetailStyles.rowValue3}>{item.outlet_id}</Text>
-                  </View>
+                  </View> */}
 
                   <View style={OutletDetailStyles.row3}>
                     <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
@@ -1066,7 +1066,9 @@ const OutletDetailScreen = ({ route }) => {
 
                   <View style={OutletDetailStyles.row3}>
                     <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.followUp}</Text>
+                    <Text style={OutletDetailStyles.rowValue3}>{item.follow_up
+                                                ? new Date(item.follow_up).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                                                : ''}</Text>
                   </View>
                 </>
               )}

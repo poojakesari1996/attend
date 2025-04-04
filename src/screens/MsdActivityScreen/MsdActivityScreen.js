@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState,useRef } from "react";
 import { ApprovalStyle } from '../../styles/ApprovalStyle';
 import { useSelector } from "react-redux";
 import { Alert } from "react-native";
@@ -15,14 +15,17 @@ import Geolocation from '@react-native-community/geolocation';
 import { RouteName } from '../../routes';
 import { useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
+import Icon from "react-native-vector-icons/MaterialIcons";
+import ViewShot from "react-native-view-shot";
+import Share from "react-native-share";
+import RNFS from "react-native-fs";
 import { msdActivity, setResetMsdActivity } from "../../redux/action/orderActions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MsdActivityScreen = ({ route }) => {
     const { customer_name, customer_contact_no, hospital_name, outlet_category_name, outlet_id, customer_department, user_type } = route.params;
     const { outletDetail } = route.params; // Assuming outletDetail is passed in route.params
-    // Safely destructure callerName and callType only if they exist in outletDetail
-    const { callerName, callType, reportingTo } = outletDetail || {}; // Destructure if outletDetail exists, otherwise default to empty object
+    const { callerName, callType, reportingTo } = outletDetail || {}; 
     const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
     const Colors = isDarkMode ? darkTheme : lightTheme;
     const { t } = useTranslation();
@@ -34,13 +37,13 @@ const MsdActivityScreen = ({ route }) => {
     const msdActivityData = useSelector((state) => state.order.msdActivityData || []);
     const MsdActivityStyles = useMemo(() => MsdActivityStyle(Colors), [Colors]);
     const [selectedFilter, setSelectedFilter] = useState('Activity');
-    const [selectedService, setSelectedService] = useState({});  // To store selected services for each product (indexed)
-    const [services, setServices] = useState([]); // State to store reasons fetched from the API
+    const [selectedService, setSelectedService] = useState({});
+    const [services, setServices] = useState([]); 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [Itemlist, setItemlist] = useState([]);
     const [dates, setDates] = useState([]);
-    const [fromDate, setFromDate] = useState(new Date()); // Initialize with the current date
-    // State for storing fetched data
+    const [fromDate, setFromDate] = useState(new Date()); 
+    const viewShotRef = useRef(null);
 
 
     const [
@@ -158,6 +161,37 @@ const MsdActivityScreen = ({ route }) => {
         activity();
     }, []);
 
+    // const captureAndShare = async () => {
+    //     try {
+    //       const uri = await viewShotRef.current.capture(); // Screenshot Capture
+      
+    //       const shareOptions = {
+    //         title: "Order Summary",
+    //         message: "Here is the Activity Summary:",
+    //         url: `file://${uri}`, // Local Image Path
+    //       };
+      
+    //       await Share.open(shareOptions); // Open Native Share Menu
+      
+    //     } catch (error) {
+    //       console.error("Sharing failed:", error);
+    //     }
+    //   };
+      
+    const captureAndShare = async () => {
+        try {
+          const uri = await viewShotRef.current.capture();  // Screenshot Capture
+          const shareOptions = {
+            title: "Order Summary",
+            message: "Here is the Activity Summary:",
+            url: `file://${uri}`,  // Local Image Path
+            social: Share.Social.WHATSAPP,
+          };
+          await Share.shareSingle(shareOptions);  // Share via WhatsApp
+        } catch (error) {
+          console.error("Sharing failed:", error);
+        }
+      };
 
 
     const handleDateChange = (event, selectedDate, index) => {
@@ -457,27 +491,35 @@ const MsdActivityScreen = ({ route }) => {
             {selectedFilter === 'Activity' && (
                 <View style={OrderStyles.saleReturnFooterContainer}>
                     <TouchableOpacity
+                    onPress={activitySave}
                         style={OrderStyles.footerButton1}
                         activeOpacity={0.7}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                        <Text style={OrderStyles.footerButtonText1} onPress={activitySave}>Save</Text>
+                        <Text style={OrderStyles.footerButtonText1}>Save</Text>
                     </TouchableOpacity>
                 </View>
             )}
 
+
+                                
+{selectedFilter === "Summary" && (
+  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
+    <TouchableOpacity onPress={captureAndShare}>
+      <Icon name="share" size={30} color="#000" />
+    </TouchableOpacity>
+  </View>
+)}
             {selectedFilter === 'Summary' && (
                 <View style={{ flex: 1, padding: 16 }}>
+                    <ViewShot ref={viewShotRef} options={{ format: "png", quality: 0.9 }}>
                     {/* Header Section */}
                     <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
                         <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                             <Text style={{ color: 'black' }}>Outlet Name: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
                         </Text>
-                        {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Type: </Text>
-                            <Text style={{ color: 'green' }}>{outlet_category_name}</Text>
-                        </Text> */}
+                        
                         <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                             <Text style={{ color: 'black' }}>Contact: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
@@ -487,10 +529,7 @@ const MsdActivityScreen = ({ route }) => {
                             <Text style={{ color: 'black' }}>Joined_Call_Name: </Text>
                             <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
                         </Text>
-
-
-                        {/* <Text style={{ fontSize: 16, color: '#6c757d' }}>Type: {outlet_category_name}</Text> */}
-                        {/* <Text style={{ fontSize: 16, color: '#6c757d' }}>Contact: {customer_contact_no}</Text> */}
+                        
                     </View>
 
                     <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
@@ -514,16 +553,6 @@ const MsdActivityScreen = ({ route }) => {
                                     elevation: 3
                                 }}
                             >
-                                {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>👤 Customer Name: {item.customer_name}</Text> */}
-                                {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>Customer Name: </Text>
-                                    <Text style={{ color: 'green' }}>{item.customer_name}</Text>
-                                </Text>
-
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>Customer Dept: </Text>
-                                    <Text style={{ color: 'green' }}>{customer_department}</Text>
-                                </Text> */}
 
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
                                     <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
@@ -536,21 +565,6 @@ const MsdActivityScreen = ({ route }) => {
                                         <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
                                     </Text>
                                 </View>
-                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
-                                        <Text style={{ color: 'black' }}>SKU Name: </Text>
-                                        <Text style={{ color: 'green', fontSize: 12 }}>{item.sku_name}</Text>
-                                    </Text>
-
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
-                                        <Text style={{ color: 'black' }}>Remarks: </Text>
-                                        <Text style={{ color: 'green', fontSize: 13 }}>{item.value}</Text>
-                                    </Text>
-                                </View> */}
-
-
-
-
 
                                 <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                     <Text style={{ color: 'black' }}>SKU Name: </Text>
@@ -580,7 +594,10 @@ const MsdActivityScreen = ({ route }) => {
                         contentContainerStyle={{ paddingBottom: 20 }}
                         showsVerticalScrollIndicator={false}
                     />
+                    </ViewShot>
                 </View>
+                
+                
             )}
 
             {selectedFilter === 'Summary' && (
