@@ -377,26 +377,13 @@ const HomeTab = (props) => {
             <Text style={HomeTabStyles.moduleLabel}>{t("EOD")}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={HomeTabStyles.moduleBox}>
+          <TouchableOpacity style={HomeTabStyles.moduleBox} onPress={() => navigation.navigate(RouteName.TASKADD)}>
             <VectorIcon icon="FontAwesome" size={SF(33)} name="pencil-square-o" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
             <Spacing space={10} />
             <Text style={HomeTabStyles.moduleLabel} >{t("Task")}</Text>
           </TouchableOpacity>
 
-          {/* <Spacing space={20} /> */}
-          {/* <TouchableOpacity style={HomeTabStyles.moduleBox}>
-            <VectorIcon icon="Feather" size={SF(33)} name="dollar-sign" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
-            <Spacing space={10} />
-            <Text style={HomeTabStyles.moduleLabel}>{t("EOD")}</Text>
-          </TouchableOpacity> */}
-          {/* <TouchableOpacity style={HomeTabStyles.moduleBox}>
-            <VectorIcon icon="AntDesign" size={SF(33)} name="contacts" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
-            <Text style={HomeTabStyles.moduleLabel}>{t("Directory")}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={HomeTabStyles.moduleBox}>
-            <VectorIcon icon="AntDesign" size={SF(33)} name="zhihu" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
-            <Text style={HomeTabStyles.moduleLabel}>{t("Assets")}</Text>
-          </TouchableOpacity> */}
+          
         </View>
 
         <Text style={HomeTabStyles.LableText}>{t("Approvals")}</Text>
@@ -430,16 +417,6 @@ const HomeTab = (props) => {
             <Spacing space={10} />
             <Text style={HomeTabStyles.moduleLabel}>{t("Regularization")}</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={HomeTabStyles.moduleBox}>
-            <VectorIcon icon="FontAwesome" size={SF(33)} name="tasks" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
-            <Spacing space={10} />
-            <Text style={HomeTabStyles.moduleLabel}>{t("Expense")}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={HomeTabStyles.moduleBox}>
-            <VectorIcon icon="FontAwesome" size={SF(33)} name="tasks" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
-            <Spacing space={10} />
-            <Text style={HomeTabStyles.moduleLabel}>{t("Eod_History")}</Text>
-          </TouchableOpacity> */}
         </View>
 
         <Spacing space={20} />

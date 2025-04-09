@@ -173,6 +173,17 @@ export default DaysummaryStyle = (Colors) => StyleSheet.create({
         alignItems: 'center',
       },
 
+      infoContainer3: {
+        backgroundColor: Colors.theme_background,
+        padding: 7,
+        borderRadius: 8,
+        marginTop: 20,
+        marginHorizontal: 20,
+        borderWidth: 1,
+        borderColor: Colors.gray_text_color,
+        alignItems: 'center',
+      },
+
       
       hospitalText: {
         fontSize: 14,

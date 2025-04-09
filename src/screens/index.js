@@ -9,6 +9,7 @@ export * from './HomeTab';
 export * from './LanguageScreen';
 export * from './ServicesTab';
 export * from './AttendanceTab';
+export * from './TaskAddScreen';
 export * from './AttendanceTab/AttendancePunchInOut';
 export * from './AttendanceTab/LeaveApply';
 export * from './OutletDetailScreen';

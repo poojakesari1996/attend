@@ -21,6 +21,7 @@ const RouteName = {
     LANGUAGESCREEN: 'LanguageScreen',
     DEALSTAB: 'DealsTab',
     CONTACTSTAB: 'ContactsTab',
+    TASKADD: 'TaskAddScreen',
     ACCOUNTSSCREEN: 'AccountsScreen',
     TASKSSCREEN: 'TasksScreen',
     DAYSUMMARY: 'DaysummaryScreen',

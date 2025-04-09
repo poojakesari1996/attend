@@ -37,29 +37,44 @@ const LeaveApply = () => {
 
     useEffect(() => {
         fetchLeaveTypes();
-        fetchLeaveBalanceData(); 
+        fetchLeaveBalanceData();
     }, []);
 
-    
+
 
     const handleFromDateChange = (event, selectedDate) => {
-        console.log("leave applied")
-        setFromDate(null);
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
+    
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+    
+        setFromDate(null);
         setShowDatePicker(false);
-        setFromDate(currentDate); // Update fromDate state
-        handleFromdate(currentDate); // Log the selected fromDate
-
+        setFromDate(currentDate);
+        handleFromdate(currentDate);
     };
+    
 
     // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
-        setToDate(null)
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
+    
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+    
+        setToDate(null);
         setShowDatePicker(false);
-        setToDate(currentDate); // Update toDate state
-
+        setToDate(currentDate);
     };
+    
 
     const fetchLeaveTypes = async () => {
 
@@ -72,10 +87,10 @@ const LeaveApply = () => {
 
             if (!response.data.error) {
                 const mappedLeaveTypes = response.data.data.map((item) => ({
-                    label: item.leave_description, 
-                    value: item.leave_type,        
+                    label: item.leave_description,
+                    value: item.leave_type,
                 }));
-                setLeaveTypes(mappedLeaveTypes); 
+                setLeaveTypes(mappedLeaveTypes);
             }
         } catch (error) {
             console.error("Error fetching leave types:", error.message);
@@ -147,13 +162,13 @@ const LeaveApply = () => {
             // Get user data from AsyncStorage
             const user = await AsyncStorage.getItem('userInfor');
             const empid = JSON.parse(user);
-    
+
             // **15 days validation (frontend check)**
             if (numberOfdays > 15) {
                 Alert.alert("Error", "You cannot apply for more than 15 leaves at a time.");
                 return;
             }
-    
+
             // Prepare payload for the API request
             const leavePayload = {
                 empID: empid[0].emp_id,
@@ -165,16 +180,16 @@ const LeaveApply = () => {
                 leavereason: reason,
                 enterBy: empid[0].emp_id,
             };
-    
+
             console.log("Payload being sent:", leavePayload);
-    
+
             // Send POST request
             const response = await axios.post("https://devcrm.romsons.com:8080/LeaveApp", leavePayload, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-    
+
             // Check for error in the response
             if (response.data.error) {
                 Alert.alert("Error", response.data.data || "Something went wrong");
@@ -185,7 +200,7 @@ const LeaveApply = () => {
             setFromDate('');
             setToDate('');
             setReason('');
-    
+
         } catch (error) {
             // Handle error if request fails
             console.error("Error during leave submission:", error);
@@ -216,6 +231,8 @@ const LeaveApply = () => {
             console.error('Error fetching leave balance data:', error);
         }
     };
+
+    
 
     return (
         <KeyboardAvoidingView
