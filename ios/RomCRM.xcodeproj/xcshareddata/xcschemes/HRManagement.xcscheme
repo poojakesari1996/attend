@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "HRManagement.app"
-               BlueprintName = "HRManagement"
-               ReferencedContainer = "container:HRManagement.xcodeproj">
+               BuildableName = "RomCRM.app"
+               BlueprintName = "RomCRM"
+               ReferencedContainer = "container:RomCRM.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,15 +33,15 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "HRManagementTests.xctest"
-               BlueprintName = "HRManagementTests"
-               ReferencedContainer = "container:HRManagement.xcodeproj">
+               BuildableName = "RomCRMTests.xctest"
+               BlueprintName = "RomCRMTests"
+               ReferencedContainer = "container:RomCRM.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "HRManagement.app"
-            BlueprintName = "HRManagement"
-            ReferencedContainer = "container:HRManagement.xcodeproj">
+            BuildableName = "RomCRM.app"
+            BlueprintName = "RomCRM"
+            ReferencedContainer = "container:RomCRM.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "HRManagement.app"
-            BlueprintName = "HRManagement"
-            ReferencedContainer = "container:HRManagement.xcodeproj">
+            BuildableName = "RomCRM.app"
+            BlueprintName = "RomCRM"
+            ReferencedContainer = "container:RomCRM.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
@@ -83,6 +83,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "RomCRM"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
