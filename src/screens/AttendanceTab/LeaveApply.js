@@ -43,23 +43,38 @@ const LeaveApply = () => {
 
 
     const handleFromDateChange = (event, selectedDate) => {
-        console.log("leave applied")
-        setFromDate(null);
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
+    
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+    
+        setFromDate(null);
         setShowDatePicker(false);
-        setFromDate(currentDate); // Update fromDate state
-        handleFromdate(currentDate); // Log the selected fromDate
-
+        setFromDate(currentDate);
+        handleFromdate(currentDate);
     };
+    
 
     // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
-        setToDate(null)
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
+    
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+    
+        setToDate(null);
         setShowDatePicker(false);
-        setToDate(currentDate); // Update toDate state
-
+        setToDate(currentDate);
     };
+    
 
     const fetchLeaveTypes = async () => {
 
@@ -216,6 +231,8 @@ const LeaveApply = () => {
             console.error('Error fetching leave balance data:', error);
         }
     };
+
+    
 
     return (
         <KeyboardAvoidingView

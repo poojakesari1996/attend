@@ -693,7 +693,13 @@ const OrderScreen = ({ route }) => {
       {/* Order Summary UI */}
       {selectedTab === "Order Summary" && (
         <ScrollView>
-          <ViewShot ref={viewShotRef} options={{ format: "png", quality: 0.9 }}>
+          <ViewShot ref={viewShotRef} options={{
+    format: 'png',
+    quality: 1, 
+    result: 'tmpfile',
+    width: 1080, 
+    height: 1920 
+  }}>
           <View style={OrderStyles.PaddingHorizontal6}>
             <View style={OrderStyles.taskContainer2}>
 

@@ -17,9 +17,8 @@ import { Platform, PermissionsAndroid } from 'react-native';
 import { Divider } from 'react-native-elements';
 const AttendancePunchInOut = () => {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
-    const [showCheckInPopup, setShowCheckInPopup] = useState(false); // State for CheckIn popup visibility
-    const [showCheckOutPopup, setShowCheckOutPopup] = useState(false); // State for CheckOut popup visibility
-    // const [selectedOption, setSelectedOption] = useState(null); // State for selected option (Office or Field)
+    const [showCheckInPopup, setShowCheckInPopup] = useState(false);
+    const [showCheckOutPopup, setShowCheckOutPopup] = useState(false);
     const [remarks, setRemarks] = useState('');
     const [attendanceData, setAttendanceData] = useState(null);
     const [remarks1, setRemarks1] = useState(''); // State for remarks input
@@ -54,10 +53,6 @@ const AttendancePunchInOut = () => {
         console.log(userdetail.division);
     }
 
-    
-
-
-
     const alertdata = {
         'checkinSuccess': t("Punch_In_Successfull"),
         // 'invalid': t("Enter Valid Emp ID & Password")
@@ -67,12 +62,6 @@ const AttendancePunchInOut = () => {
         setAlertVisible(false); // Hide the alert
 
     };
-
-
-
-
-
-
 
     const openPunchInModal = () => {
         setModalVisible(true);
@@ -86,12 +75,12 @@ const AttendancePunchInOut = () => {
 
     const handleSave = async () => {
         if (!currentLatitude || !currentLongitude || currentLatitude === '...' || currentLongitude === '...') {
-            alert("Location is disabled. Please enable Your location");
+            alert("Please wait, fetch location...");
             return;
         }
     
         if (!address || address.trim() === "") {
-            alert("Location is disabled. Please enable Your location");
+            alert("Please wait, fetch location...");
             return;
         }
     
@@ -240,16 +229,7 @@ const AttendancePunchInOut = () => {
             );
         }
 
-
-
-
-
-
     }, [])
-
-
-
-    
 
     useEffect(() => {
         const requestLocationPermission = async () => {
@@ -442,12 +422,12 @@ const AttendancePunchInOut = () => {
 
     const handleOut = async () => {
         if (!currentLatitude || !currentLongitude || currentLatitude === '...' || currentLongitude === '...') {
-            alert("Location is disabled. Please enable Your location");
+            alert("Please wait, fetch location...");
             return;
         }
     
         if (!address || address.trim() === "") {
-            alert("Location is disabled. Please enable Your location");
+            alert("Please wait, fetch location...");
             return;
         }
     
@@ -689,3 +669,4 @@ const AttendancePunchInOut = () => {
 };
 
 export default AttendancePunchInOut;
+
