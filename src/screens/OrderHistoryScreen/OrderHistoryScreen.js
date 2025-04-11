@@ -124,11 +124,6 @@ const OrderHistoryScreen = () => {
         }
     };
 
-
-
-
-
-
     const selectBeat = async () => {
         try {
             const user = await AsyncStorage.getItem('userInfor');
@@ -415,20 +410,40 @@ const OrderHistoryScreen = () => {
       
           {/* Month Picker */}
           <View>
-            <View style={[OrderHistoryStyles.pickerBorder, { width: 200, alignSelf: "center", borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: Colors.border, marginTop: 20, backgroundColor: Colors.cardBackground, paddingHorizontal: 5 }]}>
-              <Picker
-                selectedValue={selectedMonth}
-                onValueChange={handleMonthSelection}
-                style={OrderHistoryStyles.picker}
-              >
-                <Picker.Item label="Choose Month" value="" />
-                {months.length > 0 &&
-                  months.map((month, index) => (
-                    <Picker.Item key={index} label={month} value={month} />
-                  ))}
-              </Picker>
-            </View>
-          </View>
+  <View
+    style={[
+      OrderHistoryStyles.pickerBorder,
+      {
+        width: 200,
+        alignSelf: "center",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        marginTop: 20,
+        backgroundColor: Colors.cardBackground,
+        paddingHorizontal: 5,
+        ...(Platform.OS === 'ios' && { height: 200 }), // 👈 height add karo
+      },
+    ]}
+  >
+    <Picker
+      selectedValue={selectedMonth}
+      onValueChange={handleMonthSelection}
+      style={[
+        OrderHistoryStyles.picker,
+        Platform.OS === 'ios' && { height: 200 }, // 👈 again add height
+      ]}
+      itemStyle={Platform.OS === 'ios' ? { fontSize: 16 } : {}}
+    >
+      <Picker.Item label="Choose Month" value="" />
+      {months.length > 0 &&
+        months.map((month, index) => (
+          <Picker.Item key={index} label={month} value={month} />
+        ))}
+    </Picker>
+  </View>
+</View>
+
       
           {/* Order History Section (Corrected) */}
           <ScrollView contentContainerStyle={{ paddingBottom: 5 }}>

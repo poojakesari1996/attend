@@ -45,36 +45,36 @@ const LeaveApply = () => {
     const handleFromDateChange = (event, selectedDate) => {
         const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-    
+
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
             setShowDatePicker(false);
             return;
         }
-    
+
         setFromDate(null);
         setShowDatePicker(false);
         setFromDate(currentDate);
         handleFromdate(currentDate);
     };
-    
+
 
     // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
         const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-    
+
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
             setShowDatePicker(false);
             return;
         }
-    
+
         setToDate(null);
         setShowDatePicker(false);
         setToDate(currentDate);
     };
-    
+
 
     const fetchLeaveTypes = async () => {
 
@@ -232,7 +232,7 @@ const LeaveApply = () => {
         }
     };
 
-    
+
 
     return (
         <KeyboardAvoidingView
@@ -333,15 +333,24 @@ const LeaveApply = () => {
 
 
                         <Text style={LeaveApplyStyles.label}>{t("Leave Type")}</Text>
+                        
+
                         <Picker
                             selectedValue={leaveType}
-                            style={LeaveApplyStyles.picker}
                             onValueChange={(itemValue) => setLeaveType(itemValue)}
+                            style={[
+                                LeaveApplyStyles.picker,
+                                Platform.OS === 'ios' && { height: 200 }
+                            ]}
+                            itemStyle={Platform.OS === 'ios' ? { fontSize: 16 } : {}}
                         >
                             {leaveTypes.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
+
+
+
 
                         <View style={LeaveApplyStyles.row}>
                             <View style={LeaveApplyStyles.datePickerContainer}>
@@ -349,7 +358,10 @@ const LeaveApply = () => {
                                     handleName={t("From Date")}
                                     selectedDate={handleFromDateChange}
                                     setDate={setFromDate}
-                                    style={LeaveApplyStyles.datePicker}
+                                    style={[
+                                        LeaveApplyStyles.datePicker,
+                                        Platform.OS === 'ios' && { height: 200 }
+                                    ]}
                                 />
                             </View>
 
@@ -358,10 +370,14 @@ const LeaveApply = () => {
                                     handleName={t("To Date")}
                                     selectedDate={handleToDateChange}
                                     setDate={setToDate}
-                                    style={LeaveApplyStyles.datePicker}
+                                    style={[
+                                        LeaveApplyStyles.datePicker,
+                                        Platform.OS === 'ios' && { height: 200 }
+                                    ]}
                                 />
                             </View>
                         </View>
+
                         <Spacing space={20} />
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text style={LeaveApplyStyles.label}>

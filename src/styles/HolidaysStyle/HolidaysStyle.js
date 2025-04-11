@@ -16,15 +16,19 @@ import { StyleSheet } from 'react-native';
       borderWidth: SH(1),
       borderColor: Colors.light_gray_text_color,
       borderRadius: SH(10),
-      alignItems:'center'
+      alignItems: 'center',
+      overflow: Platform.OS === 'android' ? 'hidden' : 'visible',
+      backgroundColor: Colors.cardBackground,
+      paddingHorizontal: SH(10),
+      marginVertical: SH(10),
     },
     picker: {
-      height: SH(50),
+      height: Platform.OS === 'ios' ? SH(200) : SH(50),
       width: '100%',
-      marginTop:SH(-10),
-      color:Colors.black_text_color
-
+      marginTop: Platform.OS === 'ios' ? 0 : SH(-10),
+      color: Colors.black_text_color,
     },
+    
     row: {
       flexDirection: 'row',
       paddingVertical: SH(13),

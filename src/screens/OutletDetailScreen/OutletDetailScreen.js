@@ -17,7 +17,6 @@ import { Button } from "react-native-elements";
 
 const OutletDetailScreen = ({ route }) => {
   const [selectedoutletsdeatil, setSelectedoutletsdeatial] = useState({});
-  // const isDarkMode = useSelector(state => state.DarkReducer.isDarkMode);
   const Colors = isDarkMode ? darkTheme : lightTheme;
   const [modalVisible, setModalVisible] = useState(false); // State for Modal visibility
   const [modalVisible1, setModalVisible1] = useState(false); // State for Modal visibility
@@ -42,13 +41,10 @@ const OutletDetailScreen = ({ route }) => {
   let [address, setAddress] = React.useState(null);
   const [reportingModalVisible, setReportingModalVisible] = useState(false); // State for Reporting Modal visibility
   const { itemId } = route.params;
-  const { icon_color, locationPinColor } = route.params;  // Retrieve the passed parameters
-
-  // You can now use 'locationPinColor' to dynamically set button colors or other UI elements
-
+  const { icon_color, locationPinColor } = route.params; 
 
   const handleOrderButtonClick = async () => {
-    if (locationPinColor === "red") {  // ✅ Location validation only when icon is red
+    if (locationPinColor === "red") {  
       Alert.alert(
         "Please Fetch Location",
         "You must fetch and save the location before proceeding.",
@@ -75,37 +71,22 @@ const OutletDetailScreen = ({ route }) => {
       // Get User Data
       const user = await AsyncStorage.getItem("userInfor");
       const loginData = JSON.parse(user);
-
-      // Find the selected reporting person's details
       const selectedReportingPerson = reportingPersons.find(
         (person) => person.reporting_to_name === callerName
       );
-
-      // Extract reporting_to
       const reportingTo = selectedReportingPerson ? selectedReportingPerson.reporting_to : null;
-      // console.log("Selected Reporting To:", reportingTo);
-
-      // ✅ Find the selected dealer_id from selectedDealerName
       const selectedDealer = dealerName.find(
         (dealer) => dealer.dealer_name === selectedDealerName
       );
-
-      // Extract dealer_id
       const dealerId = selectedDealer ? selectedDealer.dealer_id : null;
-      // console.log("Final Selected Dealer ID:", dealerId);
-
-      // Prepare outletData with dealer_id added
       const outletData = {
         ...selectedoutletsdeatil,
         callerName: callerName,
         callType: callType,
         reportingTo: reportingTo,
         dealerName: selectedDealerName,
-        dealerId: dealerId  // ✅ Added dealer_id
+        dealerId: dealerId  
       };
-      // console.log('poojaaa', outletData);
-
-
       navigation.navigate("OrderScreen", { outletDetail: outletData });
     }
   };

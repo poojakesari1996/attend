@@ -52,18 +52,19 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
         alignItems: 'center',         // Center align the text
         justifyContent: 'center',     // Center content vertically
         marginTop: 5,                 // Some space above
-      },
+    },
 
-      statusText: {
+    statusText: {
         color: Colors.white_text_color,            // White text color for contrast
         fontWeight: 'bold',          // Bold text
         fontSize: 12,                // Slightly smaller font size for a cute effect
-      },
+    },
     picker: {
-        height: 50,
+        height: Platform.OS === 'ios' ? 200 : 50,
         width: '100%',
         marginBottom: SH(20),
     },
+
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -72,7 +73,7 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
     datePickerContainer: {
         flex: 1,
         marginRight: SH(10),
-         // Adjust spacing between the two pickers
+        // Adjust spacing between the two pickers
     },
     dateButton: {
         padding: SH(10),
@@ -94,7 +95,7 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
         marginBottom: SH(20),
     },
 
-    
+
     container: {
         margin: 16,
         padding: 8,
@@ -121,8 +122,8 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
         fontSize: 16,
         color: '#000',
     },
-    
-    
+
+
     datePicker: {
         fontSize: SF(16),
         marginVertical: SH(10),
@@ -130,9 +131,11 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
         color: Colors.black_text_color,
         marginBottom: SH(20),
         textAlign: 'center',
+        ...(Platform.OS === 'ios' && { height: 200 }), // 👈 Conditional height
     },
 
-    
+
+
     moduleBox: {
         backgroundColor: Colors.box_background, // Example background color
         padding: 16, // Padding inside the box
@@ -146,20 +149,20 @@ export default LeaveApplyStyle = (Colors) => StyleSheet.create({
         justifyContent: 'center', // Center the content
         alignItems: 'center', // Center the items horizontally
     },
-    
+
     moduleContent: {
         flexDirection: 'row', // Align EL: and CL: side by side
         justifyContent: 'space-between', // Spread out EL: and CL: 
         width: '100%', // Ensure they use the full width of the TouchableOpacity
     },
-    
+
     moduleLabel: {
         fontSize: SF(16),
         fontFamily: Fonts.Poppins_Regular,
         color: Colors.text_color, // Adjust based on your design
         marginRight: 10, // Space between EL: and CL:
     },
-    
 
-    
+
+
 });

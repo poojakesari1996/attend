@@ -147,23 +147,28 @@ taskContainer1: {
   
   // Dropdown container
   dropdownContainer: { 
-    flex: 1, 
-    height: 40, // Same as input box
-    borderWidth: 1, 
-    borderColor: Colors.green, 
-    borderRadius: 8, 
-    backgroundColor: Colors.white_text_color, 
-    justifyContent: 'center',
+    flex: 1,
+    borderWidth: 1,
+    borderColor: Colors.green,
+    borderRadius: 8,
+    backgroundColor: Colors.white_text_color,
+    justifyContent: Platform.OS === 'android' ? 'center' : 'flex-start', // iOS needs more top space
+    height: Platform.OS === 'ios' ? 200 : 45, // Bigger height for iOS popup
+    paddingHorizontal: 5,
+    overflow: 'hidden',
   },
+  
+  
   
   // Dropdown picker style
   dropdownPicker: { 
-    height: 40, 
-    width: '100%', 
+    width: '100%',
     color: Colors.brown,
     fontWeight: 'bold',
-    fontSize: 14, 
+    fontSize: 14,
+    height: Platform.OS === 'ios' ? 200 : 45, // iOS needs taller area
   },
+  
   
   // Horizontal padding
   PaddingHorizontal1: { 

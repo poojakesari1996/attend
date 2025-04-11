@@ -464,6 +464,7 @@ const MsdActivityScreen = ({ route }) => {
                                                 selectedValue={selectedService[item.sku_id] || ''}
                                                 onValueChange={(itemValue) => handlePickerChange(itemValue, item.sku_id)}
                                                 style={MsdActivityStyles.dropdownPicker}
+                                                itemStyle={Platform.OS === 'ios' ? { fontSize: 14, height: 200 } : {}}
                                             >
                                                 <Picker.Item label="Post Call Remarks" value="" style={{ fontSize: 13, color: 'brown', fontWeight: 'bold' }} />
                                                 {services.map((reason, i) => (
@@ -473,6 +474,7 @@ const MsdActivityScreen = ({ route }) => {
                                         </View>
                                     </View>
                                 </View>
+
                             </TouchableOpacity>
                         </View>
                     )}
@@ -507,13 +509,16 @@ const MsdActivityScreen = ({ route }) => {
             )}
             {selectedFilter === 'Summary' && (
                 <View style={{ flex: 1 }}>
-                    <ViewShot ref={viewShotRef} options={{
-                        format: 'png',
-                        quality: 1, // 1 = best quality
-                        result: 'tmpfile',
-                        width: 1080, // Increase width
-                        height: 1920 // Increase height (adjust to your screen needs)
-                    }} style={{ flex: 1, padding: 16 }}>
+                    <ViewShot
+                        ref={viewShotRef}
+                        style={{ flex: 1 }}
+                        options={{
+                            format: 'png',
+                            quality: 1,
+                            result: 'tmpfile',
+                        }}
+                    >
+
                         {/* Header Section */}
                         <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
                             <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>

@@ -19,13 +19,13 @@ const OutletScreen = () => {
   const OutletStyles = useMemo(() => OutletStyle(currentColors), [currentColors]);
   //   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [outletDates, setOutletDates] = useState([]); // All available outlet dates
-  const [selectedButton, setSelectedButton] = useState(null); // Store selected date index
+  const [outletDates, setOutletDates] = useState([]); 
+  const [selectedButton, setSelectedButton] = useState(null); 
   const [count, setCount] = useState('');
   const [beatName, setBeatName] = useState('');
-  const [remainingOutlets, setRemainingOutlets] = useState(0);  // ✅ Define this
+  const [remainingOutlets, setRemainingOutlets] = useState(0);  
   const [minOutletCoverage, setMinOutletCoverage] = useState('');
-  const [outletData, setOutletData] = useState([]); // Store data for the selected date
+  const [outletData, setOutletData] = useState([]); 
 
   const fetchOutletDates = async () => {
     const user = await AsyncStorage.getItem('userInfor');
@@ -120,16 +120,12 @@ const OutletScreen = () => {
 
   useEffect(() => {
     if (outletData.length > 0) {
-      // **✅ Count outlets that are either 'Red' (ordered) or 'Blue' (activity done)**
-      const coveredOutlets = outletData.filter((res) => res.order_status === 'Red' || res.activity_status === 'Blue').length;
-
-      let remaining = coveredOutlets; // ✅ Show exact count of visited outlets
-
+      const coveredOutlets = outletData.filter((res) => res.order_status === 'Green' || res.activity_status === 'Green').length;
+      let remaining = coveredOutlets;
       setRemainingOutlets(remaining);
       console.log("Updated Remaining Outlets:", remaining);
     }
-  }, [outletData, minOutletCoverage]); // **Dependency array ensures it runs when `outletData` or `minOutletCoverage` updates**
-
+  }, [outletData, minOutletCoverage]);
 
 
 
@@ -208,7 +204,7 @@ const OutletScreen = () => {
           : res.activity_status === 'Green'
             ? 'green'  // If activity exists, color it green
             : 'black'; // Default color
-        const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green'; // Map icon_color to the correct color
+        const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green'; 
 
         return (
           <TouchableOpacity

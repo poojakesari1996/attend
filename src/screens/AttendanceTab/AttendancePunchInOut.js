@@ -1,7 +1,5 @@
-///////////////////////////aatendance updated///////////////////////////////
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, ActivityIndicator, Button,Alert, Linking  } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, ActivityIndicator, Button, Alert, Linking } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AttendancePunchStyle } from '../../styles'; // Corrected import
 import { useSelector } from 'react-redux';
@@ -10,18 +8,11 @@ import { Spacing, ConfirmationAlert } from '../../components';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from '@react-native-community/geolocation';
-// import Geolocation from 'react-native-geolocation-service';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import axios from 'axios';
 import { Platform, PermissionsAndroid } from 'react-native';
 import { Divider } from 'react-native-elements';
 const AttendancePunchInOut = () => {
-    const [isCheckedIn, setIsCheckedIn] = useState(false);
-    const [showCheckInPopup, setShowCheckInPopup] = useState(false);
-    const [showCheckOutPopup, setShowCheckOutPopup] = useState(false);
-    const [remarks, setRemarks] = useState('');
-    const [attendanceData, setAttendanceData] = useState(null);
-    const [remarks1, setRemarks1] = useState(''); // State for remarks input
     let [address, setAddress] = React.useState(null);
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -33,29 +24,21 @@ const AttendancePunchInOut = () => {
     const [punchinoutTime, setPunchinoutTime] = useState([]);
     const [checkInTime, setCheckInTime] = useState(null);
     const [checkOutTime, setCheckOutTime] = useState(null);
-    const [totalHours,setTotalHours] = useState(null)
+    const [totalHours, setTotalHours] = useState(null)
     const isDarkMode = useSelector(state => state.DarkReducer.isDarkMode);
     const currentColors = isDarkMode ? darkTheme : lightTheme;
     const AttendancePunchStyles = useMemo(() => AttendancePunchStyle(currentColors), [currentColors]);
-
+    const [currentLongitude, setCurrentLongitude] = useState('...');
+    const [currentLatitude, setCurrentLatitude] = useState('...');
+    const [locationStatus, setLocationStatus] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigation = useNavigation();
     const { t } = useTranslation();
 
 
-
-    let [userdetail, setUserdetail] = React.useState([])
-    ///
-    const getdata = async () => {
-        let user = await AsyncStorage.getItem('userInfor');
-
-        userdetail = JSON.parse(user);
-        setUserdetail(userdetail[0])
-        console.log(userdetail.division);
-    }
-
     const alertdata = {
         'checkinSuccess': t("Punch_In_Successfull"),
-        // 'invalid': t("Enter Valid Emp ID & Password")
+
     };
 
     const handleAlertOk = () => {
@@ -78,18 +61,18 @@ const AttendancePunchInOut = () => {
             alert("Please wait, fetch location...");
             return;
         }
-    
+
         if (!address || address.trim() === "") {
             alert("Please wait, fetch location...");
             return;
         }
-    
+
         let user = await AsyncStorage.getItem("userInfor");
         let empid = JSON.parse(user);
-    
+
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-    
+
         const raw = JSON.stringify({
             empid: empid[0].emp_id,
             in_lat: currentLatitude,
@@ -98,21 +81,21 @@ const AttendancePunchInOut = () => {
             emp_in_address: address,  // Ensure address is fetched
             app_version: ""
         });
-    
+
         console.log(raw, "Request Payload");
-    
+
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
             body: raw,
             redirect: "follow"
         };
-    
+
         fetch("https://devcrm.romsons.com:8080/attendance_punch_in", requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 console.log(result, "API Response");
-    
+
                 if (result.success === false) {
                     alert("Successfully punched in");
                     PunchInOuttime();
@@ -127,27 +110,17 @@ const AttendancePunchInOut = () => {
                 alert("Failed to punch in, please check your network connection.");
             });
     };
-    
-
-    const [
-        currentLongitude,
-        setCurrentLongitude
-    ] = useState('...');
-    const [
-        currentLatitude,
-        setCurrentLatitude
-    ] = useState('...');
-    const [
-        locationStatus,
-        setLocationStatus
-    ] = useState('');
-
 
     useEffect(() => {
-        requestPermissions();
-    }, []);
+        if (Platform.OS === 'ios') {
+          Geolocation.requestAuthorization(); // ⬅️ Call this before getting location
+          getOneTimeLocation();               // ⬅️ Then fetch location
+        } else {
+          requestPermissions();               // ⬅️ Your Android-specific logic
+        }
+      }, []);
 
-    
+
 
 
     const getLocation = () => {
@@ -155,10 +128,10 @@ const AttendancePunchInOut = () => {
             (position) => {
                 const currentLongitude = JSON.stringify(position.coords.longitude);
                 const currentLatitude = JSON.stringify(position.coords.latitude);
-    
+
                 setCurrentLongitude(currentLongitude);
                 setCurrentLatitude(currentLatitude);
-    
+
                 // Check if location is enabled and proceed with fetching the address
                 if (currentLatitude !== '...' && currentLongitude !== '...') {
                     getAddress(currentLatitude, currentLongitude);
@@ -206,8 +179,6 @@ const AttendancePunchInOut = () => {
     }
 
     useEffect(() => {
-
-
         if (hasLocationPermission) {
             Geolocation.getCurrentPosition(
                 (position) => {
@@ -329,28 +300,30 @@ const AttendancePunchInOut = () => {
 
     async function requestPermissions() {
         if (Platform.OS === 'ios') {
-            Geolocation.requestAuthorization();
-            Geolocation.setRNConfiguration({
-                skipPermissionRequests: false,
-                authorizationLevel: 'whenInUse',
-            });
-            getLocation();
+            const auth = await Geolocation.requestAuthorization('whenInUse');
+            if (auth === 'granted') {
+                Geolocation.setRNConfiguration({
+                    skipPermissionRequests: false,
+                    authorizationLevel: 'whenInUse',
+                });
+                Geolocation.requestAuthorization('whenInUse');
+                getLocation();
+            } else {
+                alert('Location permission denied. Please enable location from settings.');
+            }
         }
 
         if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            getLocation();
-        } else {
-            alert('Location permission denied. Please enable location.');
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                getLocation();
+            } else {
+                alert('Location permission denied. Please enable location.');
+            }
         }
     }
-    }
-
-    const [loading, setLoading] = useState(false);
-    
 
     const getAddress = async (lat, long) => {
         if (!lat || !long) {
@@ -405,59 +378,53 @@ const AttendancePunchInOut = () => {
                     console.log('timeeee', result.data);
                     setPunchinoutTime(result.data)
                     if (result.data.length > 0) {
-                        setCheckInTime(result.data[0].punch_in); 
-                        setCheckOutTime(result.data[0].punch_out);  
+                        setCheckInTime(result.data[0].punch_in);
+                        setCheckOutTime(result.data[0].punch_out);
                         setTotalHours(result.data[0].total_hours); // Assuming total_hours is returned from API
-
-
-
                     }
                 }
             })
             .catch((error) => console.error(error));
     }
 
-
-
-
     const handleOut = async () => {
         if (!currentLatitude || !currentLongitude || currentLatitude === '...' || currentLongitude === '...') {
             alert("Please wait, fetch location...");
             return;
         }
-    
+
         if (!address || address.trim() === "") {
             alert("Please wait, fetch location...");
             return;
         }
-    
+
         let user = await AsyncStorage.getItem('userInfor');
         let empid = JSON.parse(user);
-    
+
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-    
+
         const raw = JSON.stringify({
             "out_lat": currentLatitude,
             "out_long": currentLongitude,
             "add_res": address,  // Ensure address is available
             "empid": empid[0].emp_id
         });
-    
+
         console.log(raw, "Punch-Out Request Payload");
-    
+
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
             body: raw,
             redirect: "follow"
         };
-    
+
         fetch("https://devcrm.romsons.com:8080/attendance_punchout", requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 console.log(result, "API Response");
-    
+
                 if (result.error) {
                     alert(result.message);
                 } else if (result.success) {
@@ -472,16 +439,6 @@ const AttendancePunchInOut = () => {
                 alert("An error occurred, please try again.");
             });
     };
-    
-
-
-
-
-
-
-
-
-
     const shiftDetails = async () => {
         const requestOptions = {
             method: "POST",
@@ -514,9 +471,6 @@ const AttendancePunchInOut = () => {
         return () => clearInterval(timer);
     }, []);
 
-    
-
-
     const buttons = [
         {
             id: 1,
@@ -546,10 +500,10 @@ const AttendancePunchInOut = () => {
             {item.date && <Text style={AttendancePunchStyles.dateText}>{item.date}</Text>}
             <Text style={AttendancePunchStyles.timeText}>{item.time}</Text>
             {item.id === 2 && totalHours && (
-                    <View>
-                        <Text>Total Hours: <Text style={{ color: 'black', fontWeight: 'bold' }}>{totalHours}</Text> hrs</Text>
-                    </View>
-                )}
+                <View>
+                    <Text>Total Hours: <Text style={{ color: 'black', fontWeight: 'bold' }}>{totalHours}</Text> hrs</Text>
+                </View>
+            )}
         </View>
     );
 
@@ -561,8 +515,6 @@ const AttendancePunchInOut = () => {
     );
 
     return (
-
-
         <View style={AttendancePunchStyles.container}>
             <View>
                 <Text style={{ color: "black", fontWeight: "bold" }}>Location: </Text>
@@ -591,18 +543,12 @@ const AttendancePunchInOut = () => {
                             <Text style={{ color: 'black', fontSize: 13 }}> {shiftTiming.start_time} to {shiftTiming.end_time}</Text>
                         </Text>
 
-                        {/* <Text style={AttendancePunchStyles.modalText}>
-                Grace Time: {shiftTiming.grace_start_time} to {shiftTiming.grace_end_time}
-            </Text> */}
-
                         <Text style={AttendancePunchStyles.modalText}>
                             <Text style={{ color: 'gray' }}>Grace Time:</Text>
                             <Text style={{ color: 'black', fontSize: 13 }}> {shiftTiming.grace_start_time} to {shiftTiming.grace_end_time}</Text>
                         </Text>
 
-                        {/* <Text style={AttendancePunchStyles.modalText}>
-                Late Time: {shiftTiming.late_start_coming} to {shiftTiming.late_end_coming}
-            </Text> */}
+
                         <Text style={AttendancePunchStyles.modalText}>
                             <Text style={{ color: 'gray' }}>Late Time: </Text>
                             <Text style={{ color: 'black', fontSize: 13 }}> {shiftTiming.late_start_coming} to {shiftTiming.late_end_coming}</Text>
@@ -637,8 +583,6 @@ const AttendancePunchInOut = () => {
                 contentContainerStyle={{ flexGrow: 1 }}
                 ListFooterComponent={
                     <View style={AttendancePunchStyles.totalHoursContainer}>
-
-
                     </View>
                 }
             />
@@ -648,22 +592,7 @@ const AttendancePunchInOut = () => {
                 message={alertMessage}
                 onConfirm={handleAlertOk}
             />
-
-{/* <View style={{ marginBottom: 30 }}>
-            
-            {punchinoutTime.length > 0 && punchinoutTime[0]?.punch_in && (
-                <Text style={AttendancePunchStyles.timeText}>In Time: {punchinoutTime[0].punch_in}</Text>
-            )}
-
-            
-            
-            {punchinoutTime.length > 0 && punchinoutTime[0]?.punch_out && (
-                <Text style={AttendancePunchStyles.timeText}>Out Time: {punchinoutTime[0].punch_out}</Text>
-            )}
-        </View> */}
         </View>
-
-
     );
 
 };

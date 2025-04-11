@@ -51,27 +51,35 @@ const initialState = {
   console.log("Payload received:", action.payload);
   console.log("Existing state:", state.saleReturnData);
 
+  const updatedData = state.saleReturnData.map(existingReturn => {
+    const newItem = action.payload.find(returnItem => returnItem.itemId === existingReturn.itemId);
+    return newItem
+      ? {
+          ...existingReturn,
+          unit: newItem.unit !== undefined ? newItem.unit : existingReturn.unit,
+          ITM: newItem.ITM !== undefined ? newItem.ITM : existingReturn.ITM,
+          value: newItem.value !== undefined ? newItem.value : existingReturn.value,
+        }
+      : existingReturn;
+  });
+
+  const newItems = action.payload.filter(returnItem =>
+    !state.saleReturnData.some(existing => existing.itemId === returnItem.itemId)
+  ).map(item => ({
+    ...item,
+    unit: item.unit || 0,
+    ITM: item.ITM || '',
+    value: item.value || 0,
+  }));
+
   return {
     ...state,
     saleReturnData: [
-      ...state.saleReturnData.map(existingReturn => {
-        const newItem = action.payload.find(returnItem => returnItem.itemId === existingReturn.itemId);
-        console.log("New Item:", newItem); // Check if newItem exists
-
-        return newItem
-          ? { 
-              ...existingReturn, 
-              unit: newItem.unit !== undefined ? newItem.unit : existingReturn.unit,
-              ITM: newItem.ITM !== undefined ? newItem.ITM : existingReturn.ITM,
-              value: newItem.value !== undefined ? newItem.value : existingReturn.value,
-            }
-          : existingReturn;
-      }),
-      ...action.payload.filter(returnItem => 
-        !state.saleReturnData.some(existing => existing.itemId === returnItem.itemId)
-      ),
+      ...updatedData,
+      ...newItems,
     ],
   };
+
 
 
 

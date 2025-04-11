@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, FlatList, ScrollView, Modal, Alert, Linking } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, ScrollView, Modal, Alert, Linking,Dimensions  } from 'react-native';
 import { SH, SF } from '../../utils';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,30 +42,37 @@ const EodScreen = () => {
 
     const captureScreenAndShare = async () => {
         try {
-            // Take a screenshot
+            // Capture screenshot
             const uri = await viewShotRef.current.capture();
+
+            if (!uri) {
+                Alert.alert("Error", "Screenshot capture failed");
+                return;
+            }
 
             // Convert image to base64
             const base64Data = await RNFS.readFile(uri, "base64");
 
-            // Fetch API data
+            // Optional: Fetch data if needed
             const apiData = await flag();
 
-            // Prepare WhatsApp message with API data
-            const message = `Attendance Report:\nDate: ${Moment(flagDate).format('YYYY-MM-DD')}`;
+            // WhatsApp message
+            const message = `📋 Attendance Report:\n📅 Date: ${Moment(flagDate).format('YYYY-MM-DD')}`;
 
-            // Share via WhatsApp
             const shareOptions = {
                 message: message,
                 url: `data:image/png;base64,${base64Data}`,
                 social: Share.Social.WHATSAPP,
+                failOnCancel: false,
             };
 
             await Share.shareSingle(shareOptions);
         } catch (error) {
+            console.error("Sharing Error:", error);
             Alert.alert("Error", error.message || "Failed to share screenshot!");
         }
     };
+
 
 
     // Modified flag() function to return API data
@@ -660,14 +667,17 @@ const EodScreen = () => {
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <ViewShot
                 ref={viewShotRef}
+                style={{ flex: 1 }}
                 options={{
                     format: 'png',
                     quality: 1,
                     result: 'tmpfile',
-                    width: 1080, 
-                    height: 1920 
+                    width: Dimensions.get('window').width * 2, // upscale 2x
+                    height: Dimensions.get('window').height * 2,
                 }}
             >
+
+
 
                 <View style={EodStyles.container}>
                     {/* Pending EOD Button */}

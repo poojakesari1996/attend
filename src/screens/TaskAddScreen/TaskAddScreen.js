@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native'
+import { View, Text, FlatList,ToastAndroid } from 'react-native'
 import { TaskAddStyle } from '../../styles/TaskAddStyle'
 import { DatePicker } from '../../components';
 import { SH, SF } from '../../utils';
@@ -20,7 +20,13 @@ const TaskAddScreen = () => {
     const [fromDate, setFromDate] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null); // ⬅️ add this to store selected date
 
-
+    const showToast = (message) => {
+        if (Platform.OS === 'android') {
+          ToastAndroid.show(message, ToastAndroid.SHORT);
+        } else {
+          Alert.alert('', message);
+        }
+      };
     const handleFromDateChange = (event, selectedDate) => {
         const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
@@ -73,6 +79,39 @@ const TaskAddScreen = () => {
         }
     };
 
+    const updateTaskToServer = async (taskId, status, priority) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+      
+        const raw = JSON.stringify({
+          taskIds: [taskId], // single task_id wrapped in array
+          status: status,
+          priority: priority
+        });
+      
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow"
+        };
+      
+        try {
+          const response = await fetch("http://localhost:8091/UpdateMultipleFollowUpTasks", requestOptions);
+          const result = await response.json();
+          console.log("Updated:", result);
+          if (result.error === false) {
+            showToast("Task updated successfully!");
+          } else {
+            showToast(result.message || "Failed to update task.");
+          }
+        } catch (error) {
+          console.error("Error updating task:", error);
+          showToast("Something went wrong!");
+        }
+      };
+      
+
     useEffect(() => {
         const today = new Date();
         setFromDate(today);
@@ -109,45 +148,90 @@ const TaskAddScreen = () => {
                         shadowOffset: { width: 0, height: 2 },
                         elevation: 3
                     }}>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Customer Name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.customername}</Text>
-                        </Text>
+                        
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Outlet Name: </Text>
+                            <Text style={{ color: 'black' }}>Outlet name: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.hospitalname}</Text>
                         </Text>
-
+                        
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Dept: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.user_type}</Text>
-                        </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Call Type: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type}</Text>
-                        </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Joined Name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.joined_name}</Text>
                         </Text>                        
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}> 
-                            <Text style={{ color: 'black' }}>Remarks: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.remark}</Text>
+                            <Text style={{ color: 'black' }}>Customer name: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.customername}</Text>
                         </Text>                        
+                        
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Status: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.followup_status}</Text>
-                        </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Priority: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.followup_priority}</Text>
+                            <Text style={{ color: 'black' }}>Call type: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type}</Text>
                         </Text>
 
+                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                            <Text style={{ color: 'black' }}>Joint name: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.joined_name}</Text>
+                        </Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                            <Text style={{ color: 'black' }}>Remarks: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.remark}</Text>
+                        </Text>
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>FollowUp Date: </Text>
                             <Text>{new Date(item.follow_up).toLocaleDateString('en-IN')}</Text>
                         </Text>
+                        {/* Status Row */}
+{/* Status Row */}
+<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+  <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'black', marginRight: 6 }}>
+    Status:
+  </Text>
+  <Picker
+  selectedValue={item.followup_status}
+  onValueChange={(value) => {
+    const updated = [...followupDatewisedata];
+    updated[index].followup_status = value;
+    setFollowupDatewisedata(updated);
+
+    // Call API after update
+    updateTaskToServer(item.task_id, value, item.followup_priority);
+  }}
+  style={{ height: 36, flex: 1, color: 'green', fontSize: 12 }}
+>
+  <Picker.Item label="Pending" value="Pending" />
+  <Picker.Item label="Complete" value="Complete" />
+  <Picker.Item label="Hold" value="Hold" />
+  <Picker.Item label="Cancelled" value="Cancelled" />
+</Picker>
+
+</View>
+
+{/* Priority Row */}
+<View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 0 }}>
+  <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'black', marginRight: 6 }}>
+    Priority:
+  </Text>
+  <Picker
+  selectedValue={item.followup_priority}
+  onValueChange={(value) => {
+    const updated = [...followupDatewisedata];
+    updated[index].followup_priority = value;
+    setFollowupDatewisedata(updated);
+
+    // Call API after update
+    updateTaskToServer(item.task_id, item.followup_status, value);
+  }}
+  style={{ height: 36, flex: 1, color: 'green', fontSize: 12 }}
+>
+  <Picker.Item label="High" value="High" />
+  <Picker.Item label="Medium" value="Medium" />
+  <Picker.Item label="Low" value="Low" />
+</Picker>
+
+</View>
+
+
                     </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}

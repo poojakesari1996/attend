@@ -18,7 +18,7 @@ import { RouteName } from '../../routes';
 import { setOrder, setSaleReturn, setResetOrder, setResetReturn } from "../../redux/action/orderActions";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Picker } from '@react-native-picker/picker';
-import {PickerIOS} from './PickerIOS';
+import { PickerIOS } from './PickerIOS';
 import { Divider } from "react-native-elements";
 
 const OrderScreen = ({ route }) => {
@@ -192,13 +192,12 @@ const OrderScreen = ({ route }) => {
       return;
     }
 
-
     const orderData = skuList
-      .map((sku, index) => ({
+      .map((sku) => ({
         skuName: sku.sku_name,
         sku_price: sku.sku_price,
-        itemvalue: unitInputs[index] || 0,
-        amount: (unitInputs[index] || 0) * sku.sku_price,
+        itemvalue: unitInputs[sku.sku_id] || 0,
+        amount: (unitInputs[sku.sku_id] || 0) * sku.sku_price,
         sku_gst: sku.sku_gst,
         sku_id: sku.sku_id
       }))
@@ -207,30 +206,28 @@ const OrderScreen = ({ route }) => {
     const totalOrderValue = orderData.reduce((total, item) => total + item.amount, 0).toFixed(2);
 
     console.log('Order Data:', orderData);
-    //   console.log('Total Order Value:', totalOrderValue);
 
-    setUnitInputs({}); // Clear inputs after saving
-    dispatch(setOrder(orderData)); // Dispatch the order data
+    setUnitInputs({});
+    dispatch(setOrder(orderData));
     alert('Order saved in draft', 'Order has been saved successfully!');
   };
 
-  const handleUnitChanges = (index, value) => {
-    const updatedUnits = { ...unitInputs, [index]: value };
 
-    // Calculate amount for the updated SKU
-    const amount = (value || 0) * skuList[index].sku_price;
+  const handleUnitChanges = (skuId, value) => {
+    const updatedUnits = { ...unitInputs, [skuId]: value };
 
-    // Calculate total order value locally
-    const totalOrderValue = Object.entries(updatedUnits).reduce((total, [idx, unit]) => {
-      const price = skuList[idx]?.sku_price || 0;
+    const amount = (value || 0) * (skuList.find(s => s.sku_id === skuId)?.sku_price || 0);
+
+    const totalOrderValue = Object.entries(updatedUnits).reduce((total, [id, unit]) => {
+      const price = skuList.find(s => s.sku_id === id)?.sku_price || 0;
       return total + (unit || 0) * price;
     }, 0).toFixed(2);
 
-    // Update state for units and log results
     setUnitInputs(updatedUnits);
-    console.log(`SKU Index: ${index}, Amount: ${amount}`);
+    console.log(`SKU ID: ${skuId}, Amount: ${amount}`);
     console.log(`Updated Total Order Value: ${totalOrderValue}`);
   };
+
 
 
   //////////////////////////////////Return order////////////////////////////////
@@ -255,16 +252,17 @@ const OrderScreen = ({ route }) => {
 
       // Filter and map relevant items only
       const filteredData = skuList
-        .filter((sku, index) => unitValue[index] > 0 || selectedService[index]) // Filter relevant items
-        .map((sku, index) => ({
+        .filter((sku) => unitValue[sku.sku_id] > 0 || selectedService[sku.sku_id])
+        .map((sku) => ({
           skuName: sku.sku_name,
-          unit: unitValue[index] || 0,
-          ITM: selectedService[index] || '',
+          unit: parseInt(unitValue[sku.sku_id], 10) || 0,
+          ITM: selectedService[sku.sku_id] || '',
           itmgst: sku.sku_gst,
-          value: (unitValue[index] || 0) * sku.sku_price,
+          value: (parseInt(unitValue[sku.sku_id], 10) || 0) * sku.sku_price,
           price: sku.sku_price,
           itemId: sku.sku_id
         }));
+
 
       console.log('Order Data:', filteredData);
 
@@ -431,16 +429,17 @@ const OrderScreen = ({ route }) => {
   };
 
 
-  
 
 
-  const handleUnitChange = (value, index) => {
-    setUnitValue((prev) => ({ ...prev, [index]: value }));
+
+  const handleUnitChange = (value, skuId) => {
+    setUnitValue((prev) => ({ ...prev, [skuId]: value }));
   };
 
-  const handlePickerChange = (value, index) => {
-    setSelectedService((prev) => ({ ...prev, [index]: value }));
+  const handlePickerChange = (value, skuId) => {
+    setSelectedService((prev) => ({ ...prev, [skuId]: value }));
   };
+
   // Unit input field value
 
   const [skuList, setSkuList] = useState([]);
@@ -527,15 +526,15 @@ const OrderScreen = ({ route }) => {
           ) : (
             <FlatList
               data={skuList}
-              keyExtractor={(item, index) => index.toString()} // Use index as the key
+              keyExtractor={(item) => item.sku_id.toString()} // Use sku_id as the key
               contentContainerStyle={{ paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                const unit = unitInputs[index] || "";
+              renderItem={({ item }) => {
+                const unit = unitInputs[item.sku_id] || "";
                 const amount = unit * item.sku_price;
 
                 return (
-                  <TouchableOpacity key={index} style={OrderStyles.PaddingHorizontal}>
+                  <TouchableOpacity key={item.sku_id} style={OrderStyles.PaddingHorizontal}>
                     <View style={OrderStyles.taskContainer}>
                       <View style={OrderStyles.taskDetails}>
                         {/* SKU Name */}
@@ -558,15 +557,14 @@ const OrderScreen = ({ route }) => {
                             style={[OrderStyles.inputBox, { marginLeft: 10, width: 100, justifyContent: "center", alignItems: "center" }]}
                             placeholder="Enter unit"
                             keyboardType="numeric"
-                            value={unit.toString()} // Show the unit value for this SKU
+                            value={unit.toString()}
                             onChangeText={(value) => {
-                              // Check if the value is a valid number and does not exceed 5 digits
                               if (value.length <= 5 && /^[0-9]*$/.test(value)) {
-                                handleUnitChanges(index, value); // Update the unit for this SKU
+                                handleUnitChanges(item.sku_id, Number(value)); // ✅ sku_id-based update
                               } else {
                                 alert('Please enter up to 5 digits only');
                               }
-                            }}// Update the unit for this SKU
+                            }}
                           />
                         </View>
 
@@ -583,6 +581,7 @@ const OrderScreen = ({ route }) => {
                 );
               }}
             />
+
           )}
 
           <View style={OrderStyles.footerContainer}>
@@ -623,11 +622,11 @@ const OrderScreen = ({ route }) => {
         <>
           <FlatList
             data={skuList}
-            keyExtractor={(item, index) => index.toString()} // or use a unique identifier
+            keyExtractor={(item) => item.sku_id.toString()} // unique identifier use kiya
             contentContainerStyle={{ paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity style={OrderStyles.PaddingHorizontal1} key={index}>
+            renderItem={({ item }) => (
+              <TouchableOpacity style={OrderStyles.PaddingHorizontal1} key={item.sku_id}>
                 <View style={OrderStyles.taskContainer1}>
                   <View style={OrderStyles.taskDetails}>
                     {/* Product Name */}
@@ -639,16 +638,17 @@ const OrderScreen = ({ route }) => {
                       <TextInput
                         style={OrderStyles.inputBox1}
                         placeholder="Enter unit"
-                        value={unitValue[index] || ''}
-                        onChangeText={(value) => handleUnitChange(value, index)}
+                        value={unitValue[item.sku_id] || ''}
+                        onChangeText={(value) => handleUnitChange(value, item.sku_id)}
                         keyboardType="numeric"
                       />
                       <Spacing space={20} />
-                      <TouchableOpacity style={OrderStyles.dropdownContainer}>
+                      <View style={OrderStyles.dropdownContainer}>
                         <Picker
-                          selectedValue={selectedService[index] || ''}
-                          onValueChange={(itemValue) => handlePickerChange(itemValue, index)}
+                          selectedValue={selectedService[item.sku_id] || ''}
+                          onValueChange={(itemValue) => handlePickerChange(itemValue, item.sku_id)}
                           style={OrderStyles.dropdownPicker}
+                          itemStyle={Platform.OS === 'ios' ? { fontSize: 16 } : {}}
                         >
                           <Picker.Item label="Choose Service" value="" />
                           <Picker.Item label="Sampling" value="sampling" />
@@ -657,13 +657,14 @@ const OrderScreen = ({ route }) => {
                           <Picker.Item label="Expired" value="expired" />
                           <Picker.Item label="Others" value="others" />
                         </Picker>
-                      </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 </View>
               </TouchableOpacity>
             )}
           />
+
           {/* Footer for Sale Return with Save Button */}
           <View style={OrderStyles.saleReturnFooterContainer}>
             <TouchableOpacity
@@ -679,276 +680,279 @@ const OrderScreen = ({ route }) => {
         </>
       )}
 
-{selectedTab === "Order Summary" && (
-  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
-    <TouchableOpacity onPress={captureAndShare}>
-      <Icon name="share" size={30} color="#000" />
-    </TouchableOpacity>
-  </View>
-)}
+      {selectedTab === "Order Summary" && (
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
+          <TouchableOpacity onPress={captureAndShare}>
+            <Icon name="share" size={30} color="#000" />
+          </TouchableOpacity>
+        </View>
+      )}
 
 
 
-                    
+
       {/* Order Summary UI */}
       {selectedTab === "Order Summary" && (
         <ScrollView>
-          <ViewShot ref={viewShotRef} options={{
-    format: 'png',
-    quality: 1, 
-    result: 'tmpfile',
-    width: 1080, 
-    height: 1920 
-  }}>
-          <View style={OrderStyles.PaddingHorizontal6}>
-            <View style={OrderStyles.taskContainer2}>
+          <ViewShot
+            ref={viewShotRef}
+            style={{ flex: 1 }}
+            options={{
+              format: 'png',
+              quality: 1,
+              result: 'tmpfile',
+            }}
+          >
 
-              {/* Outlet Information Section */}
-              <View style={OrderStyles.outletInfoContainer}>
-                <View style={OrderStyles.outletRow}>
-                  <Text style={OrderStyles.outletLabel}>Outlet:</Text>
-                  <Text style={OrderStyles.outletValue}>{outletDetail?.outlet_name}</Text>
-                </View>
-                <View style={OrderStyles.outletRow}>
-                  <Text style={OrderStyles.outletLabel}>Joined Name: </Text>
-                  <Text style={OrderStyles.outletValue}>{outletDetail?.callerName}</Text>
-                </View>
-                <View style={OrderStyles.outletRow}>
-                  <Text style={OrderStyles.outletLabel}>Mobile No:</Text>
-                  <Text style={OrderStyles.outletValue}>{outletDetail?.phone_number}</Text>
-                </View>
-                <View style={OrderStyles.outletRow}>
-                  <Text style={OrderStyles.outletLabel}>Outlet Type:</Text>
-                  <Text style={OrderStyles.outletValue}>{outletDetail?.outlet_category_name}</Text>
+            <View style={OrderStyles.PaddingHorizontal6}>
+              <View style={OrderStyles.taskContainer2}>
+
+                {/* Outlet Information Section */}
+                <View style={OrderStyles.outletInfoContainer}>
+                  <View style={OrderStyles.outletRow}>
+                    <Text style={OrderStyles.outletLabel}>Outlet:</Text>
+                    <Text style={OrderStyles.outletValue}>{outletDetail?.outlet_name}</Text>
+                  </View>
+                  <View style={OrderStyles.outletRow}>
+                    <Text style={OrderStyles.outletLabel}>Joined Name: </Text>
+                    <Text style={OrderStyles.outletValue}>{outletDetail?.callerName}</Text>
+                  </View>
+                  <View style={OrderStyles.outletRow}>
+                    <Text style={OrderStyles.outletLabel}>Mobile No:</Text>
+                    <Text style={OrderStyles.outletValue}>{outletDetail?.phone_number}</Text>
+                  </View>
+                  <View style={OrderStyles.outletRow}>
+                    <Text style={OrderStyles.outletLabel}>Outlet Type:</Text>
+                    <Text style={OrderStyles.outletValue}>{outletDetail?.outlet_category_name}</Text>
+                  </View>
+
+                  <View style={OrderStyles.outletRow}>
+                    <Text style={OrderStyles.outletLabel}>Dealer Name:</Text>
+                    <Text style={OrderStyles.outletValue}>{outletDetail?.dealerName}</Text>
+                  </View>
+
+
+                  <View style={OrderStyles.totalContainer}>
+                    <Text>
+                      <Text style={[OrderStyles.totalText, { color: 'black' }]}>Total: </Text>
+                      <Text style={[OrderStyles.totalText, { color: 'green' }]}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
+                    </Text>
+                  </View>
+
                 </View>
 
-                <View style={OrderStyles.outletRow}>
-                  <Text style={OrderStyles.outletLabel}>Dealer Name:</Text>
-                  <Text style={OrderStyles.outletValue}>{outletDetail?.dealerName}</Text>
+                <View style={OrderStyles.divider5} />
+
+                {/* Order Summary */}
+                <Text style={OrderStyles.summaryHeading}>Order Summary</Text>
+                <View>
+                  {orderData?.map((res, ind) => (
+                    <View
+                      key={ind}
+                      style={{
+                        marginTop: 16,
+                        padding: 12,
+                        backgroundColor: '#ffffff',
+                        borderRadius: 8,
+                        shadowColor: '#000',
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        shadowOffset: { width: 0, height: 2 },
+                        elevation: 3,
+                      }}>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{res.skuName}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_price}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{res.itemvalue}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_gst}%</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>
+                          {(res.sku_price * res.sku_gst / 100 + res.amount).toFixed(2)}
+                        </Text>
+                      </Text>
+                    </View>
+                  ))}
+
+                  {/* Total Row */}
+                  <View
+                    style={{
+                      marginTop: 16,
+                      padding: 12,
+                      backgroundColor: '#f1f1f1',
+                      borderRadius: 8,
+                      shadowColor: '#000',
+                      shadowOpacity: 0.1,
+                      shadowRadius: 4,
+                      shadowOffset: { width: 0, height: 2 },
+                      elevation: 3,
+                    }}>
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {orderData.reduce((total, item) => Number(total) + Number(item.itemvalue), 0)}
+                      </Text>
+                    </Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Total Amt: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {orderData.reduce((total, item) => total + item.amount, 0)}
+                      </Text>
+                    </Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {orderData
+                          .reduce((total, item) => total + item.sku_price * item.sku_gst / 100 + item.amount, 0)
+                          .toFixed(2)}
+                      </Text>
+                    </Text>
+                  </View>
                 </View>
 
 
-                <View style={OrderStyles.totalContainer}>
-                  <Text>
-                    <Text style={[OrderStyles.totalText, { color: 'black' }]}>Total: </Text>
-                    <Text style={[OrderStyles.totalText, { color: 'green' }]}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
-                  </Text>
+                {/* Return Section */}
+                <Text style={OrderStyles.summaryHeading}>Return</Text>
+                <View>
+                  {saleReturnData?.map((response, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        marginTop: 16,
+                        padding: 12,
+                        backgroundColor: '#ffffff',
+                        borderRadius: 8,
+                        shadowColor: '#000',
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        shadowOffset: { width: 0, height: 2 },
+                        elevation: 3,
+                      }}>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.skuName}</Text>
+                      </Text>
+
+                      {response?.ITM && (
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Service: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{response?.ITM}</Text>
+                        </Text>
+                      )}
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.price}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.unit}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Amount: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.value}</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.itmgst}%</Text>
+                      </Text>
+
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
+                        <Text style={{ color: 'green', fontSize: 13 }}>
+                          {(response?.price * response?.itmgst / 100 + response?.value).toFixed(2)}
+                        </Text>
+                      </Text>
+                    </View>
+                  ))}
+
+                  {/* Total Row in Activities Style */}
+                  <View
+                    style={{
+                      marginTop: 16,
+                      padding: 12,
+                      backgroundColor: '#f1f1f1',
+                      borderRadius: 8,
+                      shadowColor: '#000',
+                      shadowOpacity: 0.1,
+                      shadowRadius: 4,
+                      shadowOffset: { width: 0, height: 2 },
+                      elevation: 3,
+                    }}>
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {saleReturnData.reduce((total, item) => Number(total) + Number(item.unit), 0)}
+                      </Text>
+                    </Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Total Amount: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {saleReturnData.reduce((total, item) => total + item.value, 0)}
+                      </Text>
+                    </Text>
+
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
+                      <Text style={{ color: 'green', fontSize: 13 }}>
+                        {saleReturnData
+                          .reduce((total, item) => total + item.price * item.itmgst / 100 + item.value, 0)
+                          .toFixed(2)}
+                      </Text>
+                    </Text>
+                  </View>
                 </View>
 
               </View>
-
-              <View style={OrderStyles.divider5} />
-
-              {/* Order Summary */}
-              <Text style={OrderStyles.summaryHeading}>Order Summary</Text>
-              <View>
-  {orderData?.map((res, ind) => (
-    <View
-      key={ind}
-      style={{
-        marginTop: 16,
-        padding: 12,
-        backgroundColor: '#ffffff',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,
-      }}>
-      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{res.skuName}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_price}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{res.itemvalue}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_gst}%</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>
-          {(res.sku_price * res.sku_gst / 100 + res.amount).toFixed(2)}
-        </Text>
-      </Text>
-    </View>
-  ))}
-
-  {/* Total Row */}
-  <View
-    style={{
-      marginTop: 16,
-      padding: 12,
-      backgroundColor: '#f1f1f1',
-      borderRadius: 8,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 2 },
-      elevation: 3,
-    }}>
-    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {orderData.reduce((total, item) => Number(total) + Number(item.itemvalue), 0)}
-      </Text>
-    </Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Total Amt: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {orderData.reduce((total, item) => total + item.amount, 0)}
-      </Text>
-    </Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {orderData
-          .reduce((total, item) => total + item.sku_price * item.sku_gst / 100 + item.amount, 0)
-          .toFixed(2)}
-      </Text>
-    </Text>
-  </View>
-</View>
+              {saleReturnData.length > 0 || orderData.length > 0 ? (
+                <TouchableOpacity style={{ padding: 2, marginVertical: 3 }} activeOpacity={0.9}>
+                  {loading ? (
+                    <ActivityIndicator size="large" color="green" />
+                  ) : (
+                    <Text style={OrderStyles.footerButtonText8} onPress={HandleSaveOrderSummury} disabled={disable}>
+                      Final Submit
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={{ padding: 2, marginVertical: 3 }}>
+                  <Button buttonStyle={OrderStyles.footerButtonText8} title={t("Final Submit")} />
+                </TouchableOpacity>
+              )}
 
 
-              {/* Return Section */}
-              <Text style={OrderStyles.summaryHeading}>Return</Text>
-              <View>
-  {saleReturnData?.map((response, index) => (
-    <View
-      key={index}
-      style={{
-        marginTop: 16,
-        padding: 12,
-        backgroundColor: '#ffffff',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,
-      }}>
-      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{response?.skuName}</Text>
-      </Text>
-
-      {response?.ITM && (
-        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-          <Text style={{ color: 'black', fontSize: 13 }}>Service: </Text>
-          <Text style={{ color: 'green', fontSize: 13 }}>{response?.ITM}</Text>
-        </Text>
-      )}
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{response?.price}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{response?.unit}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Amount: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{response?.value}</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>{response?.itmgst}%</Text>
-      </Text>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-        <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
-        <Text style={{ color: 'green', fontSize: 13 }}>
-          {(response?.price * response?.itmgst / 100 + response?.value).toFixed(2)}
-        </Text>
-      </Text>
-    </View>
-  ))}
-
-  {/* Total Row in Activities Style */}
-  <View
-    style={{
-      marginTop: 16,
-      padding: 12,
-      backgroundColor: '#f1f1f1',
-      borderRadius: 8,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 2 },
-      elevation: 3,
-    }}>
-    <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Total Summary</Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Total Units: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {saleReturnData.reduce((total, item) => Number(total) + Number(item.unit), 0)}
-      </Text>
-    </Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Total Amount: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {saleReturnData.reduce((total, item) => total + item.value, 0)}
-      </Text>
-    </Text>
-
-    <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-      <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>
-      <Text style={{ color: 'green', fontSize: 13 }}>
-        {saleReturnData
-          .reduce((total, item) => total + item.price * item.itmgst / 100 + item.value, 0)
-          .toFixed(2)}
-      </Text>
-    </Text>
-  </View>
-</View>
 
             </View>
-            {saleReturnData.length > 0 || orderData.length > 0 ? (
-              <TouchableOpacity style={{ padding: 2, marginVertical: 3 }} activeOpacity={0.9}>
-                {loading ? (
-                  <ActivityIndicator size="large" color="green" />
-                ) : (
-                  <Text style={OrderStyles.footerButtonText8} onPress={HandleSaveOrderSummury} disabled={disable}>
-                    Final Submit
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={{ padding: 2, marginVertical: 3 }}>
-                <Button buttonStyle={OrderStyles.footerButtonText8} title={t("Final Submit")} />
-              </TouchableOpacity>
-            )}
-
-
-
-          </View>
           </ViewShot>
         </ScrollView>
       )}

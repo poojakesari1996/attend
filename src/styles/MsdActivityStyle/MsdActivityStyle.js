@@ -67,17 +67,19 @@ export default MsdActivityStyle = (Colors) =>
             borderWidth: 1,
             borderColor: Colors.black_text_color,
             borderRadius: 8,
-            height: 45,
+            height: Platform.OS === 'ios' ? 60 : 45,  // more room for iOS
             justifyContent: 'center',
-        },
-        
-        dropdownPicker: { 
-            height: 40, 
-            width: '100%', 
-            color: Colors.brown,
-            fontWeight: 'bold',
-            fontSize: 12, 
+            overflow: 'hidden',  // ensures content doesn't overflow
           },
+          
+          dropdownPicker: {
+            height: 50,
+            width: '100%',
+            color: Colors.brown,
+            fontWeight: Platform.OS === 'ios' ? '600' : 'bold',
+            fontSize: Platform.OS === 'ios' ? 14 : 12,
+          },
+          
 
           dateButton: {
             padding: SF(10),
