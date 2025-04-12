@@ -132,6 +132,14 @@ export default HomeTabStyle = (Colors) => StyleSheet.create({
     color: Colors.black_text_color
   },
 
+  pendingCountText: {
+    fontSize: 12,
+    color: "red",
+    marginTop: 4,
+    fontWeight: "bold",
+  },
+  
+
 
   moduleContainer: {
     paddingHorizontal: 16,

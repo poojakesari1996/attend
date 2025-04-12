@@ -406,16 +406,6 @@ const groupedEodReturnDetails = groupEodReturnDetailByOutlet(eodreturnDetails);
                         <Text style={DaysummaryStyles.skuText}>{res.item_qty}</Text>
                         <Text style={DaysummaryStyles.skuText}>{res.return_order_amt}</Text>
                       </View>
-
-                      {/* Total Row - Show only after last item */}
-                      {/* {ind === orderItems.length - 1 && (
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                          <Text style={{ marginHorizontal: 10, color: 'black', fontWeight: 'bold' }}>Total</Text>
-                          <Text style={{ marginHorizontal: 10, color: 'green', fontWeight: 'bold', fontSize: 13 }}>
-                            {res.total_quantity}
-                          </Text>
-                        </View>
-                      )} */}
                     </View>
                   ))}
                 </View>

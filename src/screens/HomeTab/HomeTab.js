@@ -26,6 +26,7 @@ const HomeTab = (props) => {
   // const HomeTabStyles = HomeTabStyle;
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const [pendingCount, setPendingCount] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -220,6 +221,39 @@ const HomeTab = (props) => {
   )
 
 
+  const fetchPendingCount = async () => {
+    const user = await AsyncStorage.getItem("userInfor");
+            const empid = JSON.parse(user);
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        emp_id: empid[0]?.emp_id
+      }),
+      redirect: "follow"
+    };
+  
+    try {
+      const response = await fetch("https://devcrm.romsons.com:8080/GetPendingTaskCount", requestOptions);
+      const data = await response.json();
+      if (!data.error && data.pendingCount !== undefined) {
+        setPendingCount(data.pendingCount);
+      } else {
+        console.warn("Unexpected response:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching pending count:", error);
+    }
+  };
+  
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPendingCount();
+    }, [])
+  );
 
 
   return (
@@ -381,6 +415,9 @@ const HomeTab = (props) => {
             <VectorIcon icon="FontAwesome" size={SF(33)} name="pencil-square-o" style={HomeTabStyles.moduleBoxIcon} color={Colors.theme_background} />
             <Spacing space={10} />
             <Text style={HomeTabStyles.moduleLabel} >{t("Task")}</Text>
+            <Text style={HomeTabStyles.pendingCountText}>
+        {pendingCount > 0 ? `${pendingCount} Pending` : "No Pending"}
+      </Text>
           </TouchableOpacity>
 
           
