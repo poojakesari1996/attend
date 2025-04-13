@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, FlatList, Alert } from "react-native";
-import { Button, Input, Spacing, ConfirmationAlert } from '../../../components';
+import { Spacing, Button } from '../../components';
 import { ApprovalStyle } from "../../styles";
 import { Platform, PermissionsAndroid } from 'react-native';
 import { useTranslation } from "react-i18next";
@@ -186,12 +186,12 @@ const OrderScreen = ({ route }) => {
 
   const handleSaveOrder = () => {
     const isEmptyUnit = Object.values(unitInputs).every(unit => unit === "" || unit === 0);
-
+  
     if (isEmptyUnit) {
       alert('Please enter unit fields');
       return;
     }
-
+  
     const orderData = skuList
       .map((sku) => ({
         skuName: sku.sku_name,
@@ -202,32 +202,32 @@ const OrderScreen = ({ route }) => {
         sku_id: sku.sku_id
       }))
       .filter(order => order.itemvalue > 0);
-
+  
     const totalOrderValue = orderData.reduce((total, item) => total + item.amount, 0).toFixed(2);
-
+  
     console.log('Order Data:', orderData);
-
+  
     setUnitInputs({});
     dispatch(setOrder(orderData));
     alert('Order saved in draft', 'Order has been saved successfully!');
   };
-
+  
 
   const handleUnitChanges = (skuId, value) => {
     const updatedUnits = { ...unitInputs, [skuId]: value };
-
+  
     const amount = (value || 0) * (skuList.find(s => s.sku_id === skuId)?.sku_price || 0);
-
+  
     const totalOrderValue = Object.entries(updatedUnits).reduce((total, [id, unit]) => {
       const price = skuList.find(s => s.sku_id === id)?.sku_price || 0;
       return total + (unit || 0) * price;
     }, 0).toFixed(2);
-
+  
     setUnitInputs(updatedUnits);
     console.log(`SKU ID: ${skuId}, Amount: ${amount}`);
     console.log(`Updated Total Order Value: ${totalOrderValue}`);
   };
-
+  
 
 
   //////////////////////////////////Return order////////////////////////////////
@@ -525,62 +525,62 @@ const OrderScreen = ({ route }) => {
             </View>
           ) : (
             <FlatList
-              data={skuList}
-              keyExtractor={(item) => item.sku_id.toString()} // Use sku_id as the key
-              contentContainerStyle={{ paddingBottom: 100 }}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => {
-                const unit = unitInputs[item.sku_id] || "";
-                const amount = unit * item.sku_price;
+  data={skuList}
+  keyExtractor={(item) => item.sku_id.toString()} // Use sku_id as the key
+  contentContainerStyle={{ paddingBottom: 100 }}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) => {
+    const unit = unitInputs[item.sku_id] || "";
+    const amount = unit * item.sku_price;
 
-                return (
-                  <TouchableOpacity key={item.sku_id} style={OrderStyles.PaddingHorizontal}>
-                    <View style={OrderStyles.taskContainer}>
-                      <View style={OrderStyles.taskDetails}>
-                        {/* SKU Name */}
-                        <Text style={OrderStyles.taskName}>{item.sku_name}</Text>
+    return (
+      <TouchableOpacity key={item.sku_id} style={OrderStyles.PaddingHorizontal}>
+        <View style={OrderStyles.taskContainer}>
+          <View style={OrderStyles.taskDetails}>
+            {/* SKU Name */}
+            <Text style={OrderStyles.taskName}>{item.sku_name}</Text>
 
-                        {/* Price, Segment, and Unit input */}
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={OrderStyles.taskDate}>Price :</Text>
-                            <Text style={OrderStyles.taskDate}>
-                              <Text style={{ color: 'brown' }}>{item.sku_price}</Text>
-                            </Text>
-                            <Text style={OrderStyles.taskTime}>Seg :</Text>
-                            <Text style={OrderStyles.taskTime}>
-                              <Text style={{ color: 'brown' }}>{item.segment_code}</Text>
-                            </Text>
-                          </View>
+            {/* Price, Segment, and Unit input */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={OrderStyles.taskDate}>Price :</Text>
+                <Text style={OrderStyles.taskDate}>
+                  <Text style={{ color: 'brown' }}>{item.sku_price}</Text>
+                </Text>
+                <Text style={OrderStyles.taskTime}>Seg :</Text>
+                <Text style={OrderStyles.taskTime}>
+                  <Text style={{ color: 'brown' }}>{item.segment_code}</Text>
+                </Text>
+              </View>
 
-                          <TextInput
-                            style={[OrderStyles.inputBox, { marginLeft: 10, width: 100, justifyContent: "center", alignItems: "center" }]}
-                            placeholder="Enter unit"
-                            keyboardType="numeric"
-                            value={unit.toString()}
-                            onChangeText={(value) => {
-                              if (value.length <= 5 && /^[0-9]*$/.test(value)) {
-                                handleUnitChanges(item.sku_id, Number(value)); // ✅ sku_id-based update
-                              } else {
-                                alert('Please enter up to 5 digits only');
-                              }
-                            }}
-                          />
-                        </View>
+              <TextInput
+                style={[OrderStyles.inputBox, { marginLeft: 10, width: 100, justifyContent: "center", alignItems: "center" }]}
+                placeholder="Enter unit"
+                keyboardType="numeric"
+                value={unit.toString()}
+                onChangeText={(value) => {
+                  if (value.length <= 5 && /^[0-9]*$/.test(value)) {
+                    handleUnitChanges(item.sku_id, Number(value)); // ✅ sku_id-based update
+                  } else {
+                    alert('Please enter up to 5 digits only');
+                  }
+                }}
+              />
+            </View>
 
-                        {/* Amount */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Text style={OrderStyles.taskTime1}>Amt : </Text>
-                          <Text style={OrderStyles.taskTime1}>
-                            <Text style={{ color: 'brown' }}>{amount.toFixed(2)}</Text>
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+            {/* Amount */}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={OrderStyles.taskTime1}>Amt : </Text>
+              <Text style={OrderStyles.taskTime1}>
+                <Text style={{ color: 'brown' }}>{amount.toFixed(2)}</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }}
+/>
 
           )}
 
@@ -606,13 +606,9 @@ const OrderScreen = ({ route }) => {
 
             <Divider style={OrderStyles.divider1} />
 
-            <Button
-              title="Save"
-              onPress={handleSaveOrder}
-              buttonStyle={OrderStyles.footerButton}
-              buttonTextStyle={OrderStyles.footerButtonText}
-            />
-
+            <TouchableOpacity style={OrderStyles.footerButton} onPress={handleSaveOrder}>
+              <Text style={OrderStyles.footerButtonText}>Save</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}
@@ -671,14 +667,16 @@ const OrderScreen = ({ route }) => {
 
           {/* Footer for Sale Return with Save Button */}
           <View style={OrderStyles.saleReturnFooterContainer}>
-            <Button
-              title="Save"
-              onPress={handleSaveReturn}
-              buttonStyle={OrderStyles.footerButton1}
-              buttonTextStyle={OrderStyles.footerButtonText1}
-            />
-          </View>
+            <TouchableOpacity
+              style={OrderStyles.footerButton1}
+              activeOpacity={0.7}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              onPress={handleSaveReturn} // Move onPress here
+            >
+              <Text style={OrderStyles.footerButtonText1}>Save</Text>
+            </TouchableOpacity>
 
+          </View>
         </>
       )}
 
@@ -697,14 +695,14 @@ const OrderScreen = ({ route }) => {
       {selectedTab === "Order Summary" && (
         <ScrollView>
           <ViewShot
-            ref={viewShotRef}
-            style={{ flex: 1 }}
-            options={{
-              format: 'png',
-              quality: 1,
-              result: 'tmpfile',
-            }}
-          >
+  ref={viewShotRef}
+  style={{ flex: 1 }}
+  options={{
+    format: 'png',
+    quality: 1,
+    result: 'tmpfile',
+  }}
+>
 
             <View style={OrderStyles.PaddingHorizontal6}>
               <View style={OrderStyles.taskContainer2}>
