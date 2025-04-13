@@ -1141,25 +1141,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNReanimated (3.16.3):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
-    - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.16.3)
-    - RNReanimated/worklets (= 3.16.3)
-  - RNReanimated/reanimated (3.16.3):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
-    - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.16.3)
-  - RNReanimated/reanimated/apple (3.16.3):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
-    - ReactCommon/turbomodule/core
-  - RNReanimated/worklets (3.16.3):
+  - RNReanimated (3.6.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1483,7 +1465,7 @@ SPEC CHECKSUMS:
   RNCPicker: f89d06ded677f77224839bccc1ca18611948e54c
   RNDateTimePicker: 818460dc31b0dc5ec58289003e27dd8d022fb79c
   RNGestureHandler: 9b70568fe6eb9d68396328a4677b8e6f4f7a1049
-  RNReanimated: 96af06df232f646a2091f7b5e38525832e067271
+  RNReanimated: 1ef68beaad1a8f4cb2a9098d0d3c374a2e3fd51a
   RNScreens: c7f27b73c98bbb52d799d4bb1136dd5237fcf896
   RNVectorIcons: 76364622e6f8e55bb456705582cde20f55ef889c
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
