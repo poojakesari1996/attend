@@ -499,13 +499,13 @@ tableData1: {
   },
   footerButton: {
     backgroundColor: Colors.blue_jeans_color,
-    fontFamily:Fonts.Poppins_Medium,
     paddingVertical: 9,
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  
 
   footerButton5: {
     backgroundColor: Colors.white_text_color,
@@ -531,7 +531,9 @@ tableData1: {
     color: Colors.black_text_color,
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: Fonts.Poppins_Medium,
   },
+  
   divider: {
     width: 1, // Divider ki width (vertical line)
     height: '90%', // Height of the divider
@@ -566,16 +568,17 @@ saleReturnFooterContainer: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    alignItems: 'center',
     justifyContent: 'center',
-    width:'40%',
-    alignItems: 'center', // Button width to give some space on sides
+    width: '40%',
+    alignItems: 'center',
   },
   footerButtonText1: {
     color: Colors.white,
     fontSize: 14,
     fontWeight: 'bold',
+    fontFamily: Fonts.Poppins_Medium, // Optional: add this for consistency
   },
+  
 
 
   footerButton8: {

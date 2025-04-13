@@ -487,16 +487,15 @@ const MsdActivityScreen = ({ route }) => {
             {/* Move the Save button inside the selectedFilter === 'Activity' condition */}
             {selectedFilter === 'Activity' && (
                 <View style={OrderStyles.saleReturnFooterContainer}>
-                    <TouchableOpacity
+                    <Button
+                        title="Save"
                         onPress={activitySave}
-                        style={OrderStyles.footerButton1}
-                        activeOpacity={0.7}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                        <Text style={OrderStyles.footerButtonText1}>Save</Text>
-                    </TouchableOpacity>
+                        buttonStyle={OrderStyles.footerButton1}
+                        buttonTextStyle={OrderStyles.footerButtonText1}
+                    />
                 </View>
             )}
+
 
 
 
@@ -607,24 +606,17 @@ const MsdActivityScreen = ({ route }) => {
             )}
 
 
-            {selectedFilter === 'Summary' && (
-                <View style={OrderStyles.saleReturnFooterContainer}>
-                    <TouchableOpacity
-                        style={[OrderStyles.footerButton1, isSubmitting && { opacity: 0.5 }]}
-                        activeOpacity={0.7}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={msdActivitySubmit}
-                        disabled={isSubmitting} // Disable button when submitting
-                    >
-                        <Text style={OrderStyles.footerButtonText1}>
-                            {isSubmitting ? "Submitting..." : "Submit"}
-                        </Text>
-                    </TouchableOpacity>
-
-                </View>
-            )}
-
-
+{selectedFilter === 'Summary' && (
+  <View style={OrderStyles.saleReturnFooterContainer}>
+    <Button
+      title={isSubmitting ? 'Submitting...' : 'Submit'}
+      onPress={msdActivitySubmit}
+      buttonStyle={[OrderStyles.footerButton1, isSubmitting && { opacity: 0.5 }]}
+      buttonTextStyle={OrderStyles.footerButtonText1}
+      disable={isSubmitting}
+    />
+  </View>
+)}
         </View>
     );
 };

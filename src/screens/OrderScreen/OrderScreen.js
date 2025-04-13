@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, FlatList, Alert } from "react-native";
-import { Spacing, Button } from '../../components';
+import { Button, Input, Spacing, ConfirmationAlert } from '../../../components';
 import { ApprovalStyle } from "../../styles";
 import { Platform, PermissionsAndroid } from 'react-native';
 import { useTranslation } from "react-i18next";
@@ -606,9 +606,13 @@ const OrderScreen = ({ route }) => {
 
             <Divider style={OrderStyles.divider1} />
 
-            <TouchableOpacity style={OrderStyles.footerButton} onPress={handleSaveOrder}>
-              <Text style={OrderStyles.footerButtonText}>Save</Text>
-            </TouchableOpacity>
+            <Button
+              title="Save"
+              onPress={handleSaveOrder}
+              buttonStyle={OrderStyles.footerButton}
+              buttonTextStyle={OrderStyles.footerButtonText}
+            />
+
           </View>
         </>
       )}
@@ -667,16 +671,14 @@ const OrderScreen = ({ route }) => {
 
           {/* Footer for Sale Return with Save Button */}
           <View style={OrderStyles.saleReturnFooterContainer}>
-            <TouchableOpacity
-              style={OrderStyles.footerButton1}
-              activeOpacity={0.7}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              onPress={handleSaveReturn} // Move onPress here
-            >
-              <Text style={OrderStyles.footerButtonText1}>Save</Text>
-            </TouchableOpacity>
-
+            <Button
+              title="Save"
+              onPress={handleSaveReturn}
+              buttonStyle={OrderStyles.footerButton1}
+              buttonTextStyle={OrderStyles.footerButtonText1}
+            />
           </View>
+
         </>
       )}
 
