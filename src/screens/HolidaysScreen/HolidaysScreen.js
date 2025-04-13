@@ -7,6 +7,8 @@ import { darkTheme, lightTheme } from "../../utils";
 import { Picker } from '@react-native-picker/picker';
 import { Spacing } from "../../components";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { HomeDropDown } from '../../components';
+
 
 const HolidaysScreen = () => {
   const { t } = useTranslation();
@@ -102,17 +104,21 @@ const HolidaysScreen = () => {
       <Text style={HolidaysStyles.title}>{t("Select_year")}</Text>
       
       {/* Year Picker */}
-      <View style={HolidaysStyles.pickerBorder}>
-        <Picker
-          selectedValue={selectedYear}
-          style={HolidaysStyles.picker}
-          onValueChange={(itemValue) => handleYearSelect(itemValue)}  // Trigger holiday list update
-        >
-          <Picker.Item label="Choose Year" value="Choose Year"/>
-          <Picker.Item label="2024" value="2024" />
-          <Picker.Item label="2025" value="2025" />
-          {/* Add more Picker items for future or past years */}
-        </Picker>
+      <View style={{ alignItems: 'center'}}>
+
+     
+<HomeDropDown
+  value={selectedYear}
+  setValue={(itemValue) => handleYearSelect(itemValue)}
+  data={[
+    { label: "Choose Year", value: "Choose Year" },
+    { label: "2024", value: "2024" },
+    { label: "2025", value: "2025" },
+    // Add more years as needed
+  ]}
+  placeholder="Choose Year"
+/>
+       
       </View>
       
       <Spacing space={30} />

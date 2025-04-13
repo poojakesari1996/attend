@@ -6,6 +6,8 @@ import { ActivityHistoryStyle } from '../../styles/ActivityHistoryStyle';
 import { useSelector } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import { HomeDropDown } from '../../components';
+
 
 const ActivityHistoryScreen = () => {
     
@@ -26,22 +28,27 @@ const ActivityHistoryScreen = () => {
         const [selectoutlets, setSelectoutlets] = useState([]);
         let [selectedOutletname, setSelectedOutletname] = useState('')
     
-        useEffect(() => {
-            // Get the current date and calculate the current and previous month
-            const currentDate = new Date();
-            const currentMonthIndex = currentDate.getMonth();  // 0 is Jan, 1 is Feb, ..., 11 is Dec
-    
-            // Get the current month (e.g., "Mar")
-            const currentMonth = currentDate.toLocaleString('default', { month: 'short' });
-    
-            // Calculate the previous month (we need to create a new date object for this to avoid modifying currentDate)
-            const previousMonthDate = new Date(currentDate);
-            previousMonthDate.setMonth(currentMonthIndex - 1);
-            const previousMonth = previousMonthDate.toLocaleString('default', { month: 'short' });
-    
-            // Set the months to be displayed in the picker
-            setMonths([previousMonth, currentMonth]);
-        }, []);
+         useEffect(() => {
+           const currentDate = new Date();
+           const currentMonthIndex = currentDate.getMonth();
+       
+           const currentMonthShort = currentDate.toLocaleString('default', { month: 'short' });
+           const currentMonthFull = currentDate.toLocaleString('default', { month: 'long' });
+       
+           const prevDate = new Date(currentDate);
+           prevDate.setMonth(currentMonthIndex - 1);
+           const previousMonthShort = prevDate.toLocaleString('default', { month: 'short' });
+           const previousMonthFull = prevDate.toLocaleString('default', { month: 'long' });
+       
+           const formattedMonths = [
+             { label: previousMonthFull, value: previousMonthShort },
+             { label: currentMonthFull, value: currentMonthShort },
+           ];
+       
+           setMonths(formattedMonths);
+           setSelectedMonth(currentMonthShort); // default
+           handleMonthSelection(currentMonthShort); // default call
+         }, []);
 
         const handleMonthSelection = (month) => {
             if (!selectoutlets) {
@@ -54,25 +61,18 @@ const ActivityHistoryScreen = () => {
             }
             setSelectedMonth(month);
         
-            const currentYear = moment().year();
-        
-            // Months array (abbreviations)
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        
-            // Get index of the selected month
-            const monthIndex = months.indexOf(month);
-        
-            if (monthIndex === -1) {
-                console.warn("Invalid month selected:", month);
-                return;
-            }
-        
-            // Fix the month and day format
-            const fromDate = moment(`${currentYear}-${(monthIndex + 1).toString().padStart(2, '0')}-01`, "YYYY-MM-DD").format("YYYY-MM-DD");
-            const toDate = moment(fromDate).endOf("month").format("YYYY-MM-DD");
-        
-            console.log("Selected Month:", month);
-            console.log("Request Payload:", { fromDate, toDate });
+           
+               const currentYear = moment().year();
+               const monthsAbbrev = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+               const monthIndex = monthsAbbrev.indexOf(month);
+           
+               if (monthIndex === -1) {
+                 console.warn("Invalid month selected:", month);
+                 return;
+               }
+           
+               const fromDate = moment(`${currentYear}-${(monthIndex + 1).toString().padStart(2, '0')}-01`).format("YYYY-MM-DD");
+               const toDate = moment(fromDate).endOf("month").format("YYYY-MM-DD");
         
             // Call the OrderHistory_MIS API only if valid dates exist
             if (fromDate && toDate) {
@@ -314,26 +314,23 @@ const ActivityHistoryScreen = () => {
 
 
             <Text style={ActivityHistoryStyles.selectedText}>
-                Selected Outlet: 
+                Selected Outlet ggg: 
                 <Text style={{ color: 'black', fontSize: 13, fontWeight: 'bold' }}>
                     {selectedOutletname}
                 </Text>
             </Text>
     
                 
-            <View style={[ActivityHistoryStyles.pickerBorder, { width: 200, alignSelf: "center", borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: Colors.border, marginTop: 20, backgroundColor: Colors.cardBackground, paddingHorizontal: 5 }]}>
-                    <Picker
-                        selectedValue={selectedMonth}
-                        onValueChange={handleMonthSelection} // Call handleMonthSelection when the month is changed
-                        style={ActivityHistoryStyles.picker}
-                    >
-                        <Picker.Item label="Choose Month" value="" />
-                        {months.length > 0 &&
-                            months.map((month, index) => (
-                                <Picker.Item key={index} label={month} value={month} />
-                            ))}
-                    </Picker>
-                </View>
+         
+
+                <View style={{ alignItems: 'center', marginVertical: 20 }}>
+      <HomeDropDown
+        value={selectedMonth}
+        setValue={handleMonthSelection}
+        data={months}
+        placeholder="Choose Month"
+      />
+    </View>
                 <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
   <View style={{ flex: 1, padding: 0 }}>
     {historyOrderData && Object.keys(historyOrderData).length > 0 ? (

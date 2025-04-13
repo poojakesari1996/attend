@@ -111,7 +111,7 @@ import { StyleSheet } from 'react-native';
         height: SH(50),
         width: '100%',
         marginTop: SH(-10),
-        color: 'black',
+        color: Colors.black_color,
     },
     pickerBorder: {
         borderWidth: SH(1),
@@ -124,6 +124,17 @@ import { StyleSheet } from 'react-native';
         marginBottom: 5,
         fontWeight: 'bold',
         color: Colors.gray
+    },
+
+    Dropdown_placeholderStyle: {
+      fontSize: SF(14),
+      fontFamily: Fonts.Poppins_Medium,
+      color: Colors.white_color,
+    },
+    Dropdown_selectedTextStyle: {
+      fontSize: SF(14),
+      fontFamily: Fonts.Poppins_Medium,
+      color: Colors.white_color,
     },
 
     infoContainer: {
