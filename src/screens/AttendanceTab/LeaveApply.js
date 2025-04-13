@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { darkTheme, lightTheme } from '../../utils';
 import Moment from 'moment';
 import axios from 'axios';
+import { HomeDropDown } from '../../components';
 
 const LeaveApply = () => {
     const [el_balance, setElBalance] = useState(0); // Initialize state for EL balance
@@ -37,28 +38,37 @@ const LeaveApply = () => {
 
     useEffect(() => {
         fetchLeaveTypes();
-        fetchLeaveBalanceData(); 
+        fetchLeaveBalanceData();
     }, []);
 
-    
+
 
     const handleFromDateChange = (event, selectedDate) => {
-        console.log("leave applied")
-        setFromDate(null);
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-        setShowDatePicker(false);
-        setFromDate(currentDate); // Update fromDate state
-        handleFromdate(currentDate); // Log the selected fromDate
 
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+
+        setShowDatePicker(false);
+        setFromDate(currentDate);
     };
 
-    // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
-        setToDate(null)
+        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-        setShowDatePicker(false);
-        setToDate(currentDate); // Update toDate state
 
+        if (currentDate < currentMonthStart) {
+            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+
+        setShowDatePicker(false);
+        setToDate(currentDate);
     };
 
     const fetchLeaveTypes = async () => {
@@ -72,10 +82,10 @@ const LeaveApply = () => {
 
             if (!response.data.error) {
                 const mappedLeaveTypes = response.data.data.map((item) => ({
-                    label: item.leave_description, 
-                    value: item.leave_type,        
+                    label: item.leave_description,
+                    value: item.leave_type,
                 }));
-                setLeaveTypes(mappedLeaveTypes); 
+                setLeaveTypes(mappedLeaveTypes);
             }
         } catch (error) {
             console.error("Error fetching leave types:", error.message);
@@ -265,32 +275,35 @@ const LeaveApply = () => {
 
 
                         <Text style={LeaveApplyStyles.label}>{t("Leave Type")}</Text>
-                        <Picker
-                            selectedValue={leaveType}
-                            style={LeaveApplyStyles.picker}
-                            onValueChange={(itemValue) => setLeaveType(itemValue)}
-                        >
-                            {leaveTypes.map((item) => (
-                                <Picker.Item key={item.value} label={item.label} value={item.value} />
-                            ))}
-                        </Picker>
+
+
+                        <View style={{ alignItems: 'center' }}>
+                            <HomeDropDown
+                                value={leaveType}
+                                setValue={(itemValue) => setLeaveType(itemValue)}
+                                data={leaveTypes.map(item => ({
+                                    label: item.label,
+                                    value: item.value
+                                }))}
+                                placeholder="Leave Type"
+                            />
+                        </View>
 
                         <View style={LeaveApplyStyles.row}>
                             <View style={LeaveApplyStyles.datePickerContainer}>
                                 <DatePicker
-                                    handleName={t("From Date")}
+                                    handleName="From Date"
                                     selectedDate={handleFromDateChange}
                                     setDate={setFromDate}
-                                    style={LeaveApplyStyles.datePicker}
+                                    initialDate={fromDate}
                                 />
                             </View>
-
                             <View style={LeaveApplyStyles.datePickerContainer}>
                                 <DatePicker
-                                    handleName={t("To Date")}
+                                    handleName="To Date"
                                     selectedDate={handleToDateChange}
                                     setDate={setToDate}
-                                    style={LeaveApplyStyles.datePicker}
+                                    initialDate={toDate}
                                 />
                             </View>
                         </View>

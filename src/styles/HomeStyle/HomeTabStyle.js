@@ -234,7 +234,12 @@ moduleLabel1: {
 
   Dropdown_container: {
     backgroundColor: Colors.theme_background,
-
+    borderRadius: SH(200),
+    overflow: 'hidden',
+    width: SH(150),
+    height: SH(50),
+    borderWidth: SH(1),
+    borderColor: Colors.white_color,
   },
   Dropdown_label: {
     color: Colors.light_gray_text_color,

@@ -432,7 +432,7 @@ const OrderScreen = ({ route }) => {
       const user = await AsyncStorage.getItem("userInfor");
       const empid = JSON.parse(user);
       const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Content-Type", "application/json");   
 
       const raw = JSON.stringify({
         division: empid[0].division,
