@@ -36,13 +36,15 @@ import { StyleSheet } from 'react-native';
     },
     tabContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      // justifyContent: 'space-between',
     },
     tabButton: {
+      flex: 1, // Equal width for all tabs
       paddingVertical: SH(10),
-      paddingHorizontal: SH(20),
       borderBottomWidth: 2,
-      borderBottomColor: 'transparent', // Default border color for unselected tab
+      borderBottomColor: 'transparent',
+      alignItems: 'center', // Center tab text horizontally
+      justifyContent: 'center',
     },
     selectedTabButton: {
       borderBottomColor: Colors.theme_background
@@ -51,7 +53,8 @@ import { StyleSheet } from 'react-native';
       fontSize: SF(15),
       fontFamily: Fonts.Poppins_Medium,
       fontWeight: 'bold',
-      color: Colors.gray_text_color
+      color: Colors.gray_text_color,
+      textAlign: 'center',
     },
     selectedTabText: {
       color: Colors.theme_background

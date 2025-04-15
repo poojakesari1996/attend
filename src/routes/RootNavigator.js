@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { darkTheme, Fonts, lightTheme } from '../utils';
 import { Appearance } from 'react-native';
 import { RouteName, SideNavigator } from '../routes';
-import { ApprovalScreen, AttendanceProfile,AttendanceHistoryScreen, CheckInOutScreen, EditProfile, ForgotPassword, HolidaysScreen, LanguageScreen, LeaveRequestsScreen,Leaveapply, LoginFirstScreen, LoginScreen,AttendancePunchInOut, NotificationScreen, OtpVeryfiveScreen, PayrollScreen, PaystubDetailsScreen, PrivacyPolicyScreen, RegisterScreen, RegistrationSuccessful, ResetPassword, ReviewsScreen, SettingsScreen,OutletScreen,RetailActivityScreen,ContactListScreen,OutletDetailScreen,OrderScreen, SplashScreen, Swiperscreen, TaskScreen, ExpenseScreen, ExpenseHqScreen,MsdActivityScreen,TeamScreen,TeamLeaveScreen, HomeTab,HomeScreen, EodScreen,ProfileTab,AttendanceTab,RegulizationScreen,OrderHistoryScreen,ActivityHistoryScreen,SkuOrderHistoryScreen,SkuOrderScreen,SalesAnalysisScreen,DaysummaryScreen,TaskAddScreen } from '../screens';
+import { ApprovalScreen, AttendanceProfile,AttendanceHistoryScreen, CheckInOutScreen, EditProfile, ForgotPassword, HolidaysScreen, LanguageScreen, LeaveRequestsScreen,Leaveapply, LoginFirstScreen, LoginScreen,AttendancePunchInOut, NotificationScreen, OtpVeryfiveScreen, PayrollScreen, PaystubDetailsScreen, PrivacyPolicyScreen, RegisterScreen, RegistrationSuccessful, ResetPassword, ReviewsScreen, SettingsScreen,OutletScreen,RetailActivityScreen,ContactListScreen,OutletDetailScreen,OrderScreen, SplashScreen, Swiperscreen, TaskScreen, ExpenseScreen, ExpenseHqScreen,MsdActivityScreen,TeamScreen,TeamLeaveScreen, HomeTab,HomeScreen, EodScreen,ProfileTab,AttendanceTab,RegulizationScreen,OrderHistoryScreen,ActivityHistoryScreen,SkuOrderHistoryScreen,SkuOrderScreen,SalesAnalysisScreen,DaysummaryScreen,TaskAddScreen,CreateTaskScreen } from '../screens';
 import { useTheme } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Translation from '../Language/i18n';
@@ -120,6 +120,13 @@ const RootNavigator = props => {
             title: Translation('Create Task'),
             headerTitleAlign: 'center'
           }} component={TaskAddScreen} />
+
+<Stack.Screen name={RouteName.CREATETASK} options=
+          {{
+            ...headerthemeArrow,
+            title: Translation('Add New Task'),
+            headerTitleAlign: 'center'
+          }} component={CreateTaskScreen} />
 
 <Stack.Screen name={RouteName.SALESANALYSIS} options=
           {{

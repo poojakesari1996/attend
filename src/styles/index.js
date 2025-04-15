@@ -4,6 +4,7 @@ export * from './LeaveApplyStyle';
 export * from './CommonStyle';
 export * from './ExpenseStyle';
 export * from './ExpenseHqStyle';
+export * from './CreateTaskStyle';
 export * from './HomeStyle';
 export * from './SideMenuStyle';
 export * from './DaysummaryStyle';

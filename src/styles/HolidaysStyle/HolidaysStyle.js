@@ -10,8 +10,12 @@ import { StyleSheet } from 'react-native';
     title: {
       fontSize: SH(18),
       fontFamily: Fonts.Poppins_Medium,
-      color: Colors.black_text_color
+      color: Colors.black_text_color,
+      textAlign: 'center',  // Centers the text horizontally
+      alignSelf: 'center',  // Ensures it is aligned in the center
+      marginBottom: 16,
     },
+    
     pickerBorder: {
       borderWidth: SH(1),
       borderColor: Colors.light_gray_text_color,

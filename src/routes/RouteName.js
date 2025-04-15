@@ -19,6 +19,7 @@ const RouteName = {
     PRIVACY_POLICY_SCREEN: 'PrivacyPolicyScreen',
     LEADTAB: 'LeadTab',
     LANGUAGESCREEN: 'LanguageScreen',
+    CREATETASK: 'CreateTaskScreen',
     DEALSTAB: 'DealsTab',
     CONTACTSTAB: 'ContactsTab',
     TASKADD: 'TaskAddScreen',

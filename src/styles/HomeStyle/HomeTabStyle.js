@@ -42,6 +42,12 @@ export default HomeTabStyle = (Colors) => StyleSheet.create({
     color: Colors.black_text_color,
     fontFamily: Fonts.Poppins_Medium
   },
+  pendingCountText: {
+    fontSize: 12,
+    color: Colors.red,
+    marginTop: 4,
+    fontWeight: "bold",
+  },
   InOutIcon2: {
     backgroundColor: Colors.Light_theme_background,
     padding: SH(7),
@@ -55,7 +61,8 @@ export default HomeTabStyle = (Colors) => StyleSheet.create({
   moduleBoxIcon: {
     backgroundColor: Colors.Light_theme_background,
     padding: SH(15),
-    borderRadius: SH(100)
+    borderRadius: SH(100),
+    marginTop: 10
   },
   header: {
     flexDirection: 'colomn',
@@ -129,9 +136,29 @@ export default HomeTabStyle = (Colors) => StyleSheet.create({
   moduleLabel: {
     fontSize: SF(12),
     fontFamily: Fonts.Poppins_Medium,
-    color: Colors.black_text_color
+    color: Colors.black_text_color,
+    // marginTop:10
   },
-
+  notificationBadge: {
+    position: "absolute",
+    right: -6,
+    top: -4,
+    backgroundColor: Colors.black_text_color,
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+    zIndex: 1,
+  },
+  
+  badgeText: {
+    color: Colors.white_color,
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  
 
   moduleContainer: {
     paddingHorizontal: 16,

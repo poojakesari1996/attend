@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, FlatList, Button } from "react-native";
 import { HolidaysStyle } from '../../styles';
 import { useTranslation } from "react-i18next";
+import {HomeDropDown } from '../../components';
 import { useSelector } from "react-redux";
 import { darkTheme, lightTheme } from "../../utils";
 import { Picker } from '@react-native-picker/picker';
@@ -103,17 +104,21 @@ const HolidaysScreen = () => {
       
       {/* Year Picker */}
       <View style={HolidaysStyles.pickerBorder}>
-        <Picker
-          selectedValue={selectedYear}
-          style={HolidaysStyles.picker}
-          onValueChange={(itemValue) => handleYearSelect(itemValue)}  // Trigger holiday list update
-        >
-          <Picker.Item label="Choose Year" value="Choose Year"/>
-          <Picker.Item label="2024" value="2024" />
-          <Picker.Item label="2025" value="2025" />
-          {/* Add more Picker items for future or past years */}
-        </Picker>
-      </View>
+  <HomeDropDown
+    value={selectedYear}
+    setValue={(itemValue) => handleYearSelect(itemValue)}  // Trigger holiday list update
+    data={[
+      { label: 'Choose Year', value: 'Choose Year' },
+      { label: '2024', value: '2024' },
+      { label: '2025', value: '2025' },
+      // Add more years if needed
+    ]}
+    placeholder="Choose Year"
+    
+    style={HolidaysStyles.picker}
+  />
+</View>
+
       
       <Spacing space={30} />
 

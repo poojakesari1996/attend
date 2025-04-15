@@ -6,7 +6,7 @@ import { Platform, PermissionsAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { OrderStyle } from '../../styles/OrderStyle';
-import { Button, Input, Spacing, DatePicker, VectorIcon } from '../../components';
+import { Button, Input, Spacing, DatePicker, VectorIcon,HomeDropDown } from '../../components';
 import { MsdActivityStyle } from '../../styles/MsdActivityStyle';
 import { Text, View, TouchableOpacity, FlatList } from 'react-native';  // Import FlatList
 import { darkTheme, lightTheme } from "../../utils";
@@ -161,23 +161,7 @@ const MsdActivityScreen = ({ route }) => {
         activity();
     }, []);
 
-    // const captureAndShare = async () => {
-    //     try {
-    //       const uri = await viewShotRef.current.capture(); // Screenshot Capture
-
-    //       const shareOptions = {
-    //         title: "Order Summary",
-    //         message: "Here is the Activity Summary:",
-    //         url: `file://${uri}`, // Local Image Path
-    //       };
-
-    //       await Share.open(shareOptions); // Open Native Share Menu
-
-    //     } catch (error) {
-    //       console.error("Sharing failed:", error);
-    //     }
-    //   };
-
+    
     const captureAndShare = async () => {
         try {
             const uri = await viewShotRef.current.capture();  // Screenshot Capture
@@ -204,12 +188,6 @@ const MsdActivityScreen = ({ route }) => {
 
         setShowDatePicker(null); // Close the date picker
     };
-
-
-
-
-
-
 
     const msdActivitySubmit = async () => {
         if (isSubmitting) return; // Prevent multiple submissions
@@ -459,19 +437,23 @@ const MsdActivityScreen = ({ route }) => {
 
                                 <View style={MsdActivityStyles.rowContainer}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <View style={[MsdActivityStyles.pickerContainer, { flex: 1 }]}>
-                                            <Picker
-                                                selectedValue={selectedService[item.sku_id] || ''}
-                                                onValueChange={(itemValue) => handlePickerChange(itemValue, item.sku_id)}
-                                                style={MsdActivityStyles.dropdownPicker}
-                                            >
-                                                <Picker.Item label="Post Call Remarks" value="" style={{ fontSize: 13, color: 'brown', fontWeight: 'bold' }} />
-                                                {services.map((reason, i) => (
-                                                    <Picker.Item key={i} label={reason.remarks_m} value={reason.remarks_m} />
-                                                ))}
-                                            </Picker>
+                                        <View style={{ flex: 1 }}>
+                                            <HomeDropDown
+                                                value={selectedService[item.sku_id] || ''}
+                                                setValue={(itemValue) => handlePickerChange(itemValue, item.sku_id)}
+                                                data={[
+                                                    { label: 'Post Call Remarks', value: '' },
+                                                    ...services.map((reason) => ({
+                                                        label: reason.remarks_m,
+                                                        value: reason.remarks_m,
+                                                    })),
+                                                ]}
+                                                placeholder="Post Call Remarks"
+                                                style={{ width: '100%' }}
+                                            />
                                         </View>
                                     </View>
+
                                 </View>
                             </TouchableOpacity>
                         </View>
