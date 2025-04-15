@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { ApprovalStyle } from '../../styles/ApprovalStyle';
 import { useSelector } from "react-redux";
-import { Alert } from "react-native";
 import { Platform, PermissionsAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { OrderStyle } from '../../styles/OrderStyle';
-import { Button, Input, Spacing, DatePicker, VectorIcon } from '../../components';
+import { HomeDropDownPicker } from '../../components';
 import { MsdActivityStyle } from '../../styles/MsdActivityStyle';
 import { Text, View, TouchableOpacity, FlatList } from 'react-native';  // Import FlatList
 import { darkTheme, lightTheme } from "../../utils";
@@ -14,15 +13,14 @@ import { useTranslation } from "react-i18next";
 import Geolocation from '@react-native-community/geolocation';
 import { RouteName } from '../../routes';
 import { useDispatch } from 'react-redux';
-import { Picker } from '@react-native-picker/picker';
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { msdActivity, setResetMsdActivity } from "../../redux/action/orderActions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MsdActivityScreen = ({ route }) => {
     const { customer_name, customer_contact_no, hospital_name, outlet_category_name, outlet_id, customer_department, user_type } = route.params;
     const { outletDetail } = route.params; // Assuming outletDetail is passed in route.params
-    // Safely destructure callerName and callType only if they exist in outletDetail
-    const { callerName, callType, reportingTo } = outletDetail || {}; // Destructure if outletDetail exists, otherwise default to empty object
+    const { callerName, callType, reportingTo } = outletDetail || {};
     const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
     const Colors = isDarkMode ? darkTheme : lightTheme;
     const { t } = useTranslation();
@@ -34,13 +32,13 @@ const MsdActivityScreen = ({ route }) => {
     const msdActivityData = useSelector((state) => state.order.msdActivityData || []);
     const MsdActivityStyles = useMemo(() => MsdActivityStyle(Colors), [Colors]);
     const [selectedFilter, setSelectedFilter] = useState('Activity');
-    const [selectedService, setSelectedService] = useState({});  // To store selected services for each product (indexed)
-    const [services, setServices] = useState([]); // State to store reasons fetched from the API
+    const [selectedService, setSelectedService] = useState({});
+    const [services, setServices] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [Itemlist, setItemlist] = useState([]);
     const [dates, setDates] = useState([]);
-    const [fromDate, setFromDate] = useState(new Date()); // Initialize with the current date
-    // State for storing fetched data
+    const [fromDate, setFromDate] = useState(new Date());
+    
 
 
     const [
@@ -158,22 +156,20 @@ const MsdActivityScreen = ({ route }) => {
         activity();
     }, []);
 
+    
+    
 
 
-    const handleDateChange = (event, selectedDate, index) => {
+    const handleDateChange = (event, selectedDate, skuId) => {
         if (selectedDate) {
-            const updatedDates = [...dates];
-            updatedDates[index] = selectedDate; // Save the selected date for the current item
-            setDates(updatedDates); // Update the dates state
+            setDates((prevDates) => ({
+                ...prevDates,
+                [skuId]: selectedDate,
+            }));
         }
 
-        setShowDatePicker(null); // Close the date picker after selecting a date
+        setShowDatePicker(null); // Close the date picker
     };
-
-
-
-
-
 
     const msdActivitySubmit = async () => {
         if (isSubmitting) return; // Prevent multiple submissions
@@ -186,7 +182,7 @@ const MsdActivityScreen = ({ route }) => {
             const empid = JSON.parse(user);
 
             console.log(outletDetail, "Line 65");
-            
+
 
             // Prepare the data for submission
             const outlet_id = outlet_id ?? 0;
@@ -242,7 +238,7 @@ const MsdActivityScreen = ({ route }) => {
 
     const activitySave = () => {
         // Check if at least one remark is selected
-        const anyRemarkSelected = Itemlist.some((_, index) => selectedService[index]);
+        const anyRemarkSelected = Itemlist.some((sku) => selectedService[sku.sku_id]);
 
         // Check if fromDate is selected
         if (!fromDate || !anyRemarkSelected) {
@@ -251,9 +247,10 @@ const MsdActivityScreen = ({ route }) => {
         }
 
         console.log("From Date before save: ", fromDate);
+
         const data = Itemlist
-            .filter((sku, index) => selectedService[index])
-            .map((sku, index) => ({
+            .filter((sku) => selectedService[sku.sku_id])
+            .map((sku) => ({
                 custype: user_type,
                 itemId: sku.sku_id,
                 sku_name: sku.sku_name,
@@ -264,8 +261,9 @@ const MsdActivityScreen = ({ route }) => {
                 customername: customer_name,
                 Hosname: hospital_name,
                 customer_contact_no: customer_contact_no,
-                value: selectedService[index] == undefined ? null : selectedService[index], // Adding selected service to the data
-                followup: dates[index] == undefined ? null : dates[index],
+
+                value: selectedService[sku.sku_id] ?? '',         // ✅ Use sku_id as key
+                followup: dates[sku.sku_id] ?? '',                // ✅ Use sku_id here too
             }));
 
         // Dispatch to Redux to save the data
@@ -279,9 +277,11 @@ const MsdActivityScreen = ({ route }) => {
     };
 
 
-    const handlePickerChange = (value, index) => {
-        setSelectedService((prev) => ({ ...prev, [index]: value }));
+
+    const handlePickerChange = (value, skuId) => {
+        setSelectedService((prev) => ({ ...prev, [skuId]: value }));
     };
+
 
     const activity = async () => {
         const user = await AsyncStorage.getItem("userInfor");
@@ -393,207 +393,172 @@ const MsdActivityScreen = ({ route }) => {
                                     </Text>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            // Open or close the date picker based on the current state
-                                            setShowDatePicker(showDatePicker === index ? null : index);
+                                            setShowDatePicker(showDatePicker === item.sku_id ? null : item.sku_id);
                                         }}
                                         style={MsdActivityStyles.taskTime1}
                                     >
                                         <Text style={MsdActivityStyles.dateButtonText}>
-                                            {/* Calendar emoji with a different font size */}
                                             <Text style={{ fontSize: 20 }}>📅 </Text>
-                                            {/* Date with a different font size */}
                                             <Text style={{ fontSize: 12 }}>
-                                                {dates[index] ? dates[index].toLocaleDateString() : t()}
+                                                {dates[item.sku_id] ? dates[item.sku_id].toLocaleDateString() : t()}
                                             </Text>
                                         </Text>
                                     </TouchableOpacity>
 
                                     {/* Date Picker */}
-                                    {showDatePicker === index && (
+                                    {showDatePicker === item.sku_id && (
                                         <DateTimePicker
-                                            value={dates[index] || new Date()} // Use the date of the current item
+                                            value={dates[item.sku_id] || new Date()}
                                             mode="date"
                                             display="default"
-                                            minimumDate={new Date()} // Disable past dates
-                                            onChange={(event, selectedDate) => handleDateChange(event, selectedDate, index)}
+                                            minimumDate={new Date()}
+                                            onChange={(event, selectedDate) => handleDateChange(event, selectedDate, item.sku_id)}
                                         />
                                     )}
-
-
-                                    {/* <Text
-                                        style={[
-                                            MsdActivityStyles.taskTime1,
-                                            { flex: 2, textAlign: 'right', flexShrink: 1 }
-                                        ]}
-                                        numberOfLines={1}
-                                    >
-                                        Seg: {item.segment_code}
-                                    </Text> */}
-
-
                                 </View>
+
                                 <View style={MsdActivityStyles.rowContainer}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }}>
-                                        <View style={[MsdActivityStyles.pickerContainer, { flex: 1 }]}>
-                                            <Picker
-                                                selectedValue={selectedService[index] || ''}
-                                                onValueChange={(itemValue) => handlePickerChange(itemValue, index)}
-                                                style={MsdActivityStyles.dropdownPicker}
-                                            >
-                                                <Picker.Item label="Post Call Remarks" value="" style={{ fontSize: 13, color: 'brown', fontWeight: 'bold' }} />
-                                                {services.map((reason, index) => (
-                                                    <Picker.Item key={index} label={reason.remarks_m} value={reason.remarks_m} />
-                                                ))}
-                                            </Picker>
-                                        </View>
-
-
-                                        {/* <View style={[MsdActivityStyles.datePickerContainer, { flex: 1 }]}>
-                                            <DatePicker
-                                                selectedDate={fromDate}
-                                                setDate={handleFromDateChange}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <View style={{ flex: 1 }}>
+                                            <HomeDropDownPicker
+                                                value={selectedService[item.sku_id] || ''}
+                                                setValue={(itemValue) => handlePickerChange(itemValue, item.sku_id)}
+                                                data={[
+                                                    { label: 'Post Call Remarks', value: '' },
+                                                    ...services.map((reason) => ({
+                                                        label: reason.remarks_m,
+                                                        value: reason.remarks_m,
+                                                    })),
+                                                ]}
+                                                placeholder="Post Call Remarks"
+                                                style={{ width: '100%' }}
                                             />
-                                        </View> */}
+                                        </View>
                                     </View>
+
                                 </View>
                             </TouchableOpacity>
                         </View>
                     )}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item) => item.sku_id.toString()}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 />
-
             )}
+
 
             {/* Move the Save button inside the selectedFilter === 'Activity' condition */}
             {selectedFilter === 'Activity' && (
                 <View style={OrderStyles.saleReturnFooterContainer}>
                     <TouchableOpacity
+                        onPress={activitySave}
                         style={OrderStyles.footerButton1}
                         activeOpacity={0.7}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                        <Text style={OrderStyles.footerButtonText1} onPress={activitySave}>Save</Text>
+                        <Text style={OrderStyles.footerButtonText1}>Save</Text>
                     </TouchableOpacity>
                 </View>
             )}
 
+
+
+            {selectedFilter === "Summary" && (
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
+                    <TouchableOpacity>
+                        <Icon name="share" size={30} color="#000" />
+                    </TouchableOpacity>
+                </View>
+            )}
             {selectedFilter === 'Summary' && (
-                <View style={{ flex: 1, padding: 16 }}>
-                    {/* Header Section */}
-                    <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Outlet Name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
-                        </Text>
-                        {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Type: </Text>
-                            <Text style={{ color: 'green' }}>{outlet_category_name}</Text>
-                        </Text> */}
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Contact: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
-                        </Text>
+                <View style={{ flex: 1 }}>
+                    
+                        {/* Header Section */}
+                        <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Outlet Name: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
+                            </Text>
 
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Joined_Call_Name: </Text>
-                            <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
-                        </Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Contact: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
+                            </Text>
 
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Joined_Call_Name: </Text>
+                                <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
+                            </Text>
 
-                        {/* <Text style={{ fontSize: 16, color: '#6c757d' }}>Type: {outlet_category_name}</Text> */}
-                        {/* <Text style={{ fontSize: 16, color: '#6c757d' }}>Contact: {customer_contact_no}</Text> */}
-                    </View>
+                        </View>
 
-                    <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
+                        <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
 
-                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
 
-                    <FlatList
-                        data={msdActivityData}
-                        renderItem={({ item, index }) => (
-                            <View
-                                key={index}
-                                style={{
-                                    marginBottom: 16,
-                                    padding: 12,
-                                    backgroundColor: '#ffffff',
-                                    borderRadius: 8,
-                                    shadowColor: '#000',
-                                    shadowOpacity: 0.1,
-                                    shadowRadius: 4,
-                                    shadowOffset: { width: 0, height: 2 },
-                                    elevation: 3
-                                }}
-                            >
-                                {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>👤 Customer Name: {item.customer_name}</Text> */}
-                                {/* <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>Customer Name: </Text>
-                                    <Text style={{ color: 'green' }}>{item.customer_name}</Text>
-                                </Text>
+                        <FlatList
+                            data={msdActivityData}
+                            renderItem={({ item, index }) => (
+                                <View
+                                    key={index}
+                                    style={{
+                                        marginBottom: 16,
+                                        padding: 12,
+                                        backgroundColor: '#ffffff',
+                                        borderRadius: 8,
+                                        shadowColor: '#000',
+                                        shadowOpacity: 0.1,
+                                        shadowRadius: 4,
+                                        shadowOffset: { width: 0, height: 2 },
+                                        elevation: 3
+                                    }}
+                                >
 
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>Customer Dept: </Text>
-                                    <Text style={{ color: 'green' }}>{customer_department}</Text>
-                                </Text> */}
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
+                                            <Text style={{ color: 'black' }}>Customer Name: </Text>
+                                            <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
+                                        </Text>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
-                                        <Text style={{ color: 'black' }}>Customer Name: </Text>
-                                        <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
-                                    </Text>
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
+                                            <Text style={{ color: 'black' }}>Customer Dept: </Text>
+                                            <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
+                                        </Text>
+                                    </View>
 
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
-                                        <Text style={{ color: 'black' }}>Customer Dept: </Text>
-                                        <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
-                                    </Text>
-                                </View>
-                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                         <Text style={{ color: 'black' }}>SKU Name: </Text>
-                                        <Text style={{ color: 'green', fontSize: 12 }}>{item.sku_name}</Text>
+                                        <Text style={{ color: 'green', fontSize: 13 }}>{item.sku_name}</Text>
                                     </Text>
 
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                         <Text style={{ color: 'black' }}>Remarks: </Text>
                                         <Text style={{ color: 'green', fontSize: 13 }}>{item.value}</Text>
                                     </Text>
-                                </View> */}
 
-
-
-
-
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>SKU Name: </Text>
-                                    <Text style={{ color: 'green', fontSize: 13 }}>{item.sku_name}</Text>
-                                </Text>
-
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                    <Text style={{ color: 'black' }}>Remarks: </Text>
-                                    <Text style={{ color: 'green', fontSize: 13 }}>{item.value}</Text>
-                                </Text>
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
-                                        <Text style={{ color: 'black' }}>Follow_up Date: </Text>
-                                        <Text style={{ color: 'green', fontSize: 12 }}>
-                                            {item.followup
-                                                ? new Date(item.followup).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-                                                : ''}
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
+                                            <Text style={{ color: 'black' }}>Follow_up Date: </Text>
+                                            <Text style={{ color: 'green', fontSize: 12 }}>
+                                                {item.followup
+                                                    ? new Date(item.followup).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                                                    : ''}
+                                            </Text>
                                         </Text>
-                                    </Text>
+                                    </View>
+
+
                                 </View>
-
-
-                            </View>
-                        )}
-                        keyExtractor={(item, index) => index.toString()}
-                        contentContainerStyle={{ paddingBottom: 20 }}
-                        showsVerticalScrollIndicator={false}
-                    />
+                            )}
+                            keyExtractor={(item, index) => index.toString()}
+                            contentContainerStyle={{ paddingBottom: 20 }}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    
                 </View>
+
+
             )}
+
 
             {selectedFilter === 'Summary' && (
                 <View style={OrderStyles.saleReturnFooterContainer}>
