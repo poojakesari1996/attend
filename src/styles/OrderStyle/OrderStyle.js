@@ -70,28 +70,6 @@ export default OrderStyle = () => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
-      
-      
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
     // Task container with flex adjustment
     // Main container for the product details
 // Task container
@@ -236,13 +214,7 @@ taskContainer1: {
     color: Colors.peach_orange,
     width: '60%',
   },
-//   totalContainer: {
-//     marginTop: 10,
-//     paddingVertical: 8,
-//     backgroundColor: Colors.white_text_color,
-//     borderRadius: 8,
-//     alignItems: 'center',
-//   },
+
   totalText: {
     fontSize: 12,
     fontWeight: 'bold',
@@ -308,13 +280,7 @@ taskContainer1: {
     flexDirection: 'row',
     flexWrap: 'nowrap',
   },
-//   tableDataLeft: {
-//     fontSize: 12,
-//     // color: Colors.blue_jeans_color,
-//     flex: 5,
-//     textAlign: 'left',
-//     marginLeft: 10
-//   },
+
 
 tableDataLeft: {
     fontSize: 12,
@@ -340,12 +306,6 @@ tableDataLeft: {
     marginTop: 2,
   },
   
-//   tableData: {
-//     fontSize: 12,
-//     color: Colors.blue_jeans_color,
-//     textAlign: 'center',
-//     marginRight: 20
-//   },
 
 
 tableData: {
@@ -407,12 +367,7 @@ tableData: {
     marginRight: 40
   },
   
-//   tableData1: {
-//     fontSize: 12,
-//     color: Colors.blue_jeans_color,
-//     textAlign: 'center',
-//     marginRight: 30
-//   },
+
 
 tableData1: {
     fontSize: 12,
@@ -479,19 +434,27 @@ tableData1: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10
+    paddingHorizontal: 8,
+    minWidth: 90,
   },
+  
   footerLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.white_text_color,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,
+    textAlign: 'center',
   },
+  
   footerValue: {
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.black_text_color,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
+  
+  
+ 
   footerButton: {
     backgroundColor: Colors.blue_jeans_color,
     fontFamily:Fonts.Poppins_Medium,
@@ -586,14 +549,7 @@ saleReturnFooterContainer: {
     left: 0,
     right: 0 // Starts from the left edge of the screen
   },
-//   footerButtonText8: {
-//     color: Colors.blue_jeans_color,
-//     fontSize: 12,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//     padding: 10,
-//     borderRadius: SH(70)
-//   },
+
   
 footerButtonText8: {
     backgroundColor: Colors.blue_jeans_color, // Add background color for visibility

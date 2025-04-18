@@ -260,12 +260,12 @@ const OrderHistoryScreen = () => {
     return (
         <View style={OrderHistoryStyles.container}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-  <TouchableOpacity style={[OrderHistoryStyles.pendingButton, { marginRight: 10 }]} onPress={openModal}>
+  {/* <TouchableOpacity style={[OrderHistoryStyles.pendingButton, { marginRight: 10 }]} onPress={openModal}>
     <Text style={OrderHistoryStyles.pendingText}>Team</Text>
   </TouchableOpacity>
   {selectedTeam && (
     <Text style={OrderHistoryStyles.selectedTeamText}>{selectedTeam}</Text>
-  )}
+  )} */}
 
   <TouchableOpacity style={[OrderHistoryStyles.pendingButton, { marginRight: 10 }]} onPress={selectBeat}>
     <Text style={OrderHistoryStyles.pendingText}>Beat</Text>

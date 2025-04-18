@@ -7,6 +7,7 @@ export * from './Notification';
 export * from './PrivacyPolicyScreen';
 export * from './HomeTab';
 export * from './LanguageScreen';
+export * from './CreateTaskScreen';
 export * from './ServicesTab';
 export * from './AttendanceTab';
 export * from './TaskAddScreen';

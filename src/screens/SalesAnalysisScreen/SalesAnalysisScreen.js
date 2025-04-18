@@ -3,11 +3,10 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { darkTheme, lightTheme, Fonts, SF, SH } from "../../utils";
 import { SalesAnalysisStyle } from "../../styles/SalesAnalysisStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, Input, Spacing, DatePicker, VectorIcon } from '../../components';
+import {DatePicker} from '../../components';
 import { useSelector } from "react-redux";
-import { Picker } from "@react-native-picker/picker";
+import { HomeDropDown } from '../../components';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from "react-native-gesture-handler";
 import SalesList from "./SalesList";
 
 const SalesAnalysis = () => {
@@ -26,7 +25,7 @@ const SalesAnalysis = () => {
   let [pickerShow, setPickerShow] = useState(false)
 
   useEffect(() => {
-    salesAnalysisCodeList();  // Fetch the sales analysis codes when the component mounts
+    salesAnalysisCodeList();  
   }, []);
 
   const [totals, setTotals] = useState({
@@ -148,7 +147,7 @@ const SalesAnalysis = () => {
 
     try {
       const response = await fetch(
-        `https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerRpt?from_date=${formattedFromDate}&to_date=${formattedToDate}&sgroups=${sgroups}`,
+        `https://prismcore.romsons.com/romsons_incentive_core/v1/process/salesPerRpt?from_date=${formattedFromDate}&to_date=${formattedToDate}&sgroups=${sgroups}`,
         requestOptions
       );
 
@@ -210,7 +209,7 @@ const SalesAnalysis = () => {
   return (
     <View style={[SalesAnalysisStyles.container, { padding: SF(10) }]}>
       {/* Picker for Sales Group */}
-      <View style={[SalesAnalysisStyles.pickerContainer]}>
+      {/* <View style={[SalesAnalysisStyles.pickerContainer]}>
         {pickerShow ? (
           <Picker
             selectedValue={selectedService}
@@ -219,12 +218,12 @@ const SalesAnalysis = () => {
             dropdownIconColor={currentColors.text}
           >
             <Picker.Item label="Please Select Sales Group" />
-            {/* <Picker.Item label="All Sales Group" value="all" /> */}
+            
         
               <Picker.Item
                 key={1}
                 label={selectedService}
-                 value={selectedService}  // Ensure `item.code` is defined and valid
+                 value={selectedService}
               />
            
           </Picker>
@@ -240,12 +239,44 @@ const SalesAnalysis = () => {
           <Picker.Item
             key={index}
             label={`${item.code} - ${item.name} (${item.headQuarter})`}
-            value={item.code}  // Ensure `item.code` is defined and valid
+            value={item.code} 
           />
         ))}
       </Picker>}
 
-      </View>
+      </View> */}
+
+{/* <View style={[SalesAnalysisStyles.pickerContainer]}> */}
+  {pickerShow ? (
+    <HomeDropDown
+      value={selectedService}
+      setValue={handlePickerChange}
+      data={[
+        {
+          label: selectedService,
+          value: selectedService,
+        },
+      ]}
+      placeholder="Please Select Sales Group"
+      style={{ width: '100%' }}
+    />
+  ) : (
+    <HomeDropDown
+      value={selectedService}
+      setValue={handlePickerChange}
+      data={[
+        { label: 'All Sales Group', value: 'all' },
+        ...salesAnalysisCode.map((item) => ({
+          label: `${item.spCode} - ${item.spName} (${item.headQuarter})`,
+          value: item.spCode,
+        })),
+      ]}
+      placeholder="Please Select Sales Group"
+      style={{ width: '100%' }}
+    />
+  )}
+{/* </View> */}
+
 
       {/* Date Pickers */}
       <View style={SalesAnalysisStyles.row}>

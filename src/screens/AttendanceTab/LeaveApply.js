@@ -3,7 +3,7 @@ import {
     View, Text, ScrollView, KeyboardAvoidingView, Platform,
     TouchableWithoutFeedback, Keyboard, Alert, TouchableOpacity
 } from 'react-native';
-import { Button, Input, Spacing, DatePicker, VectorIcon } from '../../components';
+import { Button, Input, Spacing, DatePicker, VectorIcon, HomeDropDown } from '../../components';
 import { Picker } from '@react-native-picker/picker';
 import { HomeTabStyle } from '../../styles';
 import { SH, SF } from '../../utils';
@@ -45,36 +45,36 @@ const LeaveApply = () => {
     const handleFromDateChange = (event, selectedDate) => {
         const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-    
+
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
             setShowDatePicker(false);
             return;
         }
-    
+
         setFromDate(null);
         setShowDatePicker(false);
         setFromDate(currentDate);
         handleFromdate(currentDate);
     };
-    
+
 
     // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
         const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-    
+
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
             setShowDatePicker(false);
             return;
         }
-    
+
         setToDate(null);
         setShowDatePicker(false);
         setToDate(currentDate);
     };
-    
+
 
     const fetchLeaveTypes = async () => {
 
@@ -111,50 +111,6 @@ const LeaveApply = () => {
         calculateNumberOfDays(fromDate, toDate);
     }, [fromDate, toDate]);
 
-    // const handleSubmit = async () => {
-    //     try {
-    //         // Get user data from AsyncStorage
-    //         const user = await AsyncStorage.getItem('userInfor');
-    //         const empid = JSON.parse(user);
-
-    //         // Prepare payload for the API request
-    //         const leavePayload = {
-    //             empID: empid[0].emp_id,
-    //             rpPerson: empid[0].reporting_to,
-    //             leaveType: leaveType,
-    //             fromDate: Moment(fromDate).format('YYYY-MM-DD'),
-    //             toDate: Moment(toDate).format('YYYY-MM-DD'),
-    //             numofdays: numberOfdays,
-    //             leavereason: reason,
-    //             enterBy: empid[0].emp_id,
-    //         };
-
-    //         console.log("Payload being sent:", leavePayload);
-
-    //         // Send POST request
-    //         const response = await axios.post("https://devcrm.romsons.com:8080/LeaveApp", leavePayload, {
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         });
-
-    //         // Check for error in the response
-    //         if (response.data.error) {
-    //             Alert.alert("Error", response.data.data || "Something went wrong");
-    //         } else {
-    //             Alert.alert("Success", response.data.msg || "Leave request submitted successfully");
-    //         }
-    //         setNumberOfdays(0);
-    //         setFromDate('');
-    //         setToDate('');
-    //         setReason('');
-
-    //     } catch (error) {
-    //         // Handle error if request fails
-    //         console.error("Error during leave submission:", error);
-    //         Alert.alert("Error", "An error occurred while submitting the leave request.");
-    //     }
-    // };
 
 
     const handleSubmit = async () => {
@@ -232,7 +188,7 @@ const LeaveApply = () => {
         }
     };
 
-    
+
 
     return (
         <KeyboardAvoidingView
@@ -333,29 +289,32 @@ const LeaveApply = () => {
 
 
                         <Text style={LeaveApplyStyles.label}>{t("Leave Type")}</Text>
-                        <Picker
-                            selectedValue={leaveType}
+                        <HomeDropDown
+                            value={leaveType}
+                            setValue={(itemValue) => setLeaveType(itemValue)}  // Set the selected value for leaveType
+                            data={leaveTypes.map((item) => ({
+                                label: item.label,
+                                value: item.value,
+                            }))}
+                            placeholder="Select Leave Type"  // You can replace this with your own placeholder text
                             style={LeaveApplyStyles.picker}
-                            onValueChange={(itemValue) => setLeaveType(itemValue)}
-                        >
-                            {leaveTypes.map((item) => (
-                                <Picker.Item key={item.value} label={item.label} value={item.value} />
-                            ))}
-                        </Picker>
+                        />
+
 
                         <View style={LeaveApplyStyles.row}>
                             <View style={LeaveApplyStyles.datePickerContainer}>
                                 <DatePicker
-                                    handleName={t("From Date")}
+                                    handleName={<Text style={{ fontSize: 16 }}>{t("From Date")}</Text>}  // Adjust fontSize here
                                     selectedDate={handleFromDateChange}
                                     setDate={setFromDate}
                                     style={LeaveApplyStyles.datePicker}
                                 />
+
                             </View>
 
                             <View style={LeaveApplyStyles.datePickerContainer}>
                                 <DatePicker
-                                    handleName={t("To Date")}
+                                    handleName={<Text style={{ fontSize: 16 }}>{t("To Date")}</Text>}
                                     selectedDate={handleToDateChange}
                                     setDate={setToDate}
                                     style={LeaveApplyStyles.datePicker}

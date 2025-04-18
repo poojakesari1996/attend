@@ -1,17 +1,37 @@
 import { Fonts, SH,  SF, Colors } from '../../utils';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Dimensions  } from 'react-native';
+const { width } = Dimensions.get('window');
 // export default StyleSheet.create({
   export default TaskAddStyle = (Colors) => StyleSheet.create({
-    datePickerWrapper: {
-        alignItems: 'center',
-        justifyContent: 'center', // Center vertically
-        flex: 1, // Take full available space
-      },
-      dateRow: {
+    dateRow: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 10,
+        marginVertical: 10,
+        paddingHorizontal: 16,
       },
+      
+      datePickerWrapper: {
+        width: '50%',
+        marginRight: 10,
+        marginHorizontal:50
+      },
+      
+      addTaskButton: {
+        backgroundColor: Colors.black,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        marginHorizontal:50,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        elevation: 2,
+      },
+      
+      
       header: {
         padding: 0,
         backgroundColor: Colors.white_text_color,
