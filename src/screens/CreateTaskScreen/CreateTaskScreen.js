@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, TouchableOpacity, ScrollView, Text, Modal, ActivityIndicator, loading } from "react-native";
 import { CreateTaskStyle } from '../../styles';
-import { darkTheme, lightTheme } from '../../utils';
+import { darkTheme, lightTheme, SH } from '../../utils';
 import { Button, ConfirmationAlert, Input, Spacing } from "../../components";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { DatePicker } from '../../components';
+import { HomeDropDown } from '../../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CreateTaskScreen = () => {
+const CreateTaskScreen = ({ route }) => {
+    const { followupDate } = route.params || {};
     const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
     const currentColors = isDarkMode ? darkTheme : lightTheme;
     const Colors = isDarkMode ? darkTheme : lightTheme;
@@ -17,42 +18,55 @@ const CreateTaskScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [callType, setCallType] = useState("Call With");
     const [callerName, setCallerName] = useState("");
+    const [followupDatewisedata, setFollowupDatewisedata] = useState([]);
     const [reportingModalVisible, setReportingModalVisible] = useState(false);
+    const [alertOtpVisible, setAlertOtpVisible] = useState(false);
+    const [alertOtpMessage, setAlertOtpMessage] = useState('');
     const [reportingPersons, setReportingPersons] = useState([]);
+    const [followupDates, setFollowupDates] = useState(null);  // Add this line
     const [loading, setLoading] = useState(false);
-    const [fromDate, setFromDate] = useState(null);
+    const [selectedReportingTo, setSelectedReportingTo] = useState(null); // To store reporting_to ID
     const [formData, setFormData] = useState({
         taskName: '',
-        status: '',
         remarks: '',
-        priority: ''
     });
 
-    const handleFromDateChange = (event, selectedDate) => {
-        // const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        // const currentDate = selectedDate || date;
+    const [followup_status, setFollowupStatus] = useState('Pending');
+    const [followup_priority, setFollowupPriority] = useState('High');
 
-        if (currentDate < currentMonthStart) {
-            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
-            setShowDatePicker(false);
-            return;
+
+    useEffect(() => {
+        if (followupDatewisedata.length === 0) {
+            setFollowupDatewisedata([{
+                followup_status: 'Pending',
+                followup_priority: 'High',
+            }]);
         }
-
-        // setShowDatePicker(false);
-        setFromDate(currentDate);
-        // setSelectedDate(currentDate); // save selected date
-
-        followUpDatewiseData(currentDate); // ✅ call with selected date
-    };
+    }, []);
 
     const handleChange = (key, value) => {
         setFormData(prev => ({ ...prev, [key]: value }));
     };
 
-    const handleSelectReportingPerson = (person) => {
-        setCallerName(person);
+    const handleReportingPersonSelect = async (person) => {
+        console.log("Selected Reporting Person:", person); // Full object
+        console.log("Reporting To Name:", person.reporting_to_name);
+        console.log("Reporting To ID (jointid):", person.reporting_to);
+
+        // If "Self" is selected, set jointid to null
+        if (person.reporting_to_name === "Self") {
+            console.log("Self Selected");
+            setCallerName("Self");
+            setSelectedReportingTo(null); // Null for "Self"
+        } else {
+            setCallerName(person.reporting_to_name); // Set selected reporting person's name
+            setSelectedReportingTo(person.reporting_to); // Set reporting person's ID
+        }
+
+        // Close the modal
         setReportingModalVisible(false);
     };
+
 
     const reportingPerson = async () => {
         const user = await AsyncStorage.getItem("userInfor");
@@ -72,61 +86,90 @@ const CreateTaskScreen = () => {
         };
 
         try {
-            // Open modal and show loader immediately
+            
             setReportingModalVisible(true);
             setLoading(true);
 
             const response = await fetch("https://devcrm.romsons.com:8080/Reporting_hierarchy", requestOptions);
-            const result = await response.json(); // Parse the response as JSON
+            const result = await response.json();
 
             if (result.error === false) {
-                // console.log("Dataa:", result.data);
-                setReportingPersons(result.data || []); // Store reporting persons in state
+                setReportingPersons(result.data || []); 
             } else {
-                setReportingPersons([]); // Handle error response
+                setReportingPersons([]);
             }
         } catch (error) {
             console.error("Request failed:", error);
-            setReportingPersons([]); // Handle network errors
+            setReportingPersons([]); 
         } finally {
-            setLoading(false); // Hide loader
+            setLoading(false); 
         }
     };
+
+
+
+    const insertAddNewTask = async () => {
+        if (!formData.taskName || !formData.remarks || !callerName) {
+            setAlertOtpMessage(t("Please fill all required_fields"));
+            setAlertOtpVisible(true);
+            return;
+        }
+    
+        try {
+            const user = await AsyncStorage.getItem("userInfor");
+            const empid = JSON.parse(user);
+    
+            const raw = JSON.stringify({
+                taskname: formData.taskName,
+                remarks: formData.remarks,
+                status: followup_status,
+                priority: followup_priority,
+                jointid: selectedReportingTo,
+                jointname: callerName,
+                followup: followupDate,
+                enterBy: empid[0].emp_id,
+            });
+    
+            console.log('Sending Task Payload:', raw);
+    
+            const response = await fetch("https://devcrm.romsons.com:8080/AddNewTask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: raw
+            });
+    
+            const result = await response.json();
+            console.log(result);
+    
+            if (!result.error) {
+                setAlertOtpMessage(t("Task_added_successfully"));
+                setAlertOtpVisible(true);
+    
+                
+                setFormData({ taskName: '', remarks: '' });
+                setFollowupStatus('Pending');
+                setFollowupPriority('High');
+                setSelectedReportingTo(null);
+                setCallerName('');
+                setFollowupDates(null);
+            } else {
+                setAlertOtpMessage(t("Failed_to_add_task") + ": " + result.message);
+                setAlertOtpVisible(true);
+            }
+    
+        } catch (error) {
+            console.error("API Error:", error);
+            setAlertOtpMessage(t("Something_went_wrong")); // Error message
+            setAlertOtpVisible(true);
+        }
+    };
+
+
     return (
         <View style={CreateTaskStyles.container1}>
             <ScrollView style={CreateTaskStyles.PaddingHorizontal}>
                 <Spacing space={10} />
                 <View style={CreateTaskStyles.SetPaddingd}>
-                    <Input
-                        title={t("Task Name")}
-                        value={formData.taskName}
-                        onChangeText={(text) => handleChange('taskName', text)}
-                        placeholder={t("Enter Here...")}
-                        placeholderTextColor={Colors.gray_text_color}
-                        titleStyle={CreateTaskStyles.titleStyle}
-                        inputStyle={CreateTaskStyles.input_style}
-                    />
-                    <Spacing space={10} />
-                    <Input
-                        title={t("Status")}
-                        value={formData.status}
-                        onChangeText={(text) => handleChange('status', text)}
-                        placeholder={t("Enter Here...")}
-                        placeholderTextColor={Colors.gray_text_color}
-                        titleStyle={CreateTaskStyles.titleStyle}
-                        inputStyle={CreateTaskStyles.input_style}
-                    />
-                    <Spacing space={10} />
-                    <Input
-                        title={t("Remarks")}
-                        value={formData.remarks}
-                        onChangeText={(text) => handleChange('remarks', text)}
-                        placeholder={t("Enter Here...")}
-                        placeholderTextColor={Colors.gray_text_color}
-                        titleStyle={CreateTaskStyles.titleStyle}
-                        inputStyle={CreateTaskStyles.input_style}
-                    />
-                    <Spacing space={10} />
 
                     <Text style={CreateTaskStyles.callLabel}>{t("Select Call Type")}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -140,23 +183,82 @@ const CreateTaskScreen = () => {
                     </View>
                     <Spacing space={10} />
                     <Input
-                        title={t("Priority")}
-                        value={formData.priority}
-                        onChangeText={(text) => handleChange('priority', text)}
+                        title={t("Task Name")}
+                        value={formData.taskName}
+                        onChangeText={(text) => handleChange('taskName', text)}
+                        placeholder={t("Enter Here...")}
+                        placeholderTextColor={Colors.gray_text_color}
+                        titleStyle={CreateTaskStyles.titleStyle}
+                        inputStyle={{ ...CreateTaskStyles.input_style, minHeight: SH(100) }}
+                        multiline
+                        numberOfLines={4}
+                    />
+
+                    <Spacing space={10} />
+
+                    <Input
+                        title={t("Remarks")}
+                        value={formData.remarks}
+                        onChangeText={(text) => handleChange('remarks', text)}
                         placeholder={t("Enter Here...")}
                         placeholderTextColor={Colors.gray_text_color}
                         titleStyle={CreateTaskStyles.titleStyle}
                         inputStyle={CreateTaskStyles.input_style}
                     />
+
                     <Spacing space={10} />
-                    <View style={{ width: '50%' }}>
-                        <DatePicker
-                            handleName={<Text style={{ fontSize: 16 }}>{t("FollowUp Date")}</Text>}
-                            selectedDate={handleFromDateChange}
-                            setDate={setFromDate}
-                            style={CreateTaskStyles.datePicker}
-                        />
+                    <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                        <View style={{ flex: 1, marginRight: 6 }}>
+                            <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'black', marginBottom: 4 }}>
+                                Status
+                            </Text>
+                            <HomeDropDown
+                                value={followup_status}
+                                setValue={(value) => {
+                                    setFollowupStatus(value);
+                                    const updated = [...followupDatewisedata];
+                                    updated[0].followup_status = value;
+                                    setFollowupDatewisedata(updated);
+                                }}
+                                data={[
+                                    { label: 'Pending', value: 'Pending' },
+                                    { label: 'Complete', value: 'Complete' },
+                                    { label: 'Hold', value: 'Hold' },
+                                    { label: 'Cancelled', value: 'Cancelled' },
+                                ]}
+                                placeholder="Select Status"
+                                style={{ width: '100%' }}
+                            />
+                        </View>
+
+                        <View style={{ flex: 1, marginLeft: 6 }}>
+                            <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'black', marginBottom: 4 }}>
+                                Priority
+                            </Text>
+                            <HomeDropDown
+                                value={followup_priority}
+                                setValue={(value) => {
+                                    setFollowupPriority(value);
+                                    const updated = [...followupDatewisedata];
+                                    updated[0].followup_priority = value;
+                                    setFollowupDatewisedata(updated);
+                                }}
+                                data={[
+                                    { label: 'High', value: 'High' },
+                                    { label: 'Medium', value: 'Medium' },
+                                    { label: 'Low', value: 'Low' },
+                                ]}
+                                placeholder="Select Priority"
+                                style={{ width: '100%' }}
+                            />
+                        </View>
                     </View>
+
+
+                    <Spacing space={10} />
+
+
+                    <Spacing space={10} />
 
                 </View>
                 <Modal
@@ -167,7 +269,6 @@ const CreateTaskScreen = () => {
                 >
                     <View style={CreateTaskStyles.modalOverlay}>
                         <View style={CreateTaskStyles.dropdownContainer}>
-
                             {/* Close Button */}
                             <TouchableOpacity
                                 style={CreateTaskStyles.closeIcon}
@@ -176,25 +277,26 @@ const CreateTaskScreen = () => {
                                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#999' }}>✕</Text>
                             </TouchableOpacity>
 
-
                             {/* Options */}
                             <TouchableOpacity
                                 style={CreateTaskStyles.option}
                                 onPress={() => {
                                     setCallType("Self");
                                     setCallerName("Self");
+                                    setSelectedReportingTo(null); // very important
                                     setModalVisible(false);
                                 }}
                             >
                                 <Text style={CreateTaskStyles.optionText}>Self</Text>
                             </TouchableOpacity>
 
+
                             <TouchableOpacity
                                 style={CreateTaskStyles.option}
                                 onPress={() => {
                                     setCallType("Joined");
                                     setModalVisible(false);
-                                    reportingPerson();
+                                    reportingPerson(); // Load reporting persons
                                 }}
                             >
                                 <Text style={CreateTaskStyles.optionText}>Joint Call</Text>
@@ -219,7 +321,7 @@ const CreateTaskScreen = () => {
                                         <TouchableOpacity
                                             key={index}
                                             style={CreateTaskStyles.option4}
-                                            onPress={() => handleSelectReportingPerson(person.reporting_to_name)}
+                                            onPress={() => handleReportingPersonSelect(person)} // Pass full person object
                                         >
                                             <Text style={CreateTaskStyles.optionText4}>{person.reporting_to_name}</Text>
                                         </TouchableOpacity>
@@ -229,13 +331,24 @@ const CreateTaskScreen = () => {
                         </View>
                     </View>
                 </Modal>
+
                 <Spacing space={70} />
             </ScrollView>
             <View style={CreateTaskStyles.BotttomAbs}>
-                    <Button
-                      title={t("Update")}
-                    />
-                  </View>
+                <Button
+                    title={t("Submit")}
+                    onPress={insertAddNewTask} />
+            </View>
+            <ConfirmationAlert
+    iconVisible={true}
+    message={alertOtpMessage}
+    modalVisible={alertOtpVisible}
+    setModalVisible={setAlertOtpVisible}
+    onPress={() => {
+      setAlertOtpVisible(false);
+      
+    }}
+  />
         </View>
     );
 }

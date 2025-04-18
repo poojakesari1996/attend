@@ -6,10 +6,10 @@ import { RouteName } from '../../routes';
 import { useTranslation } from 'react-i18next';
 import { HomeDropDown } from '../../components';
 import { useSelector } from 'react-redux';
-import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { darkTheme, lightTheme } from '../../utils';
-import { useNavigation} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const TaskAddScreen = () => {
     const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
@@ -132,18 +132,27 @@ const TaskAddScreen = () => {
             <View style={TaskAddStyles.dateRow}>
                 <View style={TaskAddStyles.datePickerWrapper}>
                     <DatePicker
-                        handleName={<Text style={{ fontSize: 16 }}>{t("Choose Date")}</Text>}
+                        handleName={<Text style={TaskAddStyles.dateLabel}>{t("Choose Date")}</Text>}
                         selectedDate={handleFromDateChange}
                         setDate={setFromDate}
                         style={TaskAddStyles.datePicker}
                     />
                 </View>
 
-                {/* Cute "Add Task" Button */}
-                <TouchableOpacity style={TaskAddStyles.cuteButton}onPress={() => navigation.navigate(RouteName.CREATETASK)}>
-  <Text style={TaskAddStyles.cuteButtonText}>Add Task</Text>
-</TouchableOpacity>
+                <TouchableOpacity
+                    style={TaskAddStyles.addTaskButton}
+                    onPress={() => navigation.navigate(RouteName.CREATETASK, {
+                        followupDate: selectedDate?.toISOString()
+                    })}
+
+                    activeOpacity={0.8}
+                >
+                    <Icon name="add" size={24} color={Colors.theme_background} />
+                </TouchableOpacity>
             </View>
+
+
+
 
 
             <FlatList
@@ -164,23 +173,14 @@ const TaskAddScreen = () => {
 
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Outlet name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.hospitalname}</Text>
-                        </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Sku name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.sku_name}</Text>
+                            <Text style={{ color: 'black' }}>Task name: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.task_name}</Text>
                         </Text>
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Dept: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.user_type}</Text>
+                            <Text style={{ color: 'black' }}>Outlet Category Name: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.outlet_category_name}</Text>
                         </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Customer name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.customername}</Text>
-                        </Text>
-
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Call type: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type}</Text>
@@ -188,13 +188,8 @@ const TaskAddScreen = () => {
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Joint name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.joined_name}</Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.joint_name}</Text>
                         </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Remarks: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.remark}</Text>
-                        </Text>
-
                         <View
                             style={{
                                 flexDirection: 'row',

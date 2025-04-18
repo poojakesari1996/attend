@@ -34,30 +34,104 @@ import { StyleSheet } from 'react-native';
     filterIcon: {
       padding: SH(10),
     },
+    // tabContainer: {
+    //   flexDirection: 'row',
+    //   // justifyContent: 'space-between',
+    // },
+    // tabButton: {
+    //   flex: 1, // Equal width for all tabs
+    //   paddingVertical: SH(10),
+    //   borderBottomWidth: 2,
+    //   borderBottomColor: 'transparent',
+    //   alignItems: 'center', // Center tab text horizontally
+    //   justifyContent: 'center',
+    // },
+    // selectedTabButton: {
+    //   borderBottomColor: Colors.theme_background
+    // },
+    // tabText: {
+    //   fontSize: SF(15),
+    //   fontFamily: Fonts.Poppins_Medium,
+    //   fontWeight: 'bold',
+    //   color: Colors.gray_text_color,
+    //   textAlign: 'center',
+    // },
+    // selectedTabText: {
+    //   color: Colors.theme_background
+    // },
+
     tabContainer: {
       flexDirection: 'row',
-      // justifyContent: 'space-between',
+      width: '100%',
+      backgroundColor: Colors.white,
+      height: Platform.select({
+        ios: 44,
+        android: 48,
+      }),
+      ...Platform.select({
+        ios: {
+          borderBottomWidth: 0.5,
+          borderBottomColor: Colors.lightGray,
+        },
+        android: {
+          elevation: 2,
+        },
+      }),
     },
     tabButton: {
-      flex: 1, // Equal width for all tabs
-      paddingVertical: SH(10),
-      borderBottomWidth: 2,
-      borderBottomColor: 'transparent',
-      alignItems: 'center', // Center tab text horizontally
+      flex: 1,
+      alignItems: 'center',
       justifyContent: 'center',
+      paddingVertical: Platform.select({
+        ios: 12,
+        android: 14,
+      }),
+      marginHorizontal: Platform.select({
+        ios: 4,
+        android: 0,
+      }),
     },
     selectedTabButton: {
-      borderBottomColor: Colors.theme_background
+      // This is now handled by activeIndicator
     },
     tabText: {
-      fontSize: SF(15),
       fontFamily: Fonts.Poppins_Medium,
-      fontWeight: 'bold',
       color: Colors.gray_text_color,
       textAlign: 'center',
+      paddingHorizontal: 8,
+      ...Platform.select({
+        ios: {
+          fontSize: 14,
+          fontWeight: '600',
+        },
+        android: {
+          fontSize: 15,
+          fontWeight: 'bold',
+          includeFontPadding: false,
+        },
+      }),
     },
     selectedTabText: {
-      color: Colors.theme_background
+      color: Colors.theme_background,
+      ...Platform.select({
+        ios: {
+          fontWeight: '700',
+        },
+      }),
+    },
+    activeIndicator: {
+      position: 'absolute',
+      bottom: 0,
+      height: Platform.select({
+        ios: 3,
+        android: 2.5,
+      }),
+      width: '70%',
+      backgroundColor: Colors.theme_background,
+      borderRadius: Platform.select({
+        android: 1,
+        ios: 0,
+      }),
     },
     approvalsList: {
       flexGrow: 1,

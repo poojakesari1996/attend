@@ -487,33 +487,31 @@ const OrderScreen = ({ route }) => {
 
       {/* Tab Selection */}
       <View style={ApprovalStyles.tabContainer}>
-        <TouchableOpacity
-          style={[ApprovalStyles.tabButton, selectedTab === "Item Order" && ApprovalStyles.selectedTabButton]}
-          onPress={() => setSelectedTab("Item Order")}
-        >
-          <Text style={[ApprovalStyles.tabText, selectedTab === "Item Order" && ApprovalStyles.selectedTabText]}>
-            {t("Item Order")}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[ApprovalStyles.tabButton, selectedTab === "Sale Return" && ApprovalStyles.selectedTabButton]}
-          onPress={() => setSelectedTab("Sale Return")}
-        >
-          <Text style={[ApprovalStyles.tabText, selectedTab === "Sale Return" && ApprovalStyles.selectedTabText]}>
-            {t("Sale Return")}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[ApprovalStyles.tabButton, selectedTab === "Order Summary" && ApprovalStyles.selectedTabButton]}
-          onPress={() => setSelectedTab("Order Summary")}
-        >
-          <Text style={[ApprovalStyles.tabText, selectedTab === "Order Summary" && ApprovalStyles.selectedTabText]}>
-            {t("Order Summary")}
-          </Text>
-        </TouchableOpacity>
-      </View>
+  {['Item Order', 'Sale Return', 'Order Summary'].map((tab) => (
+    <TouchableOpacity
+      key={tab}
+      style={[
+        ApprovalStyles.tabButton,
+        selectedTab === tab && ApprovalStyles.selectedTabButton,
+      ]}
+      onPress={() => setSelectedTab(tab)}
+      activeOpacity={0.6}
+    >
+      <Text 
+        style={[
+          ApprovalStyles.tabText,
+          selectedTab === tab && ApprovalStyles.selectedTabText,
+        ]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+      >
+        {t(tab)}
+      </Text>
+      {selectedTab === tab && <View style={ApprovalStyles.activeIndicator} />}
+    </TouchableOpacity>
+  ))}
+</View>
 
       {/* Item Order UI */}
       {selectedTab === "Item Order" && (

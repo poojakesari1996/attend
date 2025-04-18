@@ -203,7 +203,7 @@ const OutletDetailScreen = ({ route }) => {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      empid: empid[0].emp_id, // Extract the first element's emp_id
+      empid: empid[0].emp_id, 
     });
 
     const requestOptions = {
@@ -214,24 +214,24 @@ const OutletDetailScreen = ({ route }) => {
     };
 
     try {
-      // Open modal and show loader immediately
+      
       setReportingModalVisible(true);
       setLoading(true);
 
       const response = await fetch("https://devcrm.romsons.com:8080/Reporting_hierarchy", requestOptions);
-      const result = await response.json(); // Parse the response as JSON
+      const result = await response.json(); 
 
       if (result.error === false) {
-        // console.log("Dataa:", result.data);
-        setReportingPersons(result.data || []); // Store reporting persons in state
+        
+        setReportingPersons(result.data || []); 
       } else {
-        setReportingPersons([]); // Handle error response
+        setReportingPersons([]); 
       }
     } catch (error) {
       console.error("Request failed:", error);
-      setReportingPersons([]); // Handle network errors
+      setReportingPersons([]); 
     } finally {
-      setLoading(false); // Hide loader
+      setLoading(false); 
     }
   };
 
@@ -351,9 +351,6 @@ const OutletDetailScreen = ({ route }) => {
     (position) => {
       const currentLongitude = JSON.stringify(position.coords.longitude);
       const currentLatitude = JSON.stringify(position.coords.latitude);
-
-      // Do something with the latitude and longitude
-      // console.log("Longitude: ", currentLongitude, "Latitude: ", currentLatitude);
     },
     (error) => {
       if (error.code === 3) { // Code 3 is for timeout

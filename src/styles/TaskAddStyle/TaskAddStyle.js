@@ -1,35 +1,36 @@
 import { Fonts, SH,  SF, Colors } from '../../utils';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Dimensions  } from 'react-native';
+const { width } = Dimensions.get('window');
 // export default StyleSheet.create({
   export default TaskAddStyle = (Colors) => StyleSheet.create({
-    datePickerWrapper: {
-        alignItems: 'center',
-        justifyContent: 'center', // Center vertically
-        flex: 1, // Take full available space
-        marginTop:10
-      },
-      dateRow: {
+    dateRow: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        alignItems: 'center', // ✅ This aligns items vertically in the center
-        marginBottom: 10,
+        marginVertical: 10,
+        paddingHorizontal: 16,
       },
       
-      cuteButton: {
-        backgroundColor: Colors.black, // Soft pink
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,           // Rounded edges
-        elevation: 2,              // Android shadow
-        shadowColor: '#000',       // iOS shadow
+      datePickerWrapper: {
+        width: '50%',
+        marginRight: 10,
+        marginHorizontal:50
+      },
+      
+      addTaskButton: {
+        backgroundColor: Colors.black,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        marginHorizontal:50,
+        alignItems: 'center',
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
+        elevation: 2,
       },
-      cuteButtonText: {
-        color: Colors.white_text_color,
-        fontSize: 14,
-        fontWeight: '600',
-      },
+      
       
       header: {
         padding: 0,
