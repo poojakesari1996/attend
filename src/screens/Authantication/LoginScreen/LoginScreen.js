@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import images from '../../../index';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import withAuthRedirect from './withAuthRedirect';
 
 
 const LoginScreen = () => {
@@ -34,11 +35,11 @@ const LoginScreen = () => {
 
     const handleLogin = () => {
         const requestData = {
-            // empid: empid,
-            // Password: TextInputPassword
-            empid: "11000126",
-            // empid: "11000185",
-            Password: "1234"
+            empid: empid,
+            Password: TextInputPassword
+            // empid: "11000126",
+            // // empid: "11000185",
+            // Password: "1234"
         };
         
         axios.post("https://devcrm.romsons.com:8080/loginApps", requestData, {

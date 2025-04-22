@@ -177,19 +177,30 @@ const TaskAddScreen = () => {
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.task_name}</Text>
                         </Text>
 
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        {item.source !== 'manual' && (
+                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Outlet Category Name: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.outlet_category_name}</Text>
                         </Text>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Call type: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type}</Text>
-                        </Text>
+                        )}
+                        {item.source !== 'manual' && (
+                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                                <Text style={{ color: 'black' }}>Call type: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type || 'NA'}</Text>
+                            </Text>
+                        )}
+
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Joint name: </Text>
                             <Text style={{ color: 'green', fontSize: 12 }}>{item.joint_name}</Text>
                         </Text>
+                        {item.source === 'manual' && (
+                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                                <Text style={{ color: 'black' }}>Remarks: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{item.remarks || 'NA'}</Text>
+                            </Text>
+                        )}
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -245,11 +256,6 @@ const TaskAddScreen = () => {
                                 />
                             </View>
                         </View>
-
-
-
-
-
                     </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
