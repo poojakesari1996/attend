@@ -82,8 +82,8 @@ const SkuOrderScreen = ({ route }) => {
           <View style={SkuHistoryStyles.datePickerContainer}>
             <DatePicker
               handleName={<Text style={{ fontSize: 14 }}>{t("From Date")}</Text>}
-              selectedDate={handleFromDateChange}  // Pass the date change handler
-              setDate={setFromDate}  // Pass the date setter function
+              selectedDate={handleFromDateChange}  
+              setDate={setFromDate}
               style={SkuHistoryStyles.datePicker}
             />
           </View>

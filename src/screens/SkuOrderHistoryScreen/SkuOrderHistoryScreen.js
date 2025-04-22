@@ -9,6 +9,7 @@ import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { RouteName } from '../../routes';
 import { SkuOrderScreen } from '../SkuOrderScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const SkuOrderHistoryScreen = () => {
   const { t } = useTranslation();
@@ -21,31 +22,29 @@ const SkuOrderHistoryScreen = () => {
   const navigation = useNavigation();
 
   const skulist = async () => {
-    const user = await AsyncStorage.getItem("userInfor");
-    const empid = JSON.parse(user);
-
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      "division": empid[0].division
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-
-    fetch("https://devcrm.romsons.com:8080/skulist", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if(result.error === false) {
-          setSkuList(result.data); // Populate the SKU list
+    try {
+      const user = await AsyncStorage.getItem("userInfor");
+      const empid = JSON.parse(user);
+  
+      const response = await axios.post(
+        "https://devcrm.romsons.com:8080/skulist",
+        {
+          division: empid[0].division,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch((error) => console.error('Error fetching SKU list:', error));
+      );
+  
+      if (response.data.error === false) {
+        setSkuList(response.data.data); // Populate the SKU list
+      }
+  
+    } catch (error) {
+      console.error('Error fetching SKU list:', error);
+    }
   };
 
   useEffect(() => {

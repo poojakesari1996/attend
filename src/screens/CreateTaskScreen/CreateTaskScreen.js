@@ -159,7 +159,7 @@ const CreateTaskScreen = ({ route }) => {
     
         } catch (error) {
             console.error("API Error:", error);
-            setAlertOtpMessage(t("Something_went_wrong")); // Error message
+            setAlertOtpMessage(t("Something_went_wrong"));
             setAlertOtpVisible(true);
         }
     };
@@ -283,7 +283,7 @@ const CreateTaskScreen = ({ route }) => {
                                 onPress={() => {
                                     setCallType("Self");
                                     setCallerName("Self");
-                                    setSelectedReportingTo(null); // very important
+                                    setSelectedReportingTo(null);
                                     setModalVisible(false);
                                 }}
                             >
@@ -296,7 +296,7 @@ const CreateTaskScreen = ({ route }) => {
                                 onPress={() => {
                                     setCallType("Joined");
                                     setModalVisible(false);
-                                    reportingPerson(); // Load reporting persons
+                                    reportingPerson();
                                 }}
                             >
                                 <Text style={CreateTaskStyles.optionText}>Joint Call</Text>
