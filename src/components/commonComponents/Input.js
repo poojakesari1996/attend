@@ -55,7 +55,7 @@ function Inputs({
           paddingVertical: 10,
           paddingHorizontal: SH(10),
           borderRadius: 8,
-          textAlignVertical: 'center',
+          // textAlignVertical: 'center',
           ...inputStyle,
         },
         inputContainer: {

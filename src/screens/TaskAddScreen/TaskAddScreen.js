@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, FlatList, ToastAndroid, Button, TouchableOpacity } from 'react-native'
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, ToastAndroid, Button, TouchableOpacity, TextInput } from 'react-native'
 import { TaskAddStyle } from '../../styles/TaskAddStyle'
 import { DatePicker } from '../../components';
 import { RouteName } from '../../routes';
@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { darkTheme, lightTheme } from '../../utils';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const TaskAddScreen = () => {
     const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
@@ -22,6 +22,26 @@ const TaskAddScreen = () => {
     const [followupDatewisedata, setFollowupDatewisedata] = useState([]);
     const [fromDate, setFromDate] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null); // ⬅️ add this to store selected date
+
+    const [updatedRemarks, setUpdatedRemarks] = useState({});
+
+
+    const handleRemarkChange = (taskId, newRemark) => {
+        setUpdatedRemarks((prev) => ({
+            ...prev,
+            [taskId]: newRemark
+        }));
+
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            if (selectedDate) {
+                followUpDatewiseData(selectedDate);
+            }
+        }, [selectedDate])
+    );
+
 
     const showToast = (message) => {
         if (Platform.OS === 'android') {
@@ -92,7 +112,8 @@ const TaskAddScreen = () => {
         const raw = JSON.stringify({
             taskIds: [taskId],
             status: status,
-            priority: priority
+            priority: priority,
+            remarks: updatedRemarks[taskId] || ''
         });
 
         const requestOptions = {
@@ -151,10 +172,6 @@ const TaskAddScreen = () => {
                 </TouchableOpacity>
             </View>
 
-
-
-
-
             <FlatList
                 data={followupDatewisedata}
                 renderItem={({ item, index }) => (
@@ -164,13 +181,14 @@ const TaskAddScreen = () => {
                         marginHorizontal: 20,
                         backgroundColor: '#ffffff',
                         borderRadius: 8,
+                        borderLeftWidth: 5,
+                        borderLeftColor: item.source === 'manual' ? '#f39c12' : '#2ecc71',
                         shadowColor: '#000',
                         shadowOpacity: 0.1,
                         shadowRadius: 4,
                         shadowOffset: { width: 0, height: 2 },
                         elevation: 3
                     }}>
-
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                             <Text style={{ color: 'black' }}>Task name: </Text>
@@ -179,28 +197,41 @@ const TaskAddScreen = () => {
 
                         {item.source !== 'manual' && (
                             <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Outlet Category Name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.outlet_category_name}</Text>
-                        </Text>
-                        )}
-                        {item.source !== 'manual' && (
-                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                                <Text style={{ color: 'black' }}>Call type: </Text>
-                                <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type || 'NA'}</Text>
+                                <Text style={{ color: 'black' }}>Outlet Category Name: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{item.outlet_category_name}</Text>
                             </Text>
                         )}
-
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                            <Text style={{ color: 'black' }}>Joint name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{item.joint_name}</Text>
+                            <Text style={{ color: 'black' }}>Call Type: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{item.call_type}</Text>
                         </Text>
+
                         {item.source === 'manual' && (
-                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                                <Text style={{ color: 'black' }}>Remarks: </Text>
-                                <Text style={{ color: 'green', fontSize: 12 }}>{item.remarks || 'NA'}</Text>
-                            </Text>
+                            <View style={{ marginVertical: 5 }}>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Remarks:</Text>
+                                <TextInput
+                                    style={{
+                                        borderWidth: 1,
+                                        borderColor: '#000000',
+                                        padding: 5,
+                                        borderRadius: 5,
+                                        fontSize: 12,
+                                        color: 'green',
+                                        fontWeight: 'bold',
+                                        marginTop: 5,
+                                    }}
+                                    value={
+                                        updatedRemarks[item.task_id] !== undefined
+                                            ? updatedRemarks[item.task_id]
+                                            : item.remarks || ''
+                                    } // fallback to item.remarks
+                                    placeholder="Enter remarks"
+                                    onChangeText={(text) => handleRemarkChange(item.task_id, text)}
+                                />
+                            </View>
                         )}
+
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -262,6 +293,7 @@ const TaskAddScreen = () => {
                 contentContainerStyle={{ paddingBottom: 100 }}
                 showsVerticalScrollIndicator={true}
             />
+
         </View>
     );
 
