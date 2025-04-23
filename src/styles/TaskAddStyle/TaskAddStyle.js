@@ -10,6 +10,9 @@ const { width } = Dimensions.get('window');
         marginVertical: 10,
         paddingHorizontal: 16,
       },
+      dateLabel: {
+          fontSize: 15
+      },
       
       datePickerWrapper: {
         width: '50%',

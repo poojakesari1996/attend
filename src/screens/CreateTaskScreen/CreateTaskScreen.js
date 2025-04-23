@@ -22,6 +22,7 @@ const CreateTaskScreen = ({ route }) => {
     const [reportingModalVisible, setReportingModalVisible] = useState(false);
     const [alertOtpVisible, setAlertOtpVisible] = useState(false);
     const [alertOtpMessage, setAlertOtpMessage] = useState('');
+    const [alertOtpType, setAlertOtpType] = useState('success');
     const [reportingPersons, setReportingPersons] = useState([]);
     const [followupDates, setFollowupDates] = useState(null);  // Add this line
     const [loading, setLoading] = useState(false);
@@ -86,7 +87,7 @@ const CreateTaskScreen = ({ route }) => {
         };
 
         try {
-            
+
             setReportingModalVisible(true);
             setLoading(true);
 
@@ -94,23 +95,48 @@ const CreateTaskScreen = ({ route }) => {
             const result = await response.json();
 
             if (result.error === false) {
-                setReportingPersons(result.data || []); 
+                setReportingPersons(result.data || []);
             } else {
                 setReportingPersons([]);
             }
         } catch (error) {
             console.error("Request failed:", error);
-            setReportingPersons([]); 
+            setReportingPersons([]);
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
 
 
     const insertAddNewTask = async () => {
-        if (!formData.taskName || !formData.remarks || !callerName) {
-            setAlertOtpMessage(t("Please fill all required_fields"));
+        const missingFields = [];
+    
+        // Check for missing fields
+        if (!formData.taskName) missingFields.push(t("Task Name"));
+        if (!formData.remarks) missingFields.push(t("Remarks"));
+        if (!callerName) missingFields.push(t("Caller Name"));
+    
+        // If there are any missing fields, show an alert
+        if (missingFields.length > 0) {
+            const missingMessage = `${t("Please_fill_the_following_fields")}: ${missingFields.join(", ")}`;
+            setAlertOtpType("error");
+            setAlertOtpMessage(missingMessage);
+            setAlertOtpVisible(true);
+            return;
+        }
+    
+        // Validate task name and remarks length
+        if (formData.taskName.length > 240) {
+            setAlertOtpType("error");
+            setAlertOtpMessage(t("Task name cannot exceed 240 characters"));
+            setAlertOtpVisible(true);
+            return;
+        }
+    
+        if (formData.remarks.length > 100) {
+            setAlertOtpType("error");
+            setAlertOtpMessage(t("Remarks cannot exceed 100 characters"));
             setAlertOtpVisible(true);
             return;
         }
@@ -130,8 +156,6 @@ const CreateTaskScreen = ({ route }) => {
                 enterBy: empid[0].emp_id,
             });
     
-            console.log('Sending Task Payload:', raw);
-    
             const response = await fetch("https://devcrm.romsons.com:8080/AddNewTask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -139,13 +163,13 @@ const CreateTaskScreen = ({ route }) => {
             });
     
             const result = await response.json();
-            console.log(result);
     
             if (!result.error) {
+                setAlertOtpType("success");
                 setAlertOtpMessage(t("Task_added_successfully"));
                 setAlertOtpVisible(true);
     
-                
+                // Reset the form
                 setFormData({ taskName: '', remarks: '' });
                 setFollowupStatus('Pending');
                 setFollowupPriority('High');
@@ -153,16 +177,20 @@ const CreateTaskScreen = ({ route }) => {
                 setCallerName('');
                 setFollowupDates(null);
             } else {
+                setAlertOtpType("error");
                 setAlertOtpMessage(t("Failed_to_add_task") + ": " + result.message);
                 setAlertOtpVisible(true);
             }
     
         } catch (error) {
             console.error("API Error:", error);
+            setAlertOtpType("error");
             setAlertOtpMessage(t("Something_went_wrong"));
             setAlertOtpVisible(true);
         }
     };
+    
+
 
 
     return (
@@ -189,22 +217,30 @@ const CreateTaskScreen = ({ route }) => {
                         placeholder={t("Enter Here...")}
                         placeholderTextColor={Colors.gray_text_color}
                         titleStyle={CreateTaskStyles.titleStyle}
-                        inputStyle={{ ...CreateTaskStyles.input_style, minHeight: SH(100) }}
-                        multiline
+                        inputStyle={CreateTaskStyles.input_style}
+                        multiline={true}
+                        scrollEnabled={false}
                         numberOfLines={4}
+                        textAlignVertical="top"
                     />
 
                     <Spacing space={10} />
 
                     <Input
-                        title={t("Remarks")}
+                        title={t(" Status Remarks")}
                         value={formData.remarks}
                         onChangeText={(text) => handleChange('remarks', text)}
                         placeholder={t("Enter Here...")}
                         placeholderTextColor={Colors.gray_text_color}
                         titleStyle={CreateTaskStyles.titleStyle}
                         inputStyle={CreateTaskStyles.input_style}
+                        multiline={true}
+                        scrollEnabled={false}
+                        numberOfLines={4}
+                        textAlignVertical="top"
                     />
+
+
 
                     <Spacing space={10} />
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
@@ -340,15 +376,18 @@ const CreateTaskScreen = ({ route }) => {
                     onPress={insertAddNewTask} />
             </View>
             <ConfirmationAlert
-    iconVisible={true}
-    message={alertOtpMessage}
-    modalVisible={alertOtpVisible}
-    setModalVisible={setAlertOtpVisible}
-    onPress={() => {
-      setAlertOtpVisible(false);
-      
-    }}
-  />
+                alertType={alertOtpType} // Pass the dynamic alertType (success or error)
+                iconVisible={true}
+                message={alertOtpMessage}
+                modalVisible={alertOtpVisible}
+                setModalVisible={setAlertOtpVisible}
+                onPress={() => {
+                    setAlertOtpVisible(false);  // Close the modal on press
+                }}
+            />
+
+
+
         </View>
     );
 }
