@@ -490,11 +490,12 @@ const MsdActivityScreen = ({ route }) => {
             {selectedFilter === 'Summary' && (
                 <View style={{ flex: 1 }}>
                     <ViewShot ref={viewShotRef} options={{
-                        format: 'png',
-                        quality: 1, // 1 = best quality
-                        result: 'tmpfile',
-                        width: 1080, // Increase width
-                        height: 1920 // Increase height (adjust to your screen needs)
+                    format: 'png',
+                    quality: 1,
+                    // result: 'tmpfile',
+                    width: 1080, 
+                    height: 1920 
+                
                     }} style={{ flex: 1, padding: 16 }}>
                         {/* Header Section */}
                         <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
@@ -509,7 +510,7 @@ const MsdActivityScreen = ({ route }) => {
                             </Text>
 
                             <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                <Text style={{ color: 'black' }}>Joined_Call_Name: </Text>
+                                <Text style={{ color: 'black' }}>Call Type: </Text>
                                 <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
                             </Text>
 
@@ -537,17 +538,17 @@ const MsdActivityScreen = ({ route }) => {
                                     }}
                                 >
 
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                    {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}> */}
                                         <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
                                             <Text style={{ color: 'black' }}>Customer Name: </Text>
                                             <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
                                         </Text>
 
-                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                             <Text style={{ color: 'black' }}>Customer Dept: </Text>
                                             <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
                                         </Text>
-                                    </View>
+                                    {/* </View> */}
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                         <Text style={{ color: 'black' }}>SKU Name: </Text>

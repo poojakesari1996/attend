@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert,ActivityIndicator } from "react-native";
 import { darkTheme, lightTheme, Fonts, SF, SH } from "../../utils";
 import { SalesAnalysisStyle } from "../../styles/SalesAnalysisStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,7 +20,7 @@ const SalesAnalysis = () => {
   const [salesData, setSalesData] = useState([]);
   const { t } = useTranslation();
   const [selectedService, setSelectedService] = useState("");  // To store selected sales group code
-
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
   //take variable for show and hide picker
   let [pickerShow, setPickerShow] = useState(false)
 
@@ -80,11 +80,6 @@ const SalesAnalysis = () => {
   }, [salesData]);
 
 
-
-
-
-
-
   const salesAnalysisCodeList = async () => {
     setSelectedService(""); // epty the variable in the initially
     setPickerShow(false);
@@ -118,54 +113,46 @@ const SalesAnalysis = () => {
   };
 
   const salesAnalysisList = async (selectedService) => {
-    const user = await AsyncStorage.getItem('userInfor');
-    const empid = JSON.parse(user);
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Basic SU5DX1JvbXNvbnNfVFA6ckwrMiUmNzM8NjVB");
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow"
-    };
-
-
-    const formattedFromDate = fromDate ? fromDate.toISOString().split('T')[0] : '';
-    const formattedToDate = toDate ? toDate.toISOString().split('T')[0] : '';
-
-    console.log(selectedService, "selectedService");
-    // console.log(salesGroups,"salesGroups");
-    // console.log(salesAnalysisCode,"jij");
-
-
-
-    const sgroups = selectedService === "all"
-      ? salesAnalysisCode.map(group => group.code).join(',')
-      : selectedService;
-    // console.log(sgroups,"71")
-    // console.log( `https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerRpt?from_date=${formattedFromDate}&to_date=${formattedToDate}&sgroups=${sgroups}`,"Line 72");
-
+    setIsLoading(true); // Start loading
+    
     try {
+      const user = await AsyncStorage.getItem('userInfor');
+      const empid = JSON.parse(user);
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", "Basic SU5DX1JvbXNvbnNfVFA6ckwrMiUmNzM8NjVB");
+  
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+  
+      const formattedFromDate = fromDate ? fromDate.toISOString().split('T')[0] : '';
+      const formattedToDate = toDate ? toDate.toISOString().split('T')[0] : '';
+      const sgroups = selectedService === "all"
+        ? salesAnalysisCode.map(group => group.code).join(',')
+        : selectedService;
+  
       const response = await fetch(
         `https://prismcore.romsons.com/romsons_incentive_core/v1/process/salesPerRpt?from_date=${formattedFromDate}&to_date=${formattedToDate}&sgroups=${sgroups}`,
         requestOptions
       );
-
+  
       const result = await response.json();
-      console.log('Full API response:', result);
-
-      if (result && result.status === 0 && result.data && Array.isArray(result.data.ex_analysis)) {
-        console.log('Sales Data:', result.data.ex_analysis);
+      
+      if (result?.status === 0 && Array.isArray(result.data?.ex_analysis)) {
         setSalesData(result.data.ex_analysis);
-
       } else {
-        console.error('No valid data found for ex_return or result status is not 0');
+        console.error('No valid data found');
         setSalesData([]);
       }
     } catch (error) {
-      console.error('Unexpected error occurred:', error);
+      console.error('API Error:', error);
       setSalesData([]);
-
+      // Optionally show error to user
+      Alert.alert("Error", "Failed to fetch sales data");
+    } finally {
+      setIsLoading(false); // Always stop loading
     }
   };
 
@@ -208,45 +195,6 @@ const SalesAnalysis = () => {
 
   return (
     <View style={[SalesAnalysisStyles.container, { padding: SF(10) }]}>
-      {/* Picker for Sales Group */}
-      {/* <View style={[SalesAnalysisStyles.pickerContainer]}>
-        {pickerShow ? (
-          <Picker
-            selectedValue={selectedService}
-            onValueChange={handlePickerChange}
-            style={{ color: currentColors.text }}
-            dropdownIconColor={currentColors.text}
-          >
-            <Picker.Item label="Please Select Sales Group" />
-            
-        
-              <Picker.Item
-                key={1}
-                label={selectedService}
-                 value={selectedService}
-              />
-           
-          </Picker>
-        ):  <Picker
-        selectedValue={selectedService}
-        onValueChange={handlePickerChange}
-        style={{ color: currentColors.text }}
-        dropdownIconColor={currentColors.text}
-      >
-        <Picker.Item label="Please Select Sales Group" />
-        <Picker.Item label="All Sales Group" value="all" />
-        {salesAnalysisCode.map((item, index) => (
-          <Picker.Item
-            key={index}
-            label={`${item.code} - ${item.name} (${item.headQuarter})`}
-            value={item.code} 
-          />
-        ))}
-      </Picker>}
-
-      </View> */}
-
-{/* <View style={[SalesAnalysisStyles.pickerContainer]}> */}
   {pickerShow ? (
     <HomeDropDown
       value={selectedService}
@@ -361,7 +309,18 @@ const SalesAnalysis = () => {
 
 
       {/* Display Sales Data */}
-      <SalesList salesData={salesData} />
+      {isLoading && (
+        <View style={SalesAnalysisStyles.loadingContainer}>
+          <ActivityIndicator 
+            size="large" 
+            color={currentColors.primary} 
+          />
+          <Text style={SalesAnalysisStyles.loadingText}>Loading sales data...</Text>
+        </View>
+      )}
+
+      {/* Display Sales Data only when not loading */}
+      {!isLoading && <SalesList salesData={salesData} />}
 
       {/* </ScrollView> */}
     </View>

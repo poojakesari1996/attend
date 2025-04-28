@@ -292,26 +292,31 @@ const OutletDetailScreen = ({ route }) => {
       const result = await response.json();
 
       if (result.error === false) {
-        // console.log("Response Data:", result.data);
-
-
         const orderData = result.data.filter(item => item.source === 'order');
         const activityData = result.data.filter(item => item.source === 'activity');
-
-        // console.log("Filtered Order Data:", orderData);
-        // console.log("Filtered Activity Data:", activityData);
-
-
+      
         const filteredData = [
           ...orderData.map(order => ({ ...order, type: 'order' })),
           ...activityData.map(activity => ({ ...activity, type: 'activity' }))
         ];
-
-        // console.log("Combined Data:", filteredData);
-
-
-        setOrderData(filteredData);
-      } else {
+      
+        // ⭐⭐ Group by m_orderID ⭐⭐
+        const groupedData = filteredData.reduce((acc, item) => {
+          if (!acc[item.m_orderID]) {
+            acc[item.m_orderID] = [];
+          }
+          acc[item.m_orderID].push(item);
+          return acc;
+        }, {});
+      
+        const finalData = Object.entries(groupedData).map(([orderId, items]) => ({
+          orderId,
+          items,
+        }));
+      
+        setOrderData(finalData);
+      }
+       else {
         // console.log("Error in response:", result.message);
       }
     } catch (error) {
@@ -932,77 +937,87 @@ const OutletDetailScreen = ({ route }) => {
         }
         renderItem={({ item }) => (
           <View style={OutletDetailStyles.container3}>
-            {item.type === 'order' ? (
-              <>
-                <Text style={OutletDetailStyles.headerText3}>Order ({item.m_orderID})</Text>
+            <Text style={OutletDetailStyles.headerText3}>
+              Order ID: {item.orderId}
+            </Text>
+        
+            {item.items.map((subItem, index) => (
+              <View key={index}>
                 <View style={OutletDetailStyles.details3}>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.sku_name}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.item_qty}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.item_value}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Scheme Discount</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.scheme_discount}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Total</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.total}</Text>
-                  </View>
+                  {subItem.type === 'order' ? (
+                    <>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>
+                          {new Date(subItem.date).toISOString().split('T')[0]}
+                        </Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.item_qty}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.item_value}</Text>
+                      </View>
+                    </>
+                  ) : subItem.type === 'activity' ? (
+                    <>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.contactPerson}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>
+                          {new Date(subItem.date).toISOString().split('T')[0]}
+                        </Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.department}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>{subItem.remark}</Text>
+                      </View>
+                      <View style={OutletDetailStyles.row3}>
+                        <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
+                        <Text style={OutletDetailStyles.rowValue3}>
+                          {subItem.follow_up
+                            ? new Date(subItem.follow_up).toLocaleDateString('en-IN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                            : ''}
+                        </Text>
+                      </View>
+                    </>
+                  ) : null}
                 </View>
-              </>
-            ) : item.type === 'activity' ? (
-              <>
-                <Text style={OutletDetailStyles.headerText3}>{item.source} ({item.m_orderID})</Text>
-                <View style={OutletDetailStyles.details3}>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.contactPerson}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{new Date(item.date).toISOString().split('T')[0]}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.department}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.sku_name}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>{item.remark}</Text>
-                  </View>
-                  <View style={OutletDetailStyles.row3}>
-                    <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
-                    <Text style={OutletDetailStyles.rowValue3}>
-                      {item.follow_up
-                        ? new Date(item.follow_up).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                        : ''}
-                    </Text>
-                  </View>
-                </View>
-              </>
-            ) : null}
+        
+                {/* Divider after each item */}
+                <View style={{
+                  height: 1,
+                  backgroundColor: '#ccc',
+                  marginVertical: 10,
+                  marginHorizontal: 10
+                }} />
+              </View>
+            ))}
           </View>
         )}
+        
+        
         ListEmptyComponent={() => (
           <View style={{ padding: 20, alignItems: 'center' }}>
             <Text>Data Loading.....</Text>

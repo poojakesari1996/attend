@@ -75,22 +75,6 @@ export default SalesAnalysisStyle = (Colors) => StyleSheet.create({
         textAlign: "center",
       },
 
-//   submitButton: {
-//     backgroundColor: "#007bff",  // Soft Blue Color
-//     width: SH(40),  // Small Width
-//     height: SH(40),  // Small Height
-//     borderRadius: SH(20),  // Fully Rounded for a Cute Look
-//     alignItems: "center",
-//     justifyContent: "center",
-//     marginLeft: SH(10),  // Space between To Date and Submit Button
-//     elevation: 3,  // Light Shadow for 3D Effect
-//   },
-  
-//   submitButtonText: {
-//     color: "#fff",
-//     fontSize: SF(16),  // Cute, Readable Font
-//     fontFamily: Fonts.Poppins_Bold,
-//   },
 
 pendingButton: {
     backgroundColor: Colors.theme_background,
@@ -157,6 +141,18 @@ row1: {
   justifyContent: 'space-between', // Ensure space is distributed evenly between the boxes
   alignItems: 'flex-start', // Align the content to the top of the container (heading on top)
   width: '100%', // Ensure it takes full width
+},
+
+
+loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+loadingText: {
+  marginTop: 10,
+  color: Colors.text,
 },
     
 });

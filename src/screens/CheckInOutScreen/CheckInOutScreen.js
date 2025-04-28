@@ -1,4 +1,4 @@
-import React, { useMemo, useState,useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, Modal, TextInput } from "react-native";
 import { CheckInOutStyle, PolicyStyle } from '../../styles';
 import { useTranslation } from "react-i18next";
@@ -27,28 +27,27 @@ const CheckInOutScreen = () => {
     weekoff: 0,
     holiday: 0,
   });
-  const [selectedPunchItem, setSelectedPunchItem] = useState(null); 
-  const [reasonData, setReasonData] = useState(""); 
-  const [modalVisible, setModalVisible] = useState(null); 
+  const [selectedPunchItem, setSelectedPunchItem] = useState(null);
+  const [reasonData, setReasonData] = useState("");
+  const [modalVisible, setModalVisible] = useState(null);
   const [regularizedDates, setRegularizedDates] = useState([]);
   const [showInput, setShowInput] = useState(null);
 
   const CheckInOutStyles = useMemo(() => CheckInOutStyle(Colors), [Colors]);
 
-  
+
 
   const monthlyInOutList = async () => {
     if (!fromDate) return;
 
+    const user = await AsyncStorage.getItem('userInfor');
+    const empid = JSON.parse(user);
     // Fetch regularized dates from AsyncStorage when the page refreshes
-    const storedRegularizedDates = await AsyncStorage.getItem('regularizedDates');
+    const storedRegularizedDates = await AsyncStorage.getItem(`regularizedDates_${empid[0].emp_id}`);
     if (storedRegularizedDates) {
       const parsedDates = JSON.parse(storedRegularizedDates);
       setRegularizedDates(parsedDates); // Update the state with the fetched data
     }
-
-    const user = await AsyncStorage.getItem('userInfor');
-    const empid = JSON.parse(user);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -75,14 +74,7 @@ const CheckInOutScreen = () => {
         }
       })
       .catch((error) => console.error("Error:", error));
-};
-
-  
-  
-  
-
-
-  
+  };
 
   const calculateAttendanceCounts = (data) => {
     let present = 0;
@@ -95,7 +87,7 @@ const CheckInOutScreen = () => {
 
     data.forEach(item => {
       totalDays++;
-      switch(item.attendance_status) {
+      switch (item.attendance_status) {
         case 'P':
           present++;
           break;
@@ -166,25 +158,18 @@ const CheckInOutScreen = () => {
             <Text style={CheckInOutStyles.createdBy}>{t("Total Hour")}: {item.total_hours}</Text>
 
             <TouchableOpacity onPress={item.attendance_status === "A" ? handleAbsentClick : null}>
-    <View
-      style={[
-        CheckInOutStyles.statusContainer,
-        { backgroundColor: CheckInOutStyles.statusContainerColor(item.attendance_status) },
-        item.attendance_status === "A" && regularizedDates.includes(item.punch_date) && { backgroundColor: "lightblue" }
-      ]}
-    >
-      <Text style={CheckInOutStyles.statusText}>
-        {item.attendance_status}
-      </Text>
-    </View>
-  </TouchableOpacity>
-
-
-
-
-
-
-
+              <View
+                style={[
+                  CheckInOutStyles.statusContainer,
+                  { backgroundColor: CheckInOutStyles.statusContainerColor(item.attendance_status) },
+                  item.attendance_status === "A" && regularizedDates.includes(item.punch_date) && { backgroundColor: "lightblue" }
+                ]}
+              >
+                <Text style={CheckInOutStyles.statusText}>
+                  {item.attendance_status}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -192,12 +177,63 @@ const CheckInOutScreen = () => {
   };
 
   const handleModalClose = () => {
-    setModalVisible(null); 
-    setShowInput(null); 
-    setSelectedPunchItem(null); 
+    setModalVisible(null);
+    setShowInput(null);
+    setSelectedPunchItem(null);
   };
 
-  const handleSubmit = () => {
+  //   const handleSubmit = () => {
+  //     if (selectedPunchItem) {
+  //       setReasonData(prevState => ({
+  //         ...prevState,
+  //         [selectedPunchItem.punch_date]: reasonData
+  //       }));
+
+  //       const myHeaders = new Headers();
+  //       myHeaders.append("Content-Type", "application/json");
+
+  //       const raw = JSON.stringify({
+  //         "emp_id": selectedPunchItem.emp_id,
+  //         "Request_Remarks": reasonData,
+  //         "requestDate": moment(selectedPunchItem.punch_date).format("YYYY-MM-DD")
+  //       });
+
+  //       const requestOptions = {
+  //         method: "POST",
+  //         headers: myHeaders,
+  //         body: raw,
+  //         redirect: "follow"
+  //       };
+
+  //       fetch("https://devcrm.romsons.com:8080/attendance_regulization", requestOptions)
+  //         .then((response) => response.json())
+  //         .then((result) => {
+  //           if (result.error === false) {
+  //             console.log("Regularization request submitted successfully", result);
+  //             alert(result.data);
+  //             const updatedRegularizedDates = [...regularizedDates, selectedPunchItem.punch_date];
+  //             AsyncStorage.setItem('regularizedDates', JSON.stringify(updatedRegularizedDates));
+  //             // ✅ UI ko turant update karo (manual underline)
+  //             setRegularizedDates(updatedRegularizedDates);
+  //             monthlyInOutList();
+
+  //             // ✅ Fresh API data ke liye list update karo
+
+  //           } else {
+  //             alert(result.data || "Failed to submit regularization request.");
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error:", error);
+  //           alert("An error occurred while submitting the request.");
+  //         });
+
+  //       setModalVisible(null);
+  //       setShowInput(null);
+  //     }
+  // };
+
+  const handleSubmit = async () => {
     if (selectedPunchItem) {
       setReasonData(prevState => ({
         ...prevState,
@@ -221,19 +257,23 @@ const CheckInOutScreen = () => {
       };
 
       fetch("https://devcrm.romsons.com:8080/attendance_regulization", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
+        .then(async (response) => response.json())
+        .then(async (result) => {
           if (result.error === false) {
-            console.log("Regularization request submitted successfully", result);
             alert(result.data);
-            const updatedRegularizedDates = [...regularizedDates, selectedPunchItem.punch_date];
-            AsyncStorage.setItem('regularizedDates', JSON.stringify(updatedRegularizedDates));
-            // ✅ UI ko turant update karo (manual underline)
+
+            const user = await AsyncStorage.getItem('userInfor');
+            const empid = JSON.parse(user);
+
+            // ✅ Employee-specific date store
+            const storedDates = await AsyncStorage.getItem(`regularizedDates_${empid[0].emp_id}`);
+            const parsedDates = storedDates ? JSON.parse(storedDates) : [];
+            const updatedRegularizedDates = [...new Set([...parsedDates, selectedPunchItem.punch_date])];
+
+            await AsyncStorage.setItem(`regularizedDates_${empid[0].emp_id}`, JSON.stringify(updatedRegularizedDates));
+
             setRegularizedDates(updatedRegularizedDates);
             monthlyInOutList();
-
-            // ✅ Fresh API data ke liye list update karo
-            
           } else {
             alert(result.data || "Failed to submit regularization request.");
           }
@@ -246,10 +286,9 @@ const CheckInOutScreen = () => {
       setModalVisible(null);
       setShowInput(null);
     }
-};
+  };
 
-  
-  
+
 
   return (
     <SafeAreaView style={CheckInOutStyles.container}>
@@ -354,25 +393,25 @@ const CheckInOutScreen = () => {
                 <Text style={CheckInOutStyles.modalText}>Enter Reason:</Text>
                 <TextInput
                   style={CheckInOutStyles.input}
-                  placeholder= 'Type your reason here'
+                  placeholder='Type your reason here'
                   value={reasonData}
                   onChangeText={(text) => setReasonData(text)}
                 />
                 <View style={CheckInOutStyles.buttonRow}>
-            <TouchableOpacity
-              style={CheckInOutStyles.submitButton}
-              onPress={handleSubmit}
-            >
-              <Text style={CheckInOutStyles.buttonText}>Submit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={CheckInOutStyles.cancelButton} // New cancel button
-              onPress={handleModalClose} // This will close the modal
-            >
-              <Text style={CheckInOutStyles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-                
+                  <TouchableOpacity
+                    style={CheckInOutStyles.submitButton}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={CheckInOutStyles.buttonText}>Submit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={CheckInOutStyles.cancelButton} // New cancel button
+                    onPress={handleModalClose} // This will close the modal
+                  >
+                    <Text style={CheckInOutStyles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+
               </>
             )}
           </View>

@@ -242,8 +242,9 @@ const OrderScreen = ({ route }) => {
 
       // Check if reason is missing for any entered unit
       const isReasonMissing = skuList.some(
-        (sku, index) => unitValue[index] > 0 && !selectedService[index]
+        (sku) => (unitValue[sku.sku_id] > 0) && !selectedService[sku.sku_id]
       );
+
 
       if (isReasonMissing) {
         alert('Please select a reason for all entered units.');
@@ -487,31 +488,31 @@ const OrderScreen = ({ route }) => {
 
       {/* Tab Selection */}
       <View style={ApprovalStyles.tabContainer}>
-  {['Item Order', 'Sale Return', 'Order Summary'].map((tab) => (
-    <TouchableOpacity
-      key={tab}
-      style={[
-        ApprovalStyles.tabButton,
-        selectedTab === tab && ApprovalStyles.selectedTabButton,
-      ]}
-      onPress={() => setSelectedTab(tab)}
-      activeOpacity={0.6}
-    >
-      <Text 
-        style={[
-          ApprovalStyles.tabText,
-          selectedTab === tab && ApprovalStyles.selectedTabText,
-        ]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.8}
-      >
-        {t(tab)}
-      </Text>
-      {selectedTab === tab && <View style={ApprovalStyles.activeIndicator} />}
-    </TouchableOpacity>
-  ))}
-</View>
+        {['Item Order', 'Sale Return', 'Order Summary'].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[
+              ApprovalStyles.tabButton,
+              selectedTab === tab && ApprovalStyles.selectedTabButton,
+            ]}
+            onPress={() => setSelectedTab(tab)}
+            activeOpacity={0.6}
+          >
+            <Text
+              style={[
+                ApprovalStyles.tabText,
+                selectedTab === tab && ApprovalStyles.selectedTabText,
+              ]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
+              {t(tab)}
+            </Text>
+            {selectedTab === tab && <View style={ApprovalStyles.activeIndicator} />}
+          </TouchableOpacity>
+        ))}
+      </View>
 
       {/* Item Order UI */}
       {selectedTab === "Item Order" && (
@@ -597,11 +598,12 @@ const OrderScreen = ({ route }) => {
                 Order Value
               </Text>
               <Text style={OrderStyles.footerValue}>
-                {skuList.reduce((total, sku, index) => {
-                  const unit = unitInputs[index] || 0;
-                  return total + (unit * sku.sku_price);
+                {skuList.reduce((total, sku) => {
+                  const unit = unitInputs[sku.sku_id] || 0;
+                  return total + (Number(unit) * Number(sku.sku_price));
                 }, 0).toFixed(2)}
               </Text>
+
             </View>
 
 
@@ -640,9 +642,16 @@ const OrderScreen = ({ route }) => {
                         style={OrderStyles.inputBox1}
                         placeholder="Enter unit"
                         value={unitValue[item.sku_id] || ''}
-                        onChangeText={(value) => handleUnitChange(value, item.sku_id)}
                         keyboardType="numeric"
+                        onChangeText={(value) => {
+                          if (value.length <= 5 && /^[0-9]*$/.test(value)) {
+                            handleUnitChange(value, item.sku_id);
+                          } else {
+                            alert('Please enter up to 5 digits only');
+                          }
+                        }}
                       />
+
                       <Spacing space={20} />
                       <View style={OrderStyles.dropdownContainer}>
                         <HomeDropDown
@@ -701,7 +710,9 @@ const OrderScreen = ({ route }) => {
             options={{
               format: 'png',
               quality: 1,
-              result: 'tmpfile',
+              // result: 'tmpfile',
+              width: 1080,
+              height: 1920
             }}
           >
 
@@ -715,7 +726,7 @@ const OrderScreen = ({ route }) => {
                     <Text style={OrderStyles.outletValue}>{outletDetail?.outlet_name}</Text>
                   </View>
                   <View style={OrderStyles.outletRow}>
-                    <Text style={OrderStyles.outletLabel}>Joined Name: </Text>
+                    <Text style={OrderStyles.outletLabel}>Call Type: </Text>
                     <Text style={OrderStyles.outletValue}>{outletDetail?.callerName}</Text>
                   </View>
                   <View style={OrderStyles.outletRow}>
@@ -733,13 +744,12 @@ const OrderScreen = ({ route }) => {
                   </View>
 
 
-                  <View style={OrderStyles.totalContainer}>
-                    <Text>
-                      <Text style={[OrderStyles.totalText, { color: 'black' }]}>Total: </Text>
-                      <Text style={[OrderStyles.totalText, { color: 'green' }]}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
-                    </Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                    {/* <Text style={{ fontSize: 14, fontWeight: 'bold'}}> */}
+                      <Text style={{ color: 'black', fontSize: 13,fontWeight: 'bold' }}>Total: </Text>
+                      <Text style={{ color: 'green',fontSize: 13,marginHorizontal: 70,fontWeight: 'bold' }}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
+                    {/* </Text> */}
                   </View>
-
                 </View>
 
                 <View style={OrderStyles.divider5} />
@@ -765,28 +775,29 @@ const OrderScreen = ({ route }) => {
                         <Text style={{ color: 'black', fontSize: 13 }}>SKU Name: </Text>
                         <Text style={{ color: 'green', fontSize: 13 }}>{res.skuName}</Text>
                       </Text>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{res.itemvalue}</Text>
+                        </Text>
 
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_price}</Text>
-                      </Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_price}</Text>
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
+                        </Text>
 
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{res.itemvalue}</Text>
-                      </Text>
-
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
-                      </Text>
-
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_gst}%</Text>
-                      </Text>
-
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 1 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{res.sku_gst}%</Text>
+                        </Text>
+                      </View>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                         <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
                         <Text style={{ color: 'green', fontSize: 13 }}>
                           {(res.sku_price * res.sku_gst / 100 + res.amount).toFixed(2)}
@@ -864,27 +875,28 @@ const OrderScreen = ({ route }) => {
                           <Text style={{ color: 'green', fontSize: 13 }}>{response?.ITM}</Text>
                         </Text>
                       )}
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{response?.unit}</Text>
+                        </Text>
 
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.price}</Text>
-                      </Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Price: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{response?.price}</Text>
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>Amount: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{response?.value}</Text>
+                        </Text>
 
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Unit: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.unit}</Text>
-                      </Text>
-
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>Amount: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.value}</Text>
-                      </Text>
-
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                        <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
-                        <Text style={{ color: 'green', fontSize: 13 }}>{response?.itmgst}%</Text>
-                      </Text>
-
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                          <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>{response?.itmgst}%</Text>
+                        </Text>
+                      </View>
                       <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
                         <Text style={{ color: 'black', fontSize: 13 }}>Net Amt: </Text>
                         <Text style={{ color: 'green', fontSize: 13 }}>
