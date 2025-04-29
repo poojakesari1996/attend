@@ -10,6 +10,7 @@ export { default as Search } from './Search';
 export { default as CustomSidebarMenu } from './CustomSidebarMenu';
 export { default as HeaderLeftMenuIcon } from './HeaderLeftMenuIcon';
 export { default as HomeDropDown } from './HomeDropDown';
+export { default as HomeDropDownPicker } from './HomeDropDownPicker';
 export { default as DatePicker } from './DatePicker';
 export { default as Repeat } from './Repeat';
 export { default as LanguageSelectFlat } from './LanguageSelectFlat';

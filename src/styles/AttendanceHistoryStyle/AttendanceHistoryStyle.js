@@ -112,8 +112,12 @@ color: 'green',
       fontSize: SF(15),
       fontFamily: Fonts.Poppins_Medium,
       color: Colors.black_text_color,
-    //   fontWeight: 'bold',
+      flexShrink: 1,             // Shrinks text to fit if needed
+      flexWrap: 'wrap',          // Wraps to next line
+      lineHeight: SF(20),
     },
+    
+    
 
     modalOverlay4: {
         flex: 1,

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from '
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { LeaveRequestsStyle, PolicyStyle } from '../../styles';
 import { useTranslation } from "react-i18next";
+import { HomeDropDown } from '../../components';
 import { HolidaysStyle } from '../../styles';
 import { useSelector } from "react-redux";
 import { Picker } from '@react-native-picker/picker';
@@ -74,30 +75,21 @@ const LeaveRequestsScreen = () => {
 
   return (
     <View style={LeaveRequestsStyles.container}>
-      {/* ✅ Year Picker */}
-      <View style={[HolidaysStyles.pickerBorder, {
-        width: 200,
-        alignSelf: "center",
-        borderRadius: 10,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: Colors.border,
-        marginTop: 20,
-        backgroundColor: Colors.cardBackground,
-        paddingHorizontal: 5
-      }]}>
-        <Picker
-          selectedValue={selectedYear}
-          onValueChange={(year) => {
-            setSelectedYear(year);
-          }}
-          style={HolidaysStyles.picker}
-        >
-          <Picker.Item label="Choose Year" value="" />
-          <Picker.Item label="2024" value="2024" />
-          <Picker.Item label="2025" value="2025" />
-        </Picker>
-      </View>
+      
+      <View style={{ alignSelf: "center", marginTop: 20 }}>
+  <HomeDropDown
+    value={selectedYear}
+    setValue={setSelectedYear}
+    data={[
+      { label: "Choose Year", value: "" },
+      { label: "2024", value: "2024" },
+      { label: "2025", value: "2025" },
+    ]}
+    placeholder="Choose Year"
+  />
+</View>
+
+
 
 
       <FlatList

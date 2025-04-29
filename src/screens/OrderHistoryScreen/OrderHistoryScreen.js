@@ -31,7 +31,8 @@ const OrderHistoryScreen = () => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [teamLists, setTeamLists] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("");
-  const [showTeamData, setShowTeamData] = useState(false)
+  const [selectedTeamId, setSelectedTeamId] = useState(null); // Manager’s selected team member ID
+  
 
   useEffect(() => {
     const currentDate = new Date();
@@ -126,11 +127,13 @@ const OrderHistoryScreen = () => {
     try {
       const user = await AsyncStorage.getItem('userInfor');
       const empid = JSON.parse(user);
+const empIdToUse = selectedTeamId || empid[0].emp_id; // ✅ Use team ID if manager selected
+
 
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
-      const raw = JSON.stringify({ "empID": empid[0].emp_id });
+      const raw = JSON.stringify({ "empID": empIdToUse });
 
       const requestOptions = {
         method: "POST",
@@ -218,7 +221,7 @@ const OrderHistoryScreen = () => {
         "fromDate": fromDate,
         "toDate": toDate,
         "Outletid": selectot,
-        "enterBy": empid[0].emp_id
+        "enterBy": selectedTeamId || empid[0].emp_id
       });
 
       console.log('Request payload:', raw);
@@ -256,9 +259,9 @@ const OrderHistoryScreen = () => {
         <TouchableOpacity style={[OrderHistoryStyles.pendingButton, { marginRight: 10 }]} onPress={openModal}>
           <Text style={OrderHistoryStyles.pendingText}>Team</Text>
         </TouchableOpacity>
-        {selectedTeam && (
+        {/* {selectedTeam && (
           <Text style={OrderHistoryStyles.selectedTeamText}>{selectedTeam}</Text>
-        )}
+        )} */}
 
         <TouchableOpacity style={[OrderHistoryStyles.pendingButton, { marginRight: 10 }]} onPress={selectBeat}>
           <Text style={OrderHistoryStyles.pendingText}>Beat</Text>
@@ -362,42 +365,70 @@ const OrderHistoryScreen = () => {
 
 
       <Modal
-        transparent={true}
-        visible={modalVisible1}
-        animationType="fade"
-        onRequestClose={() => setModalVisible1(false)}
-      >
-        <View style={OrderHistoryStyles.modalOverlay4}>
-          <View style={OrderHistoryStyles.dropdownContainer4}>
-            {loading ? (
-              <ActivityIndicator size="medium" color="#0000ff" />
-            ) : (
-              <ScrollView>
-                {teamLists.length > 0 ? (
-                  teamLists.map((team, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={OrderHistoryStyles.option4}
-                      onPress={async () => {
-                        // console.log("Selected team:", team.reporting_person_name);
-                        setSelectedTeam(team.reporting_person_name);
-                        // await teamData(team)
-                        setModalVisible1(false);
-                      }}
-                    >
-                      <Text style={OrderHistoryStyles.optionText4}>{team.reporting_person_name}</Text>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text style={{ textAlign: "center", padding: 10 }}>
-                    No Dealers Available
-                  </Text>
-                )}
-              </ScrollView>
-            )}
-          </View>
-        </View>
-      </Modal>
+              transparent={true}
+              visible={modalVisible1}
+              animationType="fade"
+              onRequestClose={() => setModalVisible1(false)}
+            >
+              <View style={OrderHistoryStyles.modalOverlay4}>
+                <View style={OrderHistoryStyles.dropdownContainer4}>
+      
+                  {/* Beautiful Close Button */}
+                  <TouchableOpacity
+                    onPress={() => setModalVisible1(false)}
+                    style={{
+                      position: 'absolute',
+                      top: 10,
+                      right: 10,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      backgroundColor: '#f2f2f2',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      elevation: 5, // for Android shadow
+                      shadowColor: '#000', // for iOS shadow
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                    }}
+                  >
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>×</Text>
+                  </TouchableOpacity>
+      
+                  {/* Modal Content */}
+                  {loading ? (
+                    <ActivityIndicator size="medium" color="#0000ff" style={{ marginTop: 50 }} />
+                  ) : (
+                    <ScrollView style={{ marginTop: 50 }}>
+                      {teamLists.length > 0 ? (
+                        teamLists.map((team, index) => (
+                          <TouchableOpacity
+                            key={index}
+                            style={OrderHistoryStyles.option4}
+                            onPress={() => {
+                              setSelectedTeam(team.reporting_person_name);
+                              setSelectedTeamId(team.emp_id);  // ✅ Store selected team member’s ID
+                              setModalVisible1(false);
+                            }}
+                            
+                          >
+                            <Text style={OrderHistoryStyles.optionText4}>
+                              {team.reporting_person_name}
+                            </Text>
+                          </TouchableOpacity>
+                        ))
+                      ) : (
+                        <Text style={{ textAlign: 'center', padding: 10 }}>
+      
+                        </Text>
+                      )}
+                    </ScrollView>
+                  )}
+                </View>
+              </View>
+            </Modal>
+      
 
       <Text style={OrderHistoryStyles.selectedText}>
         Selected Outlet:

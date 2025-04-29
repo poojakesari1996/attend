@@ -70,28 +70,6 @@ export default OrderStyle = () => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
-      
-      
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
     // Task container with flex adjustment
     // Main container for the product details
 // Task container
@@ -123,37 +101,34 @@ taskContainer1: {
   
   // Row container for input and dropdown
   rowContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', // Align vertically
-    justifyContent: 'flex-start', 
-    width: '100%', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
     marginTop: 10,
+    gap: 10,
   },
-  
   // Text input box
-  inputBox1: { 
-    height: 40, // Height of the input box
-    width: 100, // Width of the input box (you can adjust this)
-    borderWidth: 1, // Border to see the box
-    borderColor: Colors.black_text_color, // Border color
-    borderRadius: 8, // Rounded corners
-    paddingHorizontal: 10, // Padding inside the input box
-    fontSize: 14, // Font size for the input text
-     // Space between previous elements and the input
-    color: Colors.black_color,
-    marginRight: 10, // Text color
-    backgroundColor: Colors.white_text_color, // Background color
+  inputBox1: {
+    flex: 1,
+    height: 45,
+    borderWidth: 1,
+    borderColor: Colors.green,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: Colors.white_text_color,
   },
-  
   // Dropdown container
-  dropdownContainer: { 
-    flex: 1, 
-    height: 40, // Same as input box
-    borderWidth: 1, 
-    borderColor: Colors.green, 
-    borderRadius: 8, 
-    backgroundColor: Colors.white_text_color, 
+  dropdownContainer: {
+    flex: 1,
+    height: 45,
+    borderWidth: 1,
+    // borderColor: Colors.green,
+    borderRadius: 8,
+    backgroundColor: Colors.white_text_color,
     justifyContent: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: 5, // Add if your dropdown isn’t centered
   },
   
   // Dropdown picker style
@@ -236,13 +211,7 @@ taskContainer1: {
     color: Colors.peach_orange,
     width: '60%',
   },
-//   totalContainer: {
-//     marginTop: 10,
-//     paddingVertical: 8,
-//     backgroundColor: Colors.white_text_color,
-//     borderRadius: 8,
-//     alignItems: 'center',
-//   },
+
   totalText: {
     fontSize: 12,
     fontWeight: 'bold',
@@ -257,9 +226,9 @@ taskContainer1: {
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.peach_orange,
-    marginBottom: 2,
-    justifyContent: 'center', // Centers vertically
-  alignItems: 'center',    // Centers horizontally
+    marginTop: 10,
+    justifyContent: 'center',
+  alignItems: 'center',
        
   },
   summaryTableHeader: {
@@ -286,13 +255,14 @@ taskContainer1: {
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
+    alignItems: "center",
     borderBottomColor: Colors.gray_text_color,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
 
     
   tableCell: {
-    flex: 1, // Adjust for proportional widths
+    flex: 0.6, // Adjust for proportional widths
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 5,
@@ -300,20 +270,14 @@ taskContainer1: {
   },
 
   tableCellLeft: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
     paddingHorizontal: 5,
     flexDirection: 'row',
     flexWrap: 'nowrap',
   },
-//   tableDataLeft: {
-//     fontSize: 12,
-//     // color: Colors.blue_jeans_color,
-//     flex: 5,
-//     textAlign: 'left',
-//     marginLeft: 10
-//   },
+
 
 tableDataLeft: {
     fontSize: 12,
@@ -333,14 +297,12 @@ tableDataLeft: {
     
   },
 
-
+  tableDataSecondary: {
+    fontSize: 12,
+    color: Colors.gray_text_color,
+    marginTop: 2,
+  },
   
-//   tableData: {
-//     fontSize: 12,
-//     color: Colors.blue_jeans_color,
-//     textAlign: 'center',
-//     marginRight: 20
-//   },
 
 
 tableData: {
@@ -402,12 +364,7 @@ tableData: {
     marginRight: 40
   },
   
-//   tableData1: {
-//     fontSize: 12,
-//     color: Colors.blue_jeans_color,
-//     textAlign: 'center',
-//     marginRight: 30
-//   },
+
 
 tableData1: {
     fontSize: 12,
@@ -474,19 +431,27 @@ tableData1: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10
+    paddingHorizontal: 8,
+    minWidth: 90,
   },
+  
   footerLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.white_text_color,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,
+    textAlign: 'center',
   },
+  
   footerValue: {
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.black_text_color,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
+  
+  
+ 
   footerButton: {
     backgroundColor: Colors.blue_jeans_color,
     fontFamily:Fonts.Poppins_Medium,
@@ -581,14 +546,7 @@ saleReturnFooterContainer: {
     left: 0,
     right: 0 // Starts from the left edge of the screen
   },
-//   footerButtonText8: {
-//     color: Colors.blue_jeans_color,
-//     fontSize: 12,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//     padding: 10,
-//     borderRadius: SH(70)
-//   },
+
   
 footerButtonText8: {
     backgroundColor: Colors.blue_jeans_color, // Add background color for visibility
