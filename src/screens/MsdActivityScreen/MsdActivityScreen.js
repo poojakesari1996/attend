@@ -38,7 +38,7 @@ const MsdActivityScreen = ({ route }) => {
     const [Itemlist, setItemlist] = useState([]);
     const [dates, setDates] = useState([]);
     const [fromDate, setFromDate] = useState(new Date());
-    
+
 
 
     const [
@@ -156,8 +156,8 @@ const MsdActivityScreen = ({ route }) => {
         activity();
     }, []);
 
-    
-    
+
+
 
 
     const handleDateChange = (event, selectedDate, skuId) => {
@@ -471,31 +471,31 @@ const MsdActivityScreen = ({ route }) => {
             )}
             {selectedFilter === 'Summary' && (
                 <View style={{ flex: 1 }}>
-                    
-                        {/* Header Section */}
-                        <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                <Text style={{ color: 'black' }}>Outlet Name: </Text>
-                                <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
-                            </Text>
 
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                <Text style={{ color: 'black' }}>Contact: </Text>
-                                <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
-                            </Text>
+                    {/* Header Section */}
+                    <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                            <Text style={{ color: 'black' }}>Outlet Name: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
+                        </Text>
 
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                <Text style={{ color: 'black' }}>Joined_Call_Name: </Text>
-                                <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
-                            </Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                            <Text style={{ color: 'black' }}>Contact: </Text>
+                            <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
+                        </Text>
 
-                        </View>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                            <Text style={{ color: 'black' }}>Call Type: </Text>
+                            <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
+                        </Text>
 
-                        <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
+                    </View>
 
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
+                    <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
 
-                        <FlatList
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
+
+                    <FlatList
                             data={msdActivityData}
                             renderItem={({ item, index }) => (
                                 <View
@@ -513,17 +513,17 @@ const MsdActivityScreen = ({ route }) => {
                                     }}
                                 >
 
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                    {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}> */}
                                         <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
                                             <Text style={{ color: 'black' }}>Customer Name: </Text>
                                             <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
                                         </Text>
 
-                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'right' }}>
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                             <Text style={{ color: 'black' }}>Customer Dept: </Text>
                                             <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
                                         </Text>
-                                    </View>
+                                    {/* </View> */}
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
                                         <Text style={{ color: 'black' }}>SKU Name: </Text>
@@ -553,7 +553,6 @@ const MsdActivityScreen = ({ route }) => {
                             contentContainerStyle={{ paddingBottom: 20 }}
                             showsVerticalScrollIndicator={false}
                         />
-                    
                 </View>
 
 

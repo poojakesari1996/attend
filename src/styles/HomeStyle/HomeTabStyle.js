@@ -213,7 +213,31 @@ moduleLabel1: {
 
 
 
+moduleLabel: {
+  fontSize: SF(12),
+  fontFamily: Fonts.Poppins_Medium,
+  color: Colors.black_text_color,
+  // marginTop:10
+},
+notificationBadge: {
+  position: "absolute",
+  right: -6,
+  top: -4,
+  backgroundColor: Colors.black_text_color,
+  borderRadius: 10,
+  minWidth: 18,
+  height: 18,
+  justifyContent: "center",
+  alignItems: "center",
+  paddingHorizontal: 4,
+  zIndex: 1,
+},
 
+badgeText: {
+  color: Colors.white_color,
+  fontSize: 10,
+  fontWeight: "bold",
+},
 
 
 

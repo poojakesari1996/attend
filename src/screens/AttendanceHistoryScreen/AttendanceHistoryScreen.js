@@ -25,7 +25,8 @@ const AttendanceHistoryScreen = () => {
     const [fieldHours, setFieldHours] = useState("0.00"); // State to store FH
     const [loading, setLoading] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTeamData, setShowTeamData] = useState(false)
+    const [showTeamData, setShowTeamData] = useState(false);
+    
 
 
     const getAttendanceHistory = async (teamData) => {
@@ -168,21 +169,20 @@ const AttendanceHistoryScreen = () => {
                 // Convert date strings to JavaScript Date objects
                 const timeArray = result.data.map(item => {
                     const parsedTime = parseTime(item.date); // Convert to 24-hour format
-                    return new Date(`${formattedDate}T${parsedTime}:00`); // Ensure correct format
+                    return new Date(`${formattedDate}T${parsedTime}:00`);
                 });
 
                 if (timeArray.length > 0) {
-                    // Find min and max timestamps
                     const minTime = new Date(Math.min(...timeArray));
                     const maxTime = new Date(Math.max(...timeArray));
 
-                    // Calculate the difference in hours
-                    const totalFieldHours = (maxTime - minTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+                    const durationInMinutes = Math.floor((maxTime - minTime) / (1000 * 60));
 
-                    console.log("Total Field Hours (FH):", totalFieldHours.toFixed(2));
+                    console.log("Total Field Minutes:", durationInMinutes);
 
-                    // Store FH in state
-                    setFieldHours(totalFieldHours.toFixed(2));
+                    // Store only minutes in state
+                    setFieldHours(`${durationInMinutes} min`);
+
                 } else {
                     console.log("No time data available.");
                 }
@@ -313,7 +313,12 @@ const AttendanceHistoryScreen = () => {
                             {/* Vertical Divider */}
                             <View style={{ height: '90%', width: 1, backgroundColor: 'gray', marginHorizontal: 6 }} />
 
-                            <Text style={AttendanceHistoryStyles.taskName}>{res.outlet_name} ({res.source})</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+                                <Text style={AttendanceHistoryStyles.taskName}>
+                                    {res.outlet_name} ({res.source})
+                                </Text>
+                            </View>
+
 
                         </View>
                         <Spacing space={5} />

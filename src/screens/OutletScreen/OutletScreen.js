@@ -17,15 +17,15 @@ const OutletScreen = () => {
   const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
   const currentColors = isDarkMode ? darkTheme : lightTheme;
   const OutletStyles = useMemo(() => OutletStyle(currentColors), [currentColors]);
-//   const { t } = useTranslation();
+  //   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [outletDates, setOutletDates] = useState([]); // All available outlet dates
-  const [selectedButton, setSelectedButton] = useState(null); // Store selected date index
+  const [outletDates, setOutletDates] = useState([]); 
+  const [selectedButton, setSelectedButton] = useState(null); 
   const [count, setCount] = useState('');
   const [beatName, setBeatName] = useState('');
-  const [remainingOutlets, setRemainingOutlets] = useState(0);  // ✅ Define this
+  const [remainingOutlets, setRemainingOutlets] = useState(0);  
   const [minOutletCoverage, setMinOutletCoverage] = useState('');
-  const [outletData, setOutletData] = useState([]); // Store data for the selected date
+  const [outletData, setOutletData] = useState([]); 
 
   const fetchOutletDates = async () => {
     const user = await AsyncStorage.getItem('userInfor');
@@ -110,29 +110,25 @@ const OutletScreen = () => {
     } catch (error) {
       console.error('API Error:', error.message || error);
     }
-};
+  };
 
-useEffect(() => {
-  const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  countOutlets(today);
-}, []);
-
-
-useEffect(() => {
-  if (outletData.length > 0) {
-    // **✅ Count outlets that are either 'Red' (ordered) or 'Blue' (activity done)**
-    const coveredOutlets = outletData.filter((res) => res.order_status === 'Red' || res.activity_status === 'Blue').length;
-
-    let remaining = coveredOutlets; // ✅ Show exact count of visited outlets
-
-    setRemainingOutlets(remaining);
-    console.log("Updated Remaining Outlets:", remaining);
-  }
-}, [outletData, minOutletCoverage]); // **Dependency array ensures it runs when `outletData` or `minOutletCoverage` updates**
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    countOutlets(today);
+  }, []);
 
 
-  
-  
+  useEffect(() => {
+    if (outletData.length > 0) {
+      const coveredOutlets = outletData.filter((res) => res.order_status === 'Green' || res.activity_status === 'Green').length;
+      let remaining = coveredOutlets;
+      setRemainingOutlets(remaining);
+      console.log("Updated Remaining Outlets:", remaining);
+    }
+  }, [outletData, minOutletCoverage]);
+
+
+
 
   useEffect(() => {
     fetchOutletDates(); // Initial fetch of outlet dates
@@ -145,7 +141,7 @@ useEffect(() => {
     countOutlets(Moment(date).format('YYYY-MM-DD')); // Count outlets for the selected date
   };
 
-  
+
 
   return (
     <ScrollView style={OutletStyles.container}>
@@ -161,8 +157,8 @@ useEffect(() => {
                     Moment().format('YYYY-MM-DD') === Moment(item.outlet_date).format('YYYY-MM-DD')
                       ? '#d49306'
                       : selectedButton === index
-                      ? 'green'
-                      : '#D3D3D3',
+                        ? 'green'
+                        : '#D3D3D3',
                   padding: 10,
                   borderRadius: 5,
                   alignItems: 'center',
@@ -201,50 +197,56 @@ useEffect(() => {
       {outletData.map((res, ind) => {
         console.log(res, 'hrhyruss');
         console.log(res.outlet_lat, res.outlet_long, 'hthuytjt');
-  // Determine the color based on order status
-  // const outletNameColor = res.order_status === 'Red' ? 'red' : 'black';
-  const outletNameColor = res.order_status === 'Red' 
-    ? 'red'  // If order exists, color it red
-    : res.activity_status === 'Blue' 
-      ? 'blue'  // If activity exists, color it green
-      : 'black'; // Default color
-  const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green'; // Map icon_color to the correct color
+        // Determine the color based on order status
+        // const outletNameColor = res.order_status === 'Red' ? 'red' : 'black';
+        const outletNameColor = res.order_status === 'Green'
+          ? 'green'  // If order exists, color it red
+          : res.activity_status === 'Green'
+            ? 'green'  // If activity exists, color it green
+            : 'black'; // Default color
+        const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green'; 
 
-  return (
-    <TouchableOpacity
-      key={ind}
-      style={OutletStyles.PaddingHorizontal}
-      onPress={() => {
-        const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green';  // Calculate locationPinColor
-        navigation.navigate(RouteName.OUTLETDETAIL, {
-          itemId: res,  // Pass the entire 'res' object as 'itemId' to the next page
-          icon_color: res.icon_color,  // Optionally pass other data
-          locationPinColor: locationPinColor,  // Pass locationPinColor to the next page
-        });
-      }}
-    >
-      <View style={OutletStyles.taskContainer}>
-        {/* Location Icon */}
-        <Icon1
-          style={OutletStyles.TaskIcon}
-          name="location-pin"
-          size={30}
-          color={locationPinColor} // Based on location
-        />
-        <View style={OutletStyles.taskDetails}>
-          {/* Outlet Name with Dynamic Color */}
-          <Text style={[OutletStyles.taskName, { color: outletNameColor }]}>
-            {res.outlet_name}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={OutletStyles.taskDate}>ID: {res.outlet_id}</Text>
-            <Text style={OutletStyles.taskTime}>{res.customer_type_name}</Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-})}
+        return (
+          <TouchableOpacity
+            key={ind}
+            style={OutletStyles.PaddingHorizontal}
+            onPress={() => {
+              const locationPinColor = res.icon_color === 'Red' ? 'red' : 'green';  // Calculate locationPinColor
+              navigation.navigate(RouteName.OUTLETDETAIL, {
+                itemId: res,  // Pass the entire 'res' object as 'itemId' to the next page
+                icon_color: res.icon_color,  // Optionally pass other data
+                locationPinColor: locationPinColor,  // Pass locationPinColor to the next page
+              });
+            }}
+          >
+            <View style={OutletStyles.taskContainer}>
+              {/* Location Icon */}
+              <Icon1
+                style={OutletStyles.TaskIcon}
+                name="location-pin"
+                size={30}
+                color={locationPinColor} // Based on location
+              />
+              <View style={OutletStyles.taskDetails}>
+                {/* Outlet Name with Dynamic Color */}
+                <Text
+                  style={[
+                    OutletStyles.taskName,
+                    { color: outletNameColor, flex: 1, flexWrap: 'wrap' }
+                  ]}
+                >
+                  {res.outlet_name}
+                </Text>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={OutletStyles.taskDate}>ID: {res.outlet_id}</Text>
+                  <Text style={OutletStyles.taskTime}>{res.customer_type_name}</Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
 
 
 

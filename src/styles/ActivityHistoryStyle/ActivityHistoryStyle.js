@@ -216,4 +216,34 @@ import { StyleSheet } from 'react-native';
         justifyContent: 'center',
         alignItems: 'center',
       },
+
+      modalOverlay4: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      dropdownContainer4: {
+        width: '90%',
+        maxHeight: '70%', // Limits the height to make room for scrolling
+        backgroundColor: Colors.black_color,
+        borderRadius: 10,
+        padding: 10,
+        elevation: 5,
+      },
+      option4: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.peach_orange,
+      },
+      optionText4: {
+        fontSize: 16,
+        color: Colors.white_text_color,
+      },
+      selectedTeamText: {
+        textAlign: 'center',
+        fontSize: 14,
+        color: 'gray',  // You can adjust the color as per your design
+        marginTop: 5,  // Adds some space below the "Team" button
+      },
 });

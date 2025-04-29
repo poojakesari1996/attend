@@ -38,15 +38,14 @@ const CheckInOutScreen = () => {
   const monthlyInOutList = async () => {
     if (!fromDate) return;
 
+    const user = await AsyncStorage.getItem('userInfor');
+    const empid = JSON.parse(user);
     // Fetch regularized dates from AsyncStorage when the page refreshes
-    const storedRegularizedDates = await AsyncStorage.getItem('regularizedDates');
+    const storedRegularizedDates = await AsyncStorage.getItem(`regularizedDates_${empid[0].emp_id}`);
     if (storedRegularizedDates) {
       const parsedDates = JSON.parse(storedRegularizedDates);
       setRegularizedDates(parsedDates); // Update the state with the fetched data
     }
-
-    const user = await AsyncStorage.getItem('userInfor');
-    const empid = JSON.parse(user);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -73,7 +72,7 @@ const CheckInOutScreen = () => {
         }
       })
       .catch((error) => console.error("Error:", error));
-};
+  };
 
   
   
@@ -195,7 +194,7 @@ const CheckInOutScreen = () => {
     setSelectedPunchItem(null); 
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedPunchItem) {
       setReasonData(prevState => ({
         ...prevState,
@@ -219,19 +218,23 @@ const CheckInOutScreen = () => {
       };
 
       fetch("https://devcrm.romsons.com:8080/attendance_regulization", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
+        .then(async (response) => response.json())
+        .then(async (result) => {
           if (result.error === false) {
-            console.log("Regularization request submitted successfully", result);
             alert(result.data);
-            const updatedRegularizedDates = [...regularizedDates, selectedPunchItem.punch_date];
-            AsyncStorage.setItem('regularizedDates', JSON.stringify(updatedRegularizedDates));
-            // ✅ UI ko turant update karo (manual underline)
+
+            const user = await AsyncStorage.getItem('userInfor');
+            const empid = JSON.parse(user);
+
+            // ✅ Employee-specific date store
+            const storedDates = await AsyncStorage.getItem(`regularizedDates_${empid[0].emp_id}`);
+            const parsedDates = storedDates ? JSON.parse(storedDates) : [];
+            const updatedRegularizedDates = [...new Set([...parsedDates, selectedPunchItem.punch_date])];
+
+            await AsyncStorage.setItem(`regularizedDates_${empid[0].emp_id}`, JSON.stringify(updatedRegularizedDates));
+
             setRegularizedDates(updatedRegularizedDates);
             monthlyInOutList();
-
-            // ✅ Fresh API data ke liye list update karo
-            
           } else {
             alert(result.data || "Failed to submit regularization request.");
           }
@@ -244,7 +247,7 @@ const CheckInOutScreen = () => {
       setModalVisible(null);
       setShowInput(null);
     }
-};
+  };
 
   
   
