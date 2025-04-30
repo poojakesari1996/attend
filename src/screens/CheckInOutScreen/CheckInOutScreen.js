@@ -42,7 +42,6 @@ const CheckInOutScreen = () => {
 
     const user = await AsyncStorage.getItem('userInfor');
     const empid = JSON.parse(user);
-    // Fetch regularized dates from AsyncStorage when the page refreshes
     const storedRegularizedDates = await AsyncStorage.getItem(`regularizedDates_${empid[0].emp_id}`);
     if (storedRegularizedDates) {
       const parsedDates = JSON.parse(storedRegularizedDates);

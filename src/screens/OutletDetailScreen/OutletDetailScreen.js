@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Linking, Alert,FlatList } from "react-native";
+import { Text, View, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Linking, Alert, FlatList } from "react-native";
 import { OutletDetailStyle } from "../../styles/OutletDetailStyle";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -203,7 +203,7 @@ const OutletDetailScreen = ({ route }) => {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      empid: empid[0].emp_id, 
+      empid: empid[0].emp_id,
     });
 
     const requestOptions = {
@@ -214,24 +214,24 @@ const OutletDetailScreen = ({ route }) => {
     };
 
     try {
-      
+
       setReportingModalVisible(true);
       setLoading(true);
 
       const response = await fetch("https://devcrm.romsons.com:8080/Reporting_hierarchy", requestOptions);
-      const result = await response.json(); 
+      const result = await response.json();
 
       if (result.error === false) {
-        
-        setReportingPersons(result.data || []); 
+
+        setReportingPersons(result.data || []);
       } else {
-        setReportingPersons([]); 
+        setReportingPersons([]);
       }
     } catch (error) {
       console.error("Request failed:", error);
-      setReportingPersons([]); 
+      setReportingPersons([]);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -294,12 +294,12 @@ const OutletDetailScreen = ({ route }) => {
       if (result.error === false) {
         const orderData = result.data.filter(item => item.source === 'order');
         const activityData = result.data.filter(item => item.source === 'activity');
-      
+
         const filteredData = [
           ...orderData.map(order => ({ ...order, type: 'order' })),
           ...activityData.map(activity => ({ ...activity, type: 'activity' }))
         ];
-      
+
         // ⭐⭐ Group by m_orderID ⭐⭐
         const groupedData = filteredData.reduce((acc, item) => {
           if (!acc[item.m_orderID]) {
@@ -308,15 +308,15 @@ const OutletDetailScreen = ({ route }) => {
           acc[item.m_orderID].push(item);
           return acc;
         }, {});
-      
+
         const finalData = Object.entries(groupedData).map(([orderId, items]) => ({
           orderId,
           items,
         }));
-      
+
         setOrderData(finalData);
       }
-       else {
+      else {
         // console.log("Error in response:", result.message);
       }
     } catch (error) {
@@ -523,25 +523,25 @@ const OutletDetailScreen = ({ route }) => {
   };
 
   //create variable for store pincode
-  let[pincode,setPincode] = useState("");
+  let [pincode, setPincode] = useState("");
 
   const getAddress = async (lat, long) => {
     console.log('Fetching address for coordinates:', lat, long);
     setLoading(true);
     setPincode("");
-  
+
     try {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=AIzaSyC4cMHPr8PdH18gyzIJ6YMlTJSHEDGwvNM`;
       const response = await fetch(url);
       const data = await response.json();
-  
+
       if (data.results && data.results.length > 0) {
         const address = data.results[0].formatted_address;
         const components = data.results[0].address_components;
-  
+
         const postalComponent = components.find(comp => comp.types.includes("postal_code"));
         const pincode = postalComponent ? postalComponent.long_name : "";
-  
+
         setAddress(address);
         setPincode(pincode);
         console.log(pincode, "Extracted Pincode");
@@ -554,7 +554,7 @@ const OutletDetailScreen = ({ route }) => {
       setLoading(false);
     }
   };
-  
+
 
   async function requestPermissions() {
     if (Platform.OS === 'ios') {
@@ -625,13 +625,13 @@ const OutletDetailScreen = ({ route }) => {
   useEffect(() => {
     setHide(false);
     setLoading(true); // start loading
-  
+
     const fetchAll = async () => {
-      await selectOutletDetail();     
-      await lastTwoVisitOrder();      
-      setLoading(false);              
+      await selectOutletDetail();
+      await lastTwoVisitOrder();
+      setLoading(false);
     };
-  
+
     fetchAll();
   }, []);
   const openModal = () => {
@@ -647,7 +647,7 @@ const OutletDetailScreen = ({ route }) => {
   );
   const navigation = useNavigation();
 
-  
+
 
   return (
     <View style={OutletDetailStyles.mainContainer}>
@@ -685,7 +685,7 @@ const OutletDetailScreen = ({ route }) => {
                 </View>
                 <Text style={{ fontSize: 12, color: '#128C7E', marginTop: 3 }}>Location</Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 onPress={handleOrderButtonClick}
                 style={{
@@ -698,7 +698,7 @@ const OutletDetailScreen = ({ route }) => {
                 <VectorIcon icon="FontAwesome" size={35} color="#128C7E" name="shopping-cart" />
                 <Text style={{ fontSize: 12, color: '#128C7E' }}>Order</Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 style={{
                   padding: 7,
@@ -711,7 +711,7 @@ const OutletDetailScreen = ({ route }) => {
                 <VectorIcon icon="FontAwesome5" size={30} name="tasks" color="#128C7E" />
                 <Text style={{ fontSize: 12, color: '#128C7E' }}>Activity</Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 style={{
                   padding: 7,
@@ -728,7 +728,7 @@ const OutletDetailScreen = ({ route }) => {
                   </Text>
                 )}
               </TouchableOpacity>
-  
+
               <TouchableOpacity style={{
                 padding: 7,
                 marginHorizontal: 8,
@@ -739,21 +739,21 @@ const OutletDetailScreen = ({ route }) => {
                 <Text style={{ fontSize: 12, color: '#128C7E' }}>Dealer</Text>
               </TouchableOpacity>
             </View>
-  
+
             <View style={OutletDetailStyles.callerNameContainer}>
               <Text style={OutletDetailStyles.callerNameText}>
                 Caller Name :
                 <Text style={{ color: 'brown', fontSize: 12 }}> {callerName}</Text>
               </Text>
             </View>
-  
+
             <View style={OutletDetailStyles.callerNameContainer}>
               <Text style={OutletDetailStyles.callerNameText}>
                 Delaer Name :
                 <Text style={{ color: 'brown', fontSize: 12 }}> {selectedDealerName}</Text>
               </Text>
             </View>
-  
+
             <View style={OutletDetailStyles.callerNameContainer}>
               {hide ? (
                 <View style={OutletDetailStyles.addressContainer}>
@@ -766,7 +766,7 @@ const OutletDetailScreen = ({ route }) => {
                     onPress={() => {
                       const outletPin = String(selectedoutletsdeatil.pin).trim();
                       const currentPin = String(pincode).trim();
-  
+
                       if (outletPin === currentPin) {
                         jioAddress();
                       } else {
@@ -790,7 +790,7 @@ const OutletDetailScreen = ({ route }) => {
                 </View>
               ) : null}
             </View>
-  
+
             <Modal
               transparent={true}
               visible={modalVisible1}
@@ -799,6 +799,27 @@ const OutletDetailScreen = ({ route }) => {
             >
               <View style={OutletDetailStyles.modalOverlay4}>
                 <View style={OutletDetailStyles.dropdownContainer4}>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible1(false)}
+                    style={{
+                      position: 'absolute',
+                      top: 10,
+                      right: 10,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      backgroundColor: '#f2f2f2',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      elevation: 5, // for Android shadow
+                      shadowColor: '#000', // for iOS shadow
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                    }}
+                  >
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>×</Text>
+                  </TouchableOpacity>
                   {loading ? (
                     <ActivityIndicator size="medium" color="#0000ff" />
                   ) : (
@@ -826,7 +847,7 @@ const OutletDetailScreen = ({ route }) => {
                 </View>
               </View>
             </Modal>
-  
+
             <Modal
               transparent={true}
               visible={modalVisible}
@@ -848,9 +869,9 @@ const OutletDetailScreen = ({ route }) => {
                   <TouchableOpacity
                     style={OutletDetailStyles.option}
                     onPress={() => {
-                      setCallType("Joined"); 
-                      setModalVisible(false); 
-                      reportingPerson(); 
+                      setCallType("Joined");
+                      setModalVisible(false);
+                      reportingPerson();
                     }}
                   >
                     <Text style={OutletDetailStyles.optionText}>Joint Call</Text>
@@ -858,7 +879,7 @@ const OutletDetailScreen = ({ route }) => {
                 </View>
               </View>
             </Modal>
-  
+
             <Modal
               transparent={true}
               visible={reportingModalVisible}
@@ -885,14 +906,14 @@ const OutletDetailScreen = ({ route }) => {
                 </View>
               </View>
             </Modal>
-  
+
             <View style={OutletDetailStyles.infoContainer}>
               <Text style={OutletDetailStyles.outletLabel}>Geo Address:</Text>
               <Text style={OutletDetailStyles.outletValue}>
                 {selectedoutletsdeatil.jio_address}
               </Text>
             </View>
-  
+
             <View style={OutletDetailStyles.infoContainer}>
               <View style={OutletDetailStyles.labelContainer}>
                 <Text style={OutletDetailStyles.outletLabel}>Outlet_Id & Name:</Text>
@@ -901,14 +922,14 @@ const OutletDetailScreen = ({ route }) => {
                 <Text style={OutletDetailStyles.outletValue}>{selectedoutletsdeatil.outlet_id} -  {selectedoutletsdeatil.outlet_name}</Text>
               </View>
             </View>
-  
+
             <View style={OutletDetailStyles.infoContainer}>
               <Text style={OutletDetailStyles.outletLabel}>Address:</Text>
               <Text style={OutletDetailStyles.outletValue}>
                 {selectedoutletsdeatil.address}  {selectedoutletsdeatil.pin}
               </Text>
             </View>
-  
+
             <View style={OutletDetailStyles.infoContainer}>
               <View style={OutletDetailStyles.labelContainer1}>
                 <Text style={OutletDetailStyles.outletLabel1}>Mobile:</Text>
@@ -931,7 +952,7 @@ const OutletDetailScreen = ({ route }) => {
                 </Text>
               </View>
             </View>
-  
+
             <Spacing space={10} />
           </>
         }
@@ -940,7 +961,7 @@ const OutletDetailScreen = ({ route }) => {
             <Text style={OutletDetailStyles.headerText3}>
               Order ID: {item.orderId}
             </Text>
-        
+
             {item.items.map((subItem, index) => (
               <View key={index}>
                 <View style={OutletDetailStyles.details3}>
@@ -994,17 +1015,17 @@ const OutletDetailScreen = ({ route }) => {
                         <Text style={OutletDetailStyles.rowValue3}>
                           {subItem.follow_up
                             ? new Date(subItem.follow_up).toLocaleDateString('en-IN', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
                             : ''}
                         </Text>
                       </View>
                     </>
                   ) : null}
                 </View>
-        
+
                 {/* Divider after each item */}
                 <View style={{
                   height: 1,
@@ -1016,8 +1037,8 @@ const OutletDetailScreen = ({ route }) => {
             ))}
           </View>
         )}
-        
-        
+
+
         ListEmptyComponent={() => (
           <View style={{ padding: 20, alignItems: 'center' }}>
             <Text>Data Loading.....</Text>

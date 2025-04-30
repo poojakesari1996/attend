@@ -277,9 +277,6 @@ const ActivityHistoryScreen = () => {
 
             </View>
 
-
-
-
             <Modal
                 animationType="slide"
                 transparent={true}
