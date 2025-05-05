@@ -43,11 +43,20 @@ const LeaveApply = () => {
 
 
     const handleFromDateChange = (event, selectedDate) => {
-        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of current month
+
         const currentDate = selectedDate || date;
 
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+
+        if (currentDate > currentMonthEnd) {
+            Alert.alert("Invalid Date", "You can't select a date beyond the current month.");
             setShowDatePicker(false);
             return;
         }
@@ -61,11 +70,20 @@ const LeaveApply = () => {
 
     // Handle To date change
     const handleToDateChange = (event, selectedDate) => {
-        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of current month
+
         const currentDate = selectedDate || date;
 
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
+            setShowDatePicker(false);
+            return;
+        }
+
+        if (currentDate > currentMonthEnd) {
+            Alert.alert("Invalid Date", "You can't select a date beyond the current month.");
             setShowDatePicker(false);
             return;
         }

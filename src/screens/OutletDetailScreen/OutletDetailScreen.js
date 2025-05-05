@@ -811,8 +811,9 @@ const OutletDetailScreen = ({ route }) => {
                       backgroundColor: '#f2f2f2',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      elevation: 5, // for Android shadow
-                      shadowColor: '#000', // for iOS shadow
+                      elevation: 10,
+                      zIndex: 999, // ensure it's above all other elements
+                      shadowColor: '#000',
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: 0.25,
                       shadowRadius: 3.84,
@@ -820,6 +821,7 @@ const OutletDetailScreen = ({ route }) => {
                   >
                     <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>×</Text>
                   </TouchableOpacity>
+
                   {loading ? (
                     <ActivityIndicator size="medium" color="#0000ff" />
                   ) : (

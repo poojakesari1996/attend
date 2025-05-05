@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert,ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { darkTheme, lightTheme, Fonts, SF, SH } from "../../utils";
 import { SalesAnalysisStyle } from "../../styles/SalesAnalysisStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {DatePicker} from '../../components';
+import { DatePicker } from '../../components';
 import { useSelector } from "react-redux";
 import { HomeDropDown } from '../../components';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const SalesAnalysis = () => {
   let [pickerShow, setPickerShow] = useState(false)
 
   useEffect(() => {
-    salesAnalysisCodeList();  
+    salesAnalysisCodeList();
   }, []);
 
   const [totals, setTotals] = useState({
@@ -81,65 +81,71 @@ const SalesAnalysis = () => {
 
 
   const salesAnalysisCodeList = async () => {
-    setSelectedService(""); // epty the variable in the initially
+    setSelectedService(""); // empty the variable initially
     setPickerShow(false);
+
     const user = await AsyncStorage.getItem('userInfor');
     const empid = JSON.parse(user);
     const sg_code = empid[0].sg_code;
-    console.log('Sending SG Code:', sg_code);  // ✅ Console mein sg_code print karega
+    console.log('Sending SG Code:', sg_code);
+
     const myHeaders = new Headers();
     myHeaders.append("Authorization", "Basic SU5DX1JvbXNvbnNfVFA6ckwrMiUmNzM8NjVB");
+
+    // 🔁 Decide whether to use sm_code or zm_code dynamically
+    const paramType = sg_code?.startsWith("ZM") ? "zm_code" : "sm_code";
+    const apiUrl = `https://prismcore.romsons.com/romsons_incentive_core/v1/process/salesPerList?${paramType}=${sg_code}`;
+    console.log("API URL: ", apiUrl);
 
     const requestOptions = {
       method: "GET",
       headers: myHeaders,
       redirect: "follow"
     };
-    console.log(`https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerList?sm_code=${empid[0].sg_code}`, "jiji");
 
-
-    fetch(`https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerList?sm_code=${empid[0].sg_code}`, requestOptions)
+    fetch(apiUrl, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.status === 0) {
           console.log('Sales Analysis Codes:', result.data);
           setSalesAnalysisCode(result.data);
         } else {
-          setSelectedService(sg_code);  //set the sg_code when status code 1
-          setPickerShow(true)
+          setSelectedService(sg_code);
+          setPickerShow(true);
         }
       })
       .catch((error) => console.error(error));
   };
 
+
   const salesAnalysisList = async (selectedService) => {
     setIsLoading(true); // Start loading
-    
+
     try {
       const user = await AsyncStorage.getItem('userInfor');
       const empid = JSON.parse(user);
       const myHeaders = new Headers();
       myHeaders.append("Authorization", "Basic SU5DX1JvbXNvbnNfVFA6ckwrMiUmNzM8NjVB");
-  
+
       const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow"
       };
-  
+
       const formattedFromDate = fromDate ? fromDate.toISOString().split('T')[0] : '';
       const formattedToDate = toDate ? toDate.toISOString().split('T')[0] : '';
       const sgroups = selectedService === "all"
         ? salesAnalysisCode.map(group => group.code).join(',')
         : selectedService;
-  
+
       const response = await fetch(
         `https://prismcore.romsons.com/romsons_incentive_core/v1/process/salesPerRpt?from_date=${formattedFromDate}&to_date=${formattedToDate}&sgroups=${sgroups}`,
         requestOptions
       );
-  
+
       const result = await response.json();
-      
+
       if (result?.status === 0 && Array.isArray(result.data?.ex_analysis)) {
         setSalesData(result.data.ex_analysis);
       } else {
@@ -195,35 +201,35 @@ const SalesAnalysis = () => {
 
   return (
     <View style={[SalesAnalysisStyles.container, { padding: SF(10) }]}>
-  {pickerShow ? (
-    <HomeDropDown
-      value={selectedService}
-      setValue={handlePickerChange}
-      data={[
-        {
-          label: selectedService,
-          value: selectedService,
-        },
-      ]}
-      placeholder="Please Select Sales Group"
-      style={{ width: '100%' }}
-    />
-  ) : (
-    <HomeDropDown
-      value={selectedService}
-      setValue={handlePickerChange}
-      data={[
-        { label: 'All Sales Group', value: 'all' },
-        ...salesAnalysisCode.map((item) => ({
-          label: `${item.spCode} - ${item.spName} (${item.headQuarter})`,
-          value: item.spCode,
-        })),
-      ]}
-      placeholder="Please Select Sales Group"
-      style={{ width: '100%' }}
-    />
-  )}
-{/* </View> */}
+      {pickerShow ? (
+        <HomeDropDown
+          value={selectedService}
+          setValue={handlePickerChange}
+          data={[
+            {
+              label: selectedService,
+              value: selectedService,
+            },
+          ]}
+          placeholder="Please Select Sales Group"
+          style={{ width: '100%' }}
+        />
+      ) : (
+        <HomeDropDown
+          value={selectedService}
+          setValue={handlePickerChange}
+          data={[
+            { label: 'All Sales Group', value: 'all' },
+            ...salesAnalysisCode.map((item) => ({
+              label: `${item.spCode} - ${item.spName} (${item.headQuarter})`,
+              value: item.spCode,
+            })),
+          ]}
+          placeholder="Please Select Sales Group"
+          style={{ width: '100%' }}
+        />
+      )}
+      {/* </View> */}
 
 
       {/* Date Pickers */}
@@ -311,9 +317,9 @@ const SalesAnalysis = () => {
       {/* Display Sales Data */}
       {isLoading && (
         <View style={SalesAnalysisStyles.loadingContainer}>
-          <ActivityIndicator 
-            size="large" 
-            color={currentColors.primary} 
+          <ActivityIndicator
+            size="large"
+            color={currentColors.primary}
           />
           <Text style={SalesAnalysisStyles.loadingText}>Loading sales data...</Text>
         </View>
