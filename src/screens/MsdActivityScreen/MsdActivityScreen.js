@@ -16,6 +16,9 @@ import { useDispatch } from 'react-redux';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { msdActivity, setResetMsdActivity } from "../../redux/action/orderActions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+//share screen 
+import { captureRef } from 'react-native-view-shot';
+import Share from 'react-native-share';
 
 const MsdActivityScreen = ({ route }) => {
     const { customer_name, customer_contact_no, hospital_name, outlet_category_name, outlet_id, customer_department, user_type } = route.params;
@@ -155,9 +158,6 @@ const MsdActivityScreen = ({ route }) => {
         skuListHospital();
         activity();
     }, []);
-
-
-
 
 
     const handleDateChange = (event, selectedDate, skuId) => {
@@ -338,6 +338,29 @@ const MsdActivityScreen = ({ route }) => {
             .catch((error) => console.error(error));
     };
 
+    // share screen 
+
+
+    const viewRef = useRef();
+
+    const captureAndShare = async () => {
+     
+        try {
+            const uri = await captureRef(viewRef, {
+                format: 'png',
+                quality: 0.8,
+            });
+
+            await Share.open({
+                url: uri,
+                type: 'image/png',
+                failOnCancel: false,
+            });
+        } catch (error) {
+            console.error('Error capturing or sharing screenshot', error);
+        }
+    };
+
     return (
         <View style={{ flex: 1 }}>
             {/* Filter Buttons */}
@@ -464,38 +487,39 @@ const MsdActivityScreen = ({ route }) => {
 
             {selectedFilter === "Summary" && (
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingHorizontal: 20 }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={captureAndShare}>
                         <Icon name="share" size={30} color="#000" />
                     </TouchableOpacity>
                 </View>
             )}
             {selectedFilter === 'Summary' && (
                 <View style={{ flex: 1 }}>
+                    <View ref={viewRef} style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
 
-                    {/* Header Section */}
-                    <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Outlet Name: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
-                        </Text>
+                        {/* Header Section */}
+                        <View style={{ marginBottom: 12, padding: 12, backgroundColor: '#f8f9fa', borderRadius: 8 }}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Outlet Name: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{hospital_name}</Text>
+                            </Text>
 
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Contact: </Text>
-                            <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
-                        </Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Contact: </Text>
+                                <Text style={{ color: 'green', fontSize: 12 }}>{customer_contact_no}</Text>
+                            </Text>
 
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                            <Text style={{ color: 'black' }}>Call Type: </Text>
-                            <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
-                        </Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                <Text style={{ color: 'black' }}>Call Type: </Text>
+                                <Text style={{ color: '#1c3978', fontSize: 12 }}>{callerName}</Text>
+                            </Text>
 
-                    </View>
+                        </View>
 
-                    <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
+                        <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 12 }} />
 
-                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 8, color: 'black' }}>Activity Summary</Text>
 
-                    <FlatList
+                        <FlatList
                             data={msdActivityData}
                             renderItem={({ item, index }) => (
                                 <View
@@ -514,15 +538,15 @@ const MsdActivityScreen = ({ route }) => {
                                 >
 
                                     {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}> */}
-                                        <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
-                                            <Text style={{ color: 'black' }}>Customer Name: </Text>
-                                            <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
-                                        </Text>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', flex: 1 }}>
+                                        <Text style={{ color: 'black' }}>Customer Name: </Text>
+                                        <Text style={{ color: 'green', fontSize: 12, }}>{item.customername}</Text>
+                                    </Text>
 
-                                        <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
-                                            <Text style={{ color: 'black' }}>Customer Dept: </Text>
-                                            <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
-                                        </Text>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
+                                        <Text style={{ color: 'black' }}>Customer Dept: </Text>
+                                        <Text style={{ color: 'green', fontSize: 12 }}>{customer_department}</Text>
+                                    </Text>
                                     {/* </View> */}
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>
@@ -553,8 +577,8 @@ const MsdActivityScreen = ({ route }) => {
                             contentContainerStyle={{ paddingBottom: 20 }}
                             showsVerticalScrollIndicator={false}
                         />
+                    </View>
                 </View>
-
 
             )}
 

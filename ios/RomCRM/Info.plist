@@ -33,6 +33,9 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+<string>This app needs access to save screenshots</string>
+
 
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to save screenshots to your library.</string>
