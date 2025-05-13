@@ -86,32 +86,37 @@ const SalesAnalysis = () => {
 
 
   const salesAnalysisCodeList = async () => {
-    setSelectedService(""); // epty the variable in the initially
+    setSelectedService(""); // empty the variable initially
     setPickerShow(false);
+
     const user = await AsyncStorage.getItem('userInfor');
     const empid = JSON.parse(user);
     const sg_code = empid[0].sg_code;
-    console.log('Sending SG Code:', sg_code);  // ✅ Console mein sg_code print karega
+    console.log('Sending SG Code:', sg_code);
+
     const myHeaders = new Headers();
     myHeaders.append("Authorization", "Basic SU5DX1JvbXNvbnNfVFA6ckwrMiUmNzM8NjVB");
+
+    // 🔁 Decide whether to use sm_code or zm_code dynamically
+    const paramType = sg_code?.startsWith("ZM") ? "zm_code" : "sm_code";
+    const apiUrl = `https://prismcore.romsons.com/romsons_incentive_core/v1/process/salesPerList?${paramType}=${sg_code}`;
+    console.log("API URL: ", apiUrl);
 
     const requestOptions = {
       method: "GET",
       headers: myHeaders,
       redirect: "follow"
     };
-    console.log(`https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerList?sm_code=${empid[0].sg_code}`, "jiji");
 
-
-    fetch(`https://ssdemocore.romsons.com/romsons_incentive_core/v1/process/salesPerList?sm_code=${empid[0].sg_code}`, requestOptions)
+    fetch(apiUrl, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.status === 0) {
           console.log('Sales Analysis Codes:', result.data);
           setSalesAnalysisCode(result.data);
         } else {
-          setSelectedService(sg_code);  //set the sg_code when status code 1
-          setPickerShow(true)
+          setSelectedService(sg_code);
+          setPickerShow(true);
         }
       })
       .catch((error) => console.error(error));

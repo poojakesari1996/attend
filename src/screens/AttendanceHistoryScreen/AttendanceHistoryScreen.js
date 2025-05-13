@@ -388,6 +388,28 @@ const AttendanceHistoryScreen = () => {
                 >
                     <View style={AttendanceHistoryStyles.modalOverlay4}>
                         <View style={AttendanceHistoryStyles.dropdownContainer4}>
+                        <TouchableOpacity
+                    onPress={() => setModalVisible1(false)}
+                    style={{
+                      position: 'absolute',
+                      top: 10,
+                      right: 10,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      backgroundColor: '#f2f2f2',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      elevation: 10,
+                      zIndex: 999, // ensure it's above all other elements
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                    }}
+                  >
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>×</Text>
+                  </TouchableOpacity>
                             {loading ? (
                                 <ActivityIndicator size="medium" color="#0000ff" />
                             ) : (
