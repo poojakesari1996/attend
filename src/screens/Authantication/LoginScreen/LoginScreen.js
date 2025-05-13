@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, TouchableOpacity, Image, Text, Modal, Linking } from 'react-native';
+import React, { useState, useMemo,useEffect } from 'react';
+import { View, TouchableOpacity, Image, Text, Modal, Linking,ActivityIndicator } from 'react-native';
 import { Button, Input, Spacing, ConfirmationAlert } from '../../../components';
 import { LoginStyle } from '../../../styles';
 import { SH } from '../../../utils';
@@ -25,12 +25,40 @@ const LoginScreen = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);  
     const [modalVisible, setModalVisible] = useState(false); 
+    const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
+
+    
+useEffect(() => {
+    const checkLoginStatus = async () => {
+        try {
+            const userInfo = await AsyncStorage.getItem("userInfor");
+            if (userInfo) {
+                navigation.replace(RouteName.HOME_SCREEN);
+            } else {
+                setLoading(false);  // Show login screen
+            }
+        } catch (error) {
+            console.error("Error checking login status:", error);
+            setLoading(false);
+        }
+    };
+
+    checkLoginStatus();
+}, [navigation]);
+
+if (loading) {
+    return null; // Don't show anything while checking login
+}
+
 
     const alertdata = {
         'loginSuccess': t("Login_Successfull"),
         'invalid': t("Enter Valid Emp ID & Password")
     };
+
+    
+    
 
     const handleLogin = () => {
         const requestData = {
@@ -90,6 +118,14 @@ const LoginScreen = () => {
     const handleSupportModal = () => {
         setModalVisible(true);  // Show the modal
     };
+
+    // if (isCheckingLogin) {
+    //     return (
+    //         <View style={[LoginStyles.Container, {justifyContent: 'center', alignItems: 'center'}]}>
+    //             <ActivityIndicator size="large" color={Colors.theme_background} />
+    //         </View>
+    //     );
+    // }
 
     return (
         <View style={LoginStyles.Container}>

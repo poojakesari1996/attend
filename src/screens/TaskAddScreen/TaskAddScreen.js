@@ -39,21 +39,13 @@ const TaskAddScreen = () => {
         }
     };
     const handleFromDateChange = (event, selectedDate) => {
-        const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const currentDate = selectedDate || date;
-
-        if (currentDate < currentMonthStart) {
-            Alert.alert("Invalid Date", "You can't select a date from the previous month.");
-            setShowDatePicker(false);
-            return;
-        }
-
         setShowDatePicker(false);
         setFromDate(currentDate);
-        setSelectedDate(currentDate); // save selected date
-
-        followUpDatewiseData(currentDate); // ✅ call with selected date
+        setSelectedDate(currentDate);
+        followUpDatewiseData(currentDate);
     };
+    
 
     const followUpDatewiseData = async (date) => {
         const user = await AsyncStorage.getItem("userInfor");

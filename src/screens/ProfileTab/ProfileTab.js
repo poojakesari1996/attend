@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView,Alert } from "react-native";
 import { AttendanceTabStyle } from '../../styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from "react-i18next";
@@ -13,13 +13,27 @@ import { Spacing, VectorIcon } from '../../components';
 
 const ProfileTab = (props) => {
   const [items, setItems] = useState([]);
-  const [userDetail, setUserDetail] = useState(null);
+  
 
   const isDarkMode = useSelector((state) => state.DarkReducer.isDarkMode);
   const Colors = isDarkMode ? darkTheme : lightTheme;
   const AttendanceTabStyles = useMemo(() => AttendanceTabStyle(Colors), [Colors]);
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove(['userInfor', 'authToken']);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: RouteName.LOGIN_SCREEN }],
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      Alert.alert(t("Error"), t("Failed to logout"));
+    }
+  };
 
   const profileData = async () => {
     try {
@@ -57,13 +71,7 @@ const ProfileTab = (props) => {
     }
   };
 
-//   const getdata = async () => {
-//     let user = await AsyncStorage.getItem('userInfor');
 
-//     userDetail = JSON.parse(user);
-//     setUserDetail(userDetail[0])
-//     console.log(userDetail.division);
-// }
 
 
   useEffect(() => {
@@ -160,7 +168,22 @@ const ProfileTab = (props) => {
             <VectorIcon icon="AntDesign" name="right" size={SF(20)} color={Colors.theme_background} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate(RouteName.SWIPER_SCREEN)}
+            onPress={() => {
+              Alert.alert(
+                t("Confirm Logout"),
+                t("Are you sure you want to logout?"),
+                [
+                  {
+                    text: t("Cancel"),
+                    style: "cancel"
+                  },
+                  { 
+                    text: t("Logout"), 
+                    onPress: handleLogout 
+                  }
+                ]
+              );
+            }}
             style={AttendanceTabStyles.timeSection3}
           >
             <View style={AttendanceTabStyles.timeSectionFlexRow}>
