@@ -191,18 +191,20 @@ const MsdActivityScreen = ({ route }) => {
 
     const msdActivitySubmit = async () => {
         if (isSubmitting) return; // Prevent multiple submissions
-
+    
+        
+        // if (!currentLatitude || currentLatitude === '...' || 
+        //     !currentLongitude || currentLongitude === '...') {
+        //     alert("Location not detected yet. Please wait for GPS to fetch your location.");
+        //     return;
+        // }
+    
         setIsSubmitting(true); // Set submitting state to true
-
+    
         try {
-            // Retrieve the user data from AsyncStorage
             const user = await AsyncStorage.getItem("userInfor");
             const empid = JSON.parse(user);
-
-            console.log(outletDetail, "Line 65");
-
-
-            // Prepare the data for submission
+    
             const outlet_id = outlet_id ?? 0;
             const raw = JSON.stringify({
                 "activitydetails": msdActivityData,
@@ -215,29 +217,26 @@ const MsdActivityScreen = ({ route }) => {
                 "lat": currentLatitude,
                 "lag": currentLongitude
             });
-
+    
             console.log(raw, 'Line 81');
-
-            // Set up the request headers
+    
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-
-            // Define the request options
+    
             const requestOptions = {
                 method: "POST",
                 headers: myHeaders,
                 body: raw,
                 redirect: "follow"
             };
-
-            // Make the POST request
+    
             const response = await fetch("https://devcrm.romsons.com:8080/ActivityHospital", requestOptions);
             const result = await response.json();
-
+    
             if (result.error === false) {
                 alert(result.data);
                 dispatch(setResetMsdActivity());
-                navigation.navigate(RouteName.HOME_SCREEN);
+                navigation.navigate(RouteName.CONTACTLIST, { outletDetail });
             } else {
                 alert("Something Went Wrong");
             }
@@ -245,14 +244,9 @@ const MsdActivityScreen = ({ route }) => {
             console.error("Error:", error);
             alert("Submission failed. Please try again.");
         } finally {
-            setIsSubmitting(false); // Reset submitting state
+            setIsSubmitting(false);
         }
     };
-
-
-
-
-
 
     const activitySave = () => {
         // Check if at least one remark is selected
@@ -273,7 +267,6 @@ const MsdActivityScreen = ({ route }) => {
                 itemId: sku.sku_id,
                 sku_name: sku.sku_name,
                 Outletid: outlet_id,
-
                 customer_department: customer_department,
                 segment_code: sku.segment_code,
                 customername: customer_name,
@@ -294,12 +287,9 @@ const MsdActivityScreen = ({ route }) => {
         setFromDate({});
     };
 
-
-
     const handlePickerChange = (value, skuId) => {
         setSelectedService((prev) => ({ ...prev, [skuId]: value }));
     };
-
 
     const activity = async () => {
         const user = await AsyncStorage.getItem("userInfor");
