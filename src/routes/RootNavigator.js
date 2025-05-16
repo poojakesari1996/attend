@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { darkTheme, Fonts, lightTheme } from '../utils';
 import { Appearance } from 'react-native';
 import { RouteName, SideNavigator } from '../routes';
-import { ApprovalScreen, AttendanceProfile,AttendanceHistoryScreen, CheckInOutScreen, EditProfile, ForgotPassword, HolidaysScreen, LanguageScreen, LeaveRequestsScreen,Leaveapply, LoginFirstScreen, LoginScreen,AttendancePunchInOut, NotificationScreen, OtpVeryfiveScreen, PayrollScreen, PaystubDetailsScreen, PrivacyPolicyScreen, RegisterScreen, RegistrationSuccessful, ResetPassword, ReviewsScreen, SettingsScreen,OutletScreen,RetailActivityScreen,ContactListScreen,OutletDetailScreen,OrderScreen, SplashScreen, Swiperscreen, TaskScreen, ExpenseScreen, ExpenseHqScreen,MsdActivityScreen,TeamScreen,TeamLeaveScreen, HomeTab,HomeScreen, EodScreen,ProfileTab,AttendanceTab,RegulizationScreen,OrderHistoryScreen,ActivityHistoryScreen,SkuOrderHistoryScreen,SkuOrderScreen,SalesAnalysisScreen,DaysummaryScreen,TaskAddScreen,CreateTaskScreen } from '../screens';
+import { ApprovalScreen, AttendanceProfile, AttendanceHistoryScreen, CheckInOutScreen, EditProfile, ForgotPassword, HolidaysScreen, LanguageScreen, LeaveRequestsScreen, Leaveapply, LoginFirstScreen, LoginScreen, AttendancePunchInOut, NotificationScreen, OtpVeryfiveScreen, PayrollScreen, PaystubDetailsScreen, PrivacyPolicyScreen, RegisterScreen, RegistrationSuccessful, ResetPassword, ReviewsScreen, SettingsScreen, OutletScreen, RetailActivityScreen, ContactListScreen, OutletDetailScreen, OrderScreen, SplashScreen, Swiperscreen, TaskScreen, ExpenseScreen, ExpenseHqScreen, MsdActivityScreen, TeamScreen, TeamLeaveScreen, HomeTab, HomeScreen, EodScreen, ProfileTab, AttendanceTab, RegulizationScreen, OrderHistoryScreen, ActivityHistoryScreen, SkuOrderHistoryScreen, SkuOrderScreen, SalesAnalysisScreen, DaysummaryScreen, TaskAddScreen, CreateTaskScreen } from '../screens';
 import { useTheme } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Translation from '../Language/i18n';
@@ -92,14 +92,14 @@ const RootNavigator = props => {
 
 
 
-<Stack.Screen name={RouteName.PUNCHINOUT} options=
+        <Stack.Screen name={RouteName.PUNCHINOUT} options=
           {{
             ...headerthemeArrow,
             title: Translation('Attendance'),
             headerTitleAlign: 'center'
           }} component={AttendancePunchInOut} />
 
-<Stack.Screen name={RouteName.ACTIVITYHISTORY} options=
+        <Stack.Screen name={RouteName.ACTIVITYHISTORY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Activity History'),
@@ -107,56 +107,56 @@ const RootNavigator = props => {
           }} component={ActivityHistoryScreen} />
 
 
-<Stack.Screen name={RouteName.ORDERHISTORY} options=
+        <Stack.Screen name={RouteName.ORDERHISTORY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Order History'),
             headerTitleAlign: 'center'
           }} component={OrderHistoryScreen} />
 
-<Stack.Screen name={RouteName.TASKADD} options=
+        <Stack.Screen name={RouteName.TASKADD} options=
           {{
             ...headerthemeArrow,
             title: Translation('Create Task'),
             headerTitleAlign: 'center'
           }} component={TaskAddScreen} />
 
-<Stack.Screen name={RouteName.CREATETASK} options=
+        <Stack.Screen name={RouteName.CREATETASK} options=
           {{
             ...headerthemeArrow,
             title: Translation('Add New Task'),
             headerTitleAlign: 'center'
           }} component={CreateTaskScreen} />
 
-<Stack.Screen name={RouteName.SALESANALYSIS} options=
+        <Stack.Screen name={RouteName.SALESANALYSIS} options=
           {{
             ...headerthemeArrow,
             title: Translation('Sales Analysis'),
             headerTitleAlign: 'center'
           }} component={SalesAnalysisScreen} />
 
-<Stack.Screen name={RouteName.DAYSUMMARY} options=
+        <Stack.Screen name={RouteName.DAYSUMMARY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Day Summary'),
             headerTitleAlign: 'center'
           }} component={DaysummaryScreen} />
 
-<Stack.Screen name={RouteName.SKUORDERHISTORY} options=
+        <Stack.Screen name={RouteName.SKUORDERHISTORY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Sku History'),
             headerTitleAlign: 'center'
           }} component={SkuOrderHistoryScreen} />
 
-<Stack.Screen name={RouteName.SKUORDER} options=
+        <Stack.Screen name={RouteName.SKUORDER} options=
           {{
             ...headerthemeArrow,
             title: Translation('Sku Order'),
             headerTitleAlign: 'center'
           }} component={SkuOrderScreen} />
 
-<Stack.Screen name={RouteName.REGULIZATION} options=
+        <Stack.Screen name={RouteName.REGULIZATION} options=
           {{
             ...headerthemeArrow,
             title: Translation('Regularization'),
@@ -164,7 +164,7 @@ const RootNavigator = props => {
           }} component={RegulizationScreen} />
 
 
-<Stack.Screen name={RouteName.PROFILETAB} options=
+        <Stack.Screen name={RouteName.PROFILETAB} options=
           {{
             ...headerthemeArrow,
             title: Translation('Profile'),
@@ -172,14 +172,14 @@ const RootNavigator = props => {
           }} component={ProfileTab} />
 
 
-<Stack.Screen name={RouteName.LEAVEAPPLY} options=
+        <Stack.Screen name={RouteName.LEAVEAPPLY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Leave Apply'),
             headerTitleAlign: 'center'
           }} component={Leaveapply} />
 
-<Stack.Screen name={RouteName.TEAMSCREEN} options=
+        <Stack.Screen name={RouteName.TEAMSCREEN} options=
           {{
             ...headerthemeArrow,
             title: Translation('Team'),
@@ -187,44 +187,44 @@ const RootNavigator = props => {
           }} component={TeamScreen} />
 
 
-<Stack.Screen name={RouteName.ATTENDANCETAB} options=
+        <Stack.Screen name={RouteName.ATTENDANCETAB} options=
           {{
             ...headerthemeArrow,
             title: Translation('Team'),
             headerTitleAlign: 'center'
           }} component={AttendanceTab} />
 
-          
 
-<Stack.Screen name={RouteName.TEAMLEAVESCREEN} options=
+
+        <Stack.Screen name={RouteName.TEAMLEAVESCREEN} options=
           {{
             ...headerthemeArrow,
             title: Translation('Leave Approval'),
             headerTitleAlign: 'center'
           }} component={TeamLeaveScreen} />
 
-<Stack.Screen name={RouteName.EODSCREEN} options=
+        <Stack.Screen name={RouteName.EODSCREEN} options=
           {{
             ...headerthemeArrow,
             title: Translation('Day Summary'),
             headerTitleAlign: 'center'
           }} component={EodScreen} />
 
-<Stack.Screen name={RouteName.CONTACTLIST} options=
+        <Stack.Screen name={RouteName.CONTACTLIST} options=
           {{
             ...headerthemeArrow,
             title: Translation('ContactList'),
             headerTitleAlign: 'center'
           }} component={ContactListScreen} />
 
-<Stack.Screen name={RouteName.OUTLET} options=
+        <Stack.Screen name={RouteName.OUTLET} options=
           {{
             ...headerthemeArrow,
             title: Translation('Outlet'),
             headerTitleAlign: 'center'
           }} component={OutletScreen} />
 
-<Stack.Screen name={RouteName.OUTLETDETAIL} options=
+        <Stack.Screen name={RouteName.OUTLETDETAIL} options=
           {{
             ...headerthemeArrow,
             title: Translation('Outlet Details'),
@@ -232,21 +232,21 @@ const RootNavigator = props => {
           }} component={OutletDetailScreen} />
 
 
-<Stack.Screen name={RouteName.ATTENDANCEHISTORY} options=
+        <Stack.Screen name={RouteName.ATTENDANCEHISTORY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Location View'),
             headerTitleAlign: 'center'
           }} component={AttendanceHistoryScreen} />
 
-<Stack.Screen name={RouteName.ORDER} options=
+        <Stack.Screen name={RouteName.ORDER} options=
           {{
             ...headerthemeArrow,
             title: Translation('Order'),
             headerTitleAlign: 'center'
           }} component={OrderScreen} />
 
-<Stack.Screen name={RouteName.MSDACTIVITY} options=
+        <Stack.Screen name={RouteName.MSDACTIVITY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Activity'),
@@ -254,14 +254,14 @@ const RootNavigator = props => {
           }} component={MsdActivityScreen} />
 
 
-{/* <Stack.Screen name={RouteName.ACTIVITY} options=
+        {/* <Stack.Screen name={RouteName.ACTIVITY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Activity'),
             headerTitleAlign: 'center'
           }} component={ActivityScreen} /> */}
 
-<Stack.Screen name={RouteName.RETAILACTIVITY} options=
+        <Stack.Screen name={RouteName.RETAILACTIVITY} options=
           {{
             ...headerthemeArrow,
             title: Translation('Activity'),
@@ -269,21 +269,21 @@ const RootNavigator = props => {
           }} component={RetailActivityScreen} />
 
 
-<Stack.Screen name={RouteName.EXPENSE} options=
+        <Stack.Screen name={RouteName.EXPENSE} options=
           {{
             ...headerthemeArrow,
             title: Translation('Expense Submission'),
             headerTitleAlign: 'center'
           }} component={ExpenseScreen} />
 
-<Stack.Screen name={RouteName.EXPENSEHQ} options=
+        <Stack.Screen name={RouteName.EXPENSEHQ} options=
           {{
             ...headerthemeArrow,
             title: Translation('HQ Expense'),
             headerTitleAlign: 'center'
           }} component={ExpenseHqScreen} />
 
-          
+
         <Stack.Screen name={RouteName.HOLIDAYSSCREEN} options=
           {{
             ...headerthemeArrow,

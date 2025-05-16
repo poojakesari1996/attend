@@ -664,8 +664,8 @@ const EodScreen = () => {
                     format: 'png',
                     quality: 1,
                     // result: 'tmpfile',
-                    width: 1080, 
-                    height: 1920 
+                    width: 1080,
+                    height: 1920
                 }}
             >
 

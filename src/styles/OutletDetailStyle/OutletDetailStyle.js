@@ -357,5 +357,39 @@ outletLabel1: {
         color: Colors.white_text_color,
       },
       
-      
+      skuContainer: {
+        backgroundColor: Colors.white_text_color,
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: Colors.white_text_color,
+      },
+      skuHeaderRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.gray_text_color,
+        paddingBottom: 5,
+        marginBottom: 8,
+      },
+      skuDataRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 7,
+      },
+      skuHeaderText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: Colors.black_text_color,
+        flex: 1,
+        textAlign: 'center',
+      },
+      skuText: {
+        fontSize: 12,
+        color: Colors.black_text_color,
+        fontWeight: 'bold',
+        flex: 1,
+        textAlign: 'center',
+      },
 });

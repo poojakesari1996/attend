@@ -324,13 +324,12 @@ const OutletDetailScreen = ({ route }) => {
     }
   };
 
+
+
   const handleSelectReportingPerson = (person) => {
     setCallerName(person); // Set the selected reporting person's name as caller name
     setReportingModalVisible(false); // Close the reporting person modal
   };
-
-
-
 
   const [
     currentLongitude,
@@ -958,63 +957,186 @@ const OutletDetailScreen = ({ route }) => {
             <Spacing space={10} />
           </>
         }
-        renderItem={({ item }) => (
-          <View style={OutletDetailStyles.container3}>
-            <Text style={OutletDetailStyles.headerText3}>
-              Order ID: {item.orderId}
-            </Text>
+        // renderItem={({ item }) => (
+        //   <View style={OutletDetailStyles.container3}>
+        //     <Text style={OutletDetailStyles.headerText3}>
+        //       Order ID: {item.orderId}
+        //     </Text>
 
-            {item.items.map((subItem, index) => (
-              <View key={index}>
-                <View style={OutletDetailStyles.details3}>
-                  {subItem.type === 'order' ? (
-                    <>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
+        //     {item.items.map((subItem, index) => (
+        //       <View key={index}>
+        //         <View style={OutletDetailStyles.details3}>
+        //           {subItem.type === 'order' ? (
+        //             <>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>
+        //                   {new Date(subItem.date).toISOString().split('T')[0]}
+        //                 </Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.item_qty}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.item_value}</Text>
+        //               </View>
+        //             </>
+        //           ) : subItem.type === 'activity' ? (
+        //             <>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.contactPerson}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>
+        //                   {new Date(subItem.date).toISOString().split('T')[0]}
+        //                 </Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.department}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>{subItem.remark}</Text>
+        //               </View>
+        //               <View style={OutletDetailStyles.row3}>
+        //                 <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
+        //                 <Text style={OutletDetailStyles.rowValue3}>
+        //                   {subItem.follow_up
+        //                     ? new Date(subItem.follow_up).toLocaleDateString('en-IN', {
+        //                       day: '2-digit',
+        //                       month: '2-digit',
+        //                       year: 'numeric',
+        //                     })
+        //                     : ''}
+        //                 </Text>
+        //               </View>
+        //             </>
+        //           ) : null}
+        //         </View>
+
+        //         {/* Divider after each item */}
+        //         <View style={{
+        //           height: 1,
+        //           backgroundColor: '#ccc',
+        //           marginVertical: 10,
+        //           marginHorizontal: 10
+        //         }} />
+        //       </View>
+        //     ))}
+        //   </View>
+        // )}
+
+        renderItem={({ item }) => {
+          const orderItems = item.items.filter(i => i.type === 'order');
+          const activityItems = item.items.filter(i => i.type === 'activity');
+          const totalValue = orderItems.reduce((sum, itm) => sum + (itm.item_value || 0), 0);
+          const orderDate = orderItems.length > 0 && orderItems[0].date
+            ? new Date(orderItems[0].date).toISOString().split('T')[0]
+            : 'N/A';
+
+
+          return (
+            <View style={OutletDetailStyles.container3}>
+              {/* Header */}
+              <Text style={OutletDetailStyles.headerText3}>
+                Order ID: {item.orderId}
+                {orderItems.length > 0 && ` | Order Date: ${orderDate}`}
+              </Text>
+
+
+              {/* Only show if there are order items */}
+              {orderItems.length > 0 && (
+                <>
+
+                  <View style={OutletDetailStyles.skuContainer}>
+                    <View style={OutletDetailStyles.skuHeaderRow}>
+                      <Text style={OutletDetailStyles.skuHeaderText}>SKU Name</Text>
+                      <Text style={OutletDetailStyles.skuHeaderText}>Qty</Text>
+                      <Text style={OutletDetailStyles.skuHeaderText}>Value</Text>
+                    </View>
+                    {orderItems.map((subItem, index) => (
+                      <View key={index} style={OutletDetailStyles.skuDataRow}>
+                        <Text style={OutletDetailStyles.skuText}>{subItem.sku_name}</Text>
+                        <Text style={OutletDetailStyles.skuText}>{subItem.item_qty}</Text>
+                        <Text style={OutletDetailStyles.skuText}>{subItem.item_value}</Text>
                       </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Order Date</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>
+                    ))}
+
+                  </View>
+                  <Text style={{
+                    fontWeight: 'bold',
+                    textAlign: 'right',
+                    marginTop: 5,
+                    borderTopWidth: 1,
+                    paddingTop: 5,
+                    color: 'black',
+                    fontSize: 12
+                  }}>
+                    Total: ₹{totalValue.toFixed(2)}
+                  </Text>
+
+                  {/* Divider */}
+                  {/* <View style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }} /> */}
+                </>
+              )}
+
+              {/* Activity Section (unchanged) */}
+              {activityItems.length > 0 && (
+                <>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Activity:</Text>
+                  {activityItems.map((subItem, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        marginBottom: 16,
+                        padding: 12,
+                        backgroundColor: '#ffffff',
+                        borderRadius: 8,
+                        shadowColor: '#000',
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        shadowOffset: { width: 0, height: 2 },
+                        elevation: 3,
+                      }}
+                    >
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Contact Person:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>{subItem.contactPerson}</Text>
+                      </Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Date:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>
                           {new Date(subItem.date).toISOString().split('T')[0]}
                         </Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Qty</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.item_qty}</Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Value</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.item_value}</Text>
-                      </View>
-                    </>
-                  ) : subItem.type === 'activity' ? (
-                    <>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Contact Person</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.contactPerson}</Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Date</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>
-                          {new Date(subItem.date).toISOString().split('T')[0]}
-                        </Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Department</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.department}</Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>SKU Name</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.sku_name}</Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Remarks</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>{subItem.remark}</Text>
-                      </View>
-                      <View style={OutletDetailStyles.row3}>
-                        <Text style={OutletDetailStyles.rowLabel3}>Follow-up</Text>
-                        <Text style={OutletDetailStyles.rowValue3}>
+                      </Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Department:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>{subItem.department}</Text>
+                      </Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>SKU Name:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>{subItem.sku_name}</Text>
+                      </Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Remarks:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>{subItem.remark}</Text>
+                      </Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        <Text style={{ color: 'black', fontSize: 13 }}>Follow-up:  </Text>
+                        <Text style={{ color: 'green', fontSize: 12 }}>
                           {subItem.follow_up
                             ? new Date(subItem.follow_up).toLocaleDateString('en-IN', {
                               day: '2-digit',
@@ -1023,24 +1145,15 @@ const OutletDetailScreen = ({ route }) => {
                             })
                             : ''}
                         </Text>
-                      </View>
-                    </>
-                  ) : null}
-                </View>
+                      </Text>
+                    </View>
+                  ))}
+                </>
+              )}
 
-                {/* Divider after each item */}
-                <View style={{
-                  height: 1,
-                  backgroundColor: '#ccc',
-                  marginVertical: 10,
-                  marginHorizontal: 10
-                }} />
-              </View>
-            ))}
-          </View>
-        )}
-
-
+            </View>
+          );
+        }}
         ListEmptyComponent={() => (
           <View style={{ padding: 20, alignItems: 'center' }}>
             <Text>Data Loading.....</Text>

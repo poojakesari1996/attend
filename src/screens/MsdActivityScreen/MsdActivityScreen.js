@@ -191,20 +191,20 @@ const MsdActivityScreen = ({ route }) => {
 
     const msdActivitySubmit = async () => {
         if (isSubmitting) return; // Prevent multiple submissions
-    
-        
+
+
         // if (!currentLatitude || currentLatitude === '...' || 
         //     !currentLongitude || currentLongitude === '...') {
         //     alert("Location not detected yet. Please wait for GPS to fetch your location.");
         //     return;
         // }
-    
+
         setIsSubmitting(true); // Set submitting state to true
-    
+
         try {
             const user = await AsyncStorage.getItem("userInfor");
             const empid = JSON.parse(user);
-    
+
             const outlet_id = outlet_id ?? 0;
             const raw = JSON.stringify({
                 "activitydetails": msdActivityData,
@@ -217,22 +217,22 @@ const MsdActivityScreen = ({ route }) => {
                 "lat": currentLatitude,
                 "lag": currentLongitude
             });
-    
+
             console.log(raw, 'Line 81');
-    
+
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-    
+
             const requestOptions = {
                 method: "POST",
                 headers: myHeaders,
                 body: raw,
                 redirect: "follow"
             };
-    
+
             const response = await fetch("https://devcrm.romsons.com:8080/ActivityHospital", requestOptions);
             const result = await response.json();
-    
+
             if (result.error === false) {
                 alert(result.data);
                 dispatch(setResetMsdActivity());

@@ -47,7 +47,7 @@ const LeaveApply = () => {
         const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of current month
 
-        const currentDate = selectedDate || date;
+        const currentDate = selectedDate || new Date();
 
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
@@ -74,7 +74,7 @@ const LeaveApply = () => {
         const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of current month
 
-        const currentDate = selectedDate || date;
+        const currentDate = selectedDate || new Date();
 
         if (currentDate < currentMonthStart) {
             Alert.alert("Invalid Date", "You can't select a date from the previous month.");
