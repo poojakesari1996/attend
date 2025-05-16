@@ -65,7 +65,7 @@ const LeaveApply = () => {
         setFromDate(null);
         setShowDatePicker(false);
         setFromDate(currentDate);
-        handleFromdate(currentDate);
+        
     };
 
 
