@@ -120,7 +120,9 @@ export default EodStyle = (Colors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: Colors.black_text_color,
+    textAlign: 'right', // optional for RTL support
   },
+  
 
   modalOverlay: {
     flex: 1,

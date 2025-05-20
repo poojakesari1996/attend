@@ -246,63 +246,81 @@ const groupedEodReturnDetails = groupEodReturnDetailByOutlet(eodreturnDetails);
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         {/* Header for each outlet */}
         <View>
-    {Object.keys(groupedEodOrderDetails).map((outletId) => {
-      const outlet = groupedEodOrderDetails[outletId];
-      return (
-        <View key={outletId}>
-          {/* Outlet Info (Displayed Once) */}
-          <View style={DaysummaryStyles.infoContainer}>
-            <Text style={DaysummaryStyles.hospitalText}>
-              {outlet.outlet_id}, {outlet.outlet_name}
-            </Text>
-          </View>
-
-          {/* Orders for each outlet */}
-          {Object.keys(outlet.orders).map((orderId) => {
-            const orderItems = outlet.orders[orderId];
-            return (
-              <View key={orderId} style={{ marginHorizontal: 20, marginTop: 10 }}>
-                <View style={DaysummaryStyles.orderContainer}>
-                  <Text style={DaysummaryStyles.orderType}>Type: Order</Text>
-                  <Text style={DaysummaryStyles.orderId}>OrderID: {orderId}</Text>
-                </View>
-
-                {/* SKU Table */}
-                <View style={DaysummaryStyles.skuContainer}>
-                  <View style={DaysummaryStyles.skuHeaderRow}>
-                    <Text style={DaysummaryStyles.skuHeaderText}>SKU Name</Text>
-                    <Text style={DaysummaryStyles.skuHeaderText}>Unit Price</Text>
-                    <Text style={DaysummaryStyles.skuHeaderText}>Unit</Text>
-                    <Text style={DaysummaryStyles.skuHeaderText}>Amount</Text>
-                  </View>
-
-                  {orderItems.map((res, ind) => (
-  <View key={ind}>
-    <View style={DaysummaryStyles.skuDataRow}>
-      <Text style={DaysummaryStyles.skuText}>{res.sku_name}</Text>
-      <Text style={DaysummaryStyles.skuText}>{res.item_price_unit}</Text>
-      <Text style={DaysummaryStyles.skuText}>{res.item_qty}</Text>
-      <Text style={DaysummaryStyles.skuText}>{res.order_amt}</Text>
-    </View>
-
-    {/* Total Row - Show only after last item */}
-    {ind === orderItems.length - 1 && (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-        <Text style={{ marginHorizontal: 10, color: 'black', fontWeight: 'bold' }}>Total</Text>
-        <Text style={{ marginHorizontal: 10, color: 'green', fontWeight: 'bold', fontSize: 13 }}>
-          {res.total_quantity}
+        {Object.keys(groupedEodOrderDetails).map((outletId) => {
+  const outlet = groupedEodOrderDetails[outletId];
+  return (
+    <View key={outletId}>
+      {/* Outlet Info (Displayed Once) */}
+      <View style={DaysummaryStyles.infoContainer}>
+        <Text style={DaysummaryStyles.hospitalText}>
+          {outlet.outlet_id}, {outlet.outlet_name}
         </Text>
       </View>
-    )}
-  </View>
-))}
-                </View>
+
+      {/* Orders for each outlet */}
+      {Object.keys(outlet.orders).map((orderId) => {
+        const orderItems = outlet.orders[orderId];
+
+        let totalAmt = 0; // Initialize total amount for this order
+
+        return (
+          <View key={orderId} style={{ marginHorizontal: 20, marginTop: 10 }}>
+            <View style={DaysummaryStyles.orderContainer}>
+              <Text style={DaysummaryStyles.orderType}>Type: Order</Text>
+              <Text style={DaysummaryStyles.orderId}>OrderID: {orderId}</Text>
+            </View>
+
+            {/* SKU Table */}
+            <View style={DaysummaryStyles.skuContainer}>
+              <View style={DaysummaryStyles.skuHeaderRow}>
+                <Text style={DaysummaryStyles.skuHeaderText}>SKU Name</Text>
+                <Text style={DaysummaryStyles.skuHeaderText}>Unit Price</Text>
+                <Text style={DaysummaryStyles.skuHeaderText}>Unit</Text>
+                <Text style={DaysummaryStyles.skuHeaderText}>Amount</Text>
               </View>
-            );
-          })}
-        </View>
-      );
-    })}
+
+              {orderItems.map((res, ind) => {
+                totalAmt += parseFloat(res.order_amt || 0);
+
+                return (
+                  <View key={ind}>
+                    <View style={DaysummaryStyles.skuDataRow}>
+                      <Text style={DaysummaryStyles.skuText}>{res.sku_name}</Text>
+                      <Text style={DaysummaryStyles.skuText}>{res.item_price_unit}</Text>
+                      <Text style={DaysummaryStyles.skuText}>{res.item_qty}</Text>
+                      <Text style={DaysummaryStyles.skuText}>{res.order_amt}</Text>
+                    </View>
+
+                    {/* Total Row - Show only after last item */}
+                    {ind === orderItems.length - 1 && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          marginTop: 5,
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Text style={{ color: 'black', fontWeight: 'bold' }}>Total</Text>
+                        <Text
+                          style={{ color: 'green', fontWeight: 'bold', fontSize: 13 }}
+                        >
+                          ₹{totalAmt.toFixed(2)}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+})}
+
   </View>
 
         {/* Date Header */}

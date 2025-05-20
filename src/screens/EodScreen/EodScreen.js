@@ -797,9 +797,11 @@ const EodScreen = () => {
                                         </View>
 
                                         {/* Total Amount */}
-                                        <View style={EodStyles.totalContainer}>
-                                            <Text style={EodStyles.totalText}>Total: ₹{totalAmount?.toFixed(2) || '0.00'}</Text>
+                                        <View style={[EodStyles.totalContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                                            <Text style={EodStyles.totalText}>Total:</Text>
+                                            <Text style={EodStyles.totalText}>₹{totalAmount?.toFixed(2) || '0.00'}</Text>
                                         </View>
+
                                     </View>
                                 );
                             })}

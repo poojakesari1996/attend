@@ -744,10 +744,10 @@ const OrderScreen = ({ route }) => {
                   </View>
 
 
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     {/* <Text style={{ fontSize: 14, fontWeight: 'bold'}}> */}
-                      <Text style={{ color: 'black', fontSize: 13,fontWeight: 'bold' }}>Total: </Text>
-                      <Text style={{ color: 'green',fontSize: 13,marginHorizontal: 70,fontWeight: 'bold' }}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
+                    <Text style={{ color: 'black', fontSize: 13, fontWeight: 'bold' }}>Total: </Text>
+                    <Text style={{ color: 'green', fontSize: 13, marginHorizontal: 70, fontWeight: 'bold' }}>₹{orderData.reduce((total, item) => total + item.amount, 0)}</Text>
                     {/* </Text> */}
                   </View>
                 </View>
@@ -789,8 +789,11 @@ const OrderScreen = ({ route }) => {
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
                         <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
                           <Text style={{ color: 'black', fontSize: 13 }}>Amt: </Text>
-                          <Text style={{ color: 'green', fontSize: 13 }}>{res.amount}</Text>
+                          <Text style={{ color: 'green', fontSize: 13 }}>
+                            {(res.amount + '').split('.')[0]}.{((res.amount + '').split('.')[1] || '00').slice(0, 2).padEnd(2, '0')}
+                          </Text>
                         </Text>
+
 
                         <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 1 }}>
                           <Text style={{ color: 'black', fontSize: 13 }}>GST%: </Text>
@@ -831,9 +834,10 @@ const OrderScreen = ({ route }) => {
                     <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
                       <Text style={{ color: 'black', fontSize: 13 }}>Total Amt: </Text>
                       <Text style={{ color: 'green', fontSize: 13 }}>
-                        {orderData.reduce((total, item) => total + item.amount, 0)}
+                        {orderData.reduce((total, item) => total + Number(item.amount), 0).toFixed(2)}
                       </Text>
                     </Text>
+
 
                     <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
                       <Text style={{ color: 'black', fontSize: 13 }}>Net Total: </Text>

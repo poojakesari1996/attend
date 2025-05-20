@@ -188,37 +188,37 @@ const HomeTab = (props) => {
 
 
 
-  useFocusEffect(
-    useCallback(() => {
-      const backAction = () => {
-        if (exitConfirm) {
-          BackHandler.exitApp(); // ✅ Second back press pe app exit karega
-          return true;
-        }
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const backAction = () => {
+  //       if (exitConfirm) {
+  //         BackHandler.exitApp(); // ✅ Second back press pe app exit karega
+  //         return true;
+  //       }
 
-        Alert.alert("Exit App", "Are you sure you want to exit?", [
-          {
-            text: "Cancel",
-            onPress: () => setExitConfirm(false),
-            style: "cancel",
-          },
-          {
-            text: "Exit",
-            onPress: () => {
-              navigation.navigate(RouteName.LOGIN_SCREEN); // ✅ Pehle Login pe navigate
-              setExitConfirm(true); // ✅ Agli baar back kare toh exit ho
-            },
-          },
-        ]);
+  //       Alert.alert("Exit App", "Are you sure you want to exit?", [
+  //         {
+  //           text: "Cancel",
+  //           onPress: () => setExitConfirm(false),
+  //           style: "cancel",
+  //         },
+  //         {
+  //           text: "Exit",
+  //           onPress: () => {
+  //             navigation.navigate(RouteName.LOGIN_SCREEN); // ✅ Pehle Login pe navigate
+  //             setExitConfirm(true); // ✅ Agli baar back kare toh exit ho
+  //           },
+  //         },
+  //       ]);
 
-        return true; // ✅ Prevent default back action
-      };
+  //       return true; // ✅ Prevent default back action
+  //     };
 
-      BackHandler.addEventListener("hardwareBackPress", backAction);
+  //     BackHandler.addEventListener("hardwareBackPress", backAction);
 
-      return () => BackHandler.removeEventListener("hardwareBackPress", backAction);
-    }, [exitConfirm])
-  )
+  //     return () => BackHandler.removeEventListener("hardwareBackPress", backAction);
+  //   }, [exitConfirm])
+  // )
 
 
   const fetchPendingCount = async () => {
