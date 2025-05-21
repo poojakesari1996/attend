@@ -461,7 +461,8 @@ const ActivityHistoryScreen = () => {
 
                                     {/* Activity Data */}
                                     {activities.map((res, ind) => (
-                                        <View key={ind}
+                                        <View
+                                            key={ind}
                                             style={{
                                                 marginTop: 16,
                                                 padding: 12,
@@ -472,10 +473,13 @@ const ActivityHistoryScreen = () => {
                                                 shadowRadius: 4,
                                                 shadowOffset: { width: 0, height: 2 },
                                                 elevation: 3,
-                                            }}>
+                                            }}
+                                        >
                                             <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                                 <Text style={{ color: 'black', fontSize: 13 }}>Customer Name: </Text>
-                                                <Text style={{ color: 'green', fontSize: 12 }}>{res.hospital_customer_name} ({res.user_type})</Text>
+                                                <Text style={{ color: 'green', fontSize: 12 }}>
+                                                    {res.hospital_customer_name} ({res.user_type})
+                                                </Text>
                                             </Text>
 
                                             <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
@@ -488,18 +492,19 @@ const ActivityHistoryScreen = () => {
                                                 <Text style={{ color: 'green', fontSize: 13 }}>{res.remark}</Text>
                                             </Text>
 
-                                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                                                <Text style={{ color: 'black', fontSize: 13 }}>Follow Up: </Text>
-                                                <Text style={{ color: 'green', fontSize: 13 }}>
-                                                    {res.follow_up && !isNaN(new Date(res.follow_up).getTime())
-                                                        ? new Date(res.follow_up).toLocaleDateString('en-IN', {
+                                            {/* Show Follow Up only if it exists and is a valid date */}
+                                            {res.follow_up && !isNaN(new Date(res.follow_up).getTime()) && (
+                                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                                                    <Text style={{ color: 'black', fontSize: 13 }}>Follow Up: </Text>
+                                                    <Text style={{ color: 'green', fontSize: 13 }}>
+                                                        {new Date(res.follow_up).toLocaleDateString('en-IN', {
                                                             day: '2-digit',
                                                             month: '2-digit',
                                                             year: 'numeric',
-                                                        })
-                                                        : ''}
+                                                        })}
+                                                    </Text>
                                                 </Text>
-                                            </Text>
+                                            )}
                                         </View>
                                     ))}
                                 </View>
@@ -510,6 +515,7 @@ const ActivityHistoryScreen = () => {
                     )}
                 </View>
             </ScrollView>
+
 
         </View>
     );
