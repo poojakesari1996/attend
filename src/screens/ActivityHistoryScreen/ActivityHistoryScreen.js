@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, Button, Modal, TouchableOpacity, StyleSheet, Platform, ScrollView, Alert,loading } from 'react-native';
+import { View, Text, Button, Modal, TouchableOpacity, StyleSheet, Platform, ScrollView, Alert, loading } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { darkTheme, Fonts, lightTheme, SF, SH } from "../../utils";
 import { ActivityHistoryStyle } from '../../styles/ActivityHistoryStyle';
@@ -489,18 +489,18 @@ const ActivityHistoryScreen = () => {
                                                 <Text style={{ color: 'green', fontSize: 13 }}>{res.remark}</Text>
                                             </Text>
 
-                                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
-                                                <Text style={{ color: 'black', fontSize: 13 }}>Follow Up: </Text>
-                                                <Text style={{ color: 'green', fontSize: 13 }}>
-                                                    {res.follow_up && !isNaN(new Date(res.follow_up).getTime())
-                                                        ? new Date(res.follow_up).toLocaleDateString('en-IN', {
+                                            {res.follow_up && !isNaN(new Date(res.follow_up).getTime()) && (
+                                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 4 }}>
+                                                    <Text style={{ color: 'black', fontSize: 13 }}>Follow Up: </Text>
+                                                    <Text style={{ color: 'green', fontSize: 13 }}>
+                                                        {new Date(res.follow_up).toLocaleDateString('en-IN', {
                                                             day: '2-digit',
                                                             month: '2-digit',
                                                             year: 'numeric',
-                                                        })
-                                                        : ''}
+                                                        })}
+                                                    </Text>
                                                 </Text>
-                                            </Text>
+                                            )}
                                         </View>
                                     ))}
                                 </View>

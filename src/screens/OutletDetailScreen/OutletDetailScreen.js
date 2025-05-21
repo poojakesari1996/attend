@@ -258,8 +258,8 @@ const OutletDetailScreen = ({ route }) => {
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON.stringify({
-        "Outletid": itemId.outlet_id,
-        "enterBy": empid[0].emp_id
+        outlet_id: itemId.outlet_id,
+        enter_by: empid[0].emp_id
       });
 
       const requestOptions = {
