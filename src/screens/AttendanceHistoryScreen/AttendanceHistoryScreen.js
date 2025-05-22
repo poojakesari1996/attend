@@ -174,17 +174,19 @@ const AttendanceHistoryScreen = () => {
                 if (timeArray.length > 0) {
                     const minTime = new Date(Math.min(...timeArray));
                     const maxTime = new Date(Math.max(...timeArray));
-
+                
                     const durationInMinutes = Math.floor((maxTime - minTime) / (1000 * 60));
-
-                    console.log("Total Field Minutes:", durationInMinutes);
-
-                    // Store only minutes in state
-                    setFieldHours(`${durationInMinutes} min`);
-
+                    const hours = Math.floor(durationInMinutes / 60);
+                    const minutes = durationInMinutes % 60;
+                
+                    const formattedDuration = `${hours} hr ${minutes} min`;
+                
+                    console.log("Total Field Duration:", formattedDuration);
+                    setFieldHours(formattedDuration);
                 } else {
                     console.log("No time data available.");
                 }
+                
 
                 // Fetch addresses for each item
                 const updatedData = await Promise.all(
