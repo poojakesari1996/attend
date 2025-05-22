@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, FlatList, ToastAndroid, Button, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, FlatList, ToastAndroid, Button, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native'
 import { TaskAddStyle } from '../../styles/TaskAddStyle'
 import { DatePicker } from '../../components';
 import { RouteName } from '../../routes';
@@ -23,6 +23,52 @@ const TaskAddScreen = () => {
     const [fromDate, setFromDate] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null); // ⬅️ add this to store selected date
     const [updatedRemarks, setUpdatedRemarks] = useState({});
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [getpendingtask, setGetpendingtask] = useState([]);
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+
+    const showPendingTask = async () => {
+        const user = await AsyncStorage.getItem('userInfor');
+        const empid = JSON.parse(user);
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const raw = JSON.stringify({
+            "emp_id": empid[0].emp_id
+        });
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        };
+
+        fetch("https://devcrm.romsons.com:8080/GetPendingTaskDates", requestOptions)
+            .then((response) => response.json())
+            .then((result) => {
+                console.log('poojabhbdhddh', result);
+
+                if (result.error === false) {
+                    setGetpendingtask(result.pendingDates)
+                }
+            })
+            .catch((error) => console.error(error));
+    }
+    useEffect(() => {
+        if (isModalVisible) {
+            showPendingTask();
+        }
+    }, [isModalVisible]);
+
+    const convertDDMMYYYYtoDate = (ddmmyyyy) => {
+        const [day, month, year] = ddmmyyyy.split("-");
+        return new Date(`${year}-${month}-${day}`);
+    };
+
 
     const handleRemarkChange = (taskId, newRemark) => {
         setUpdatedRemarks((prev) => ({
@@ -45,7 +91,7 @@ const TaskAddScreen = () => {
         setSelectedDate(currentDate);
         followUpDatewiseData(currentDate);
     };
-    
+
 
     const followUpDatewiseData = async (date) => {
         const user = await AsyncStorage.getItem("userInfor");
@@ -129,6 +175,57 @@ const TaskAddScreen = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#f9f9f9' }}>
+            <TouchableOpacity
+                style={TaskAddStyles.pendingTaskButton}
+                activeOpacity={0.8}
+                onPress={toggleModal}
+            >
+                <Text style={TaskAddStyles.pendingTaskText}>Pending Task</Text>
+            </TouchableOpacity>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={toggleModal}
+            >
+                <View style={TaskAddStyles.modalOverlay}>
+                    <View style={TaskAddStyles.modalContainer}>
+                        <Text style={TaskAddStyles.modalTitle}>Pending Task</Text>
+                        <View style={TaskAddStyles.divider} />
+
+                        <ScrollView
+                            style={TaskAddStyles.scrollView}
+                            contentContainerStyle={TaskAddStyles.scrollViewContent}
+                            showsVerticalScrollIndicator={true}
+                        >
+                            {getpendingtask?.length > 0 ? (
+                                getpendingtask.map((item, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={TaskAddStyles.dateContainer}
+                                        onPress={() => {
+                                            const date = convertDDMMYYYYtoDate(item.pending_date);
+                                            setSelectedDate(date);
+                                            followUpDatewiseData(date);
+                                            toggleModal();
+                                        }}
+
+                                    >
+                                        <Text style={TaskAddStyles.dateText}>{item.pending_date}</Text>
+                                    </TouchableOpacity>
+                                ))
+                            ) : (
+                                <Text style={TaskAddStyles.dateText}>No pending tasks available</Text>
+                            )}
+
+                        </ScrollView>
+
+                        <TouchableOpacity style={TaskAddStyles.closeButton} onPress={toggleModal}>
+                            <Text style={TaskAddStyles.closeButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
             <View style={TaskAddStyles.dateRow}>
                 <View style={TaskAddStyles.datePickerWrapper}>
